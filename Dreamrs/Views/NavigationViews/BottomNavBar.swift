@@ -9,7 +9,29 @@ import SwiftUI
 
 struct BottomNavBar: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ZStack {
+            TabView() {
+                Group() {
+                    HomeView()
+                        .tabItem {
+                            Label("", systemImage: "house")
+                        }
+                    
+                    CommunityMainView()
+                        .tabItem {
+                            Label("", systemImage: "person.3.fill")
+                        }
+                    
+                    ProfileMainView()
+                        .tabItem {
+                            Label("", systemImage: "person.fill")
+                        }
+                }
+//                .toolbarBackground(.visible, for:.tabBar)
+                .toolbarColorScheme(.none, for: .tabBar)
+                .toolbarBackground(.hidden, for: .tabBar)
+            }
+        }
     }
 }
 

@@ -7,18 +7,39 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1A4055932B0AC4440025CBEF /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A4055922B0AC4430025CBEF /* HomeView.swift */; };
+		1A4395192B117D1800BA5C27 /* ProfileSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A4395182B117D1800BA5C27 /* ProfileSettingsView.swift */; };
+		1A4676392B1508310007F3E6 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A4676382B1508310007F3E6 /* User.swift */; };
+		1A46763B2B1508B20007F3E6 /* Dream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A46763A2B1508B20007F3E6 /* Dream.swift */; };
 		1ACA216B2AEDAFC000CCEF66 /* DreamrsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ACA216A2AEDAFC000CCEF66 /* DreamrsApp.swift */; };
 		1ACA216D2AEDAFC000CCEF66 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ACA216C2AEDAFC000CCEF66 /* ContentView.swift */; };
 		1ACA216F2AEDAFC100CCEF66 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1ACA216E2AEDAFC100CCEF66 /* Assets.xcassets */; };
 		1ACA21722AEDAFC100CCEF66 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1ACA21712AEDAFC100CCEF66 /* Preview Assets.xcassets */; };
+		1ACA217A2AEDB18800CCEF66 /* SingleDream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ACA21792AEDB18800CCEF66 /* SingleDream.swift */; };
+		1ACA217E2AEDC63D00CCEF66 /* BottomNavBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ACA217D2AEDC63D00CCEF66 /* BottomNavBar.swift */; };
+		1ACA21802AEDC68600CCEF66 /* HomeMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ACA217F2AEDC68600CCEF66 /* HomeMainView.swift */; };
+		1ACA21832AEDC6CD00CCEF66 /* CommunityMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ACA21822AEDC6CC00CCEF66 /* CommunityMainView.swift */; };
+		1ACA21872AEDC71A00CCEF66 /* ProfileMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ACA21862AEDC71A00CCEF66 /* ProfileMainView.swift */; };
+		1ACA21892AEDCFA300CCEF66 /* CreateDream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ACA21882AEDCFA300CCEF66 /* CreateDream.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1A4055922B0AC4430025CBEF /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		1A4395182B117D1800BA5C27 /* ProfileSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSettingsView.swift; sourceTree = "<group>"; };
+		1A4676382B1508310007F3E6 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		1A46763A2B1508B20007F3E6 /* Dream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dream.swift; sourceTree = "<group>"; };
 		1ACA21672AEDAFC000CCEF66 /* Dreamrs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Dreamrs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1ACA216A2AEDAFC000CCEF66 /* DreamrsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DreamrsApp.swift; sourceTree = "<group>"; };
 		1ACA216C2AEDAFC000CCEF66 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		1ACA216E2AEDAFC100CCEF66 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1ACA21712AEDAFC100CCEF66 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		1ACA21792AEDB18800CCEF66 /* SingleDream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleDream.swift; sourceTree = "<group>"; };
+		1ACA217D2AEDC63D00CCEF66 /* BottomNavBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomNavBar.swift; sourceTree = "<group>"; };
+		1ACA217F2AEDC68600CCEF66 /* HomeMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeMainView.swift; sourceTree = "<group>"; };
+		1ACA21822AEDC6CC00CCEF66 /* CommunityMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityMainView.swift; sourceTree = "<group>"; };
+		1ACA21862AEDC71A00CCEF66 /* ProfileMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileMainView.swift; sourceTree = "<group>"; };
+		1ACA21882AEDCFA300CCEF66 /* CreateDream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateDream.swift; sourceTree = "<group>"; };
+		1ACA218A2AEDDD3000CCEF66 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +53,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1A4676372B1508220007F3E6 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				1A4676382B1508310007F3E6 /* User.swift */,
+				1A46763A2B1508B20007F3E6 /* Dream.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		1ACA215E2AEDAFC000CCEF66 = {
 			isa = PBXGroup;
 			children = (
@@ -51,6 +81,9 @@
 		1ACA21692AEDAFC000CCEF66 /* Dreamrs */ = {
 			isa = PBXGroup;
 			children = (
+				1A4676372B1508220007F3E6 /* Models */,
+				1ACA218A2AEDDD3000CCEF66 /* Info.plist */,
+				1ACA21782AEDB17A00CCEF66 /* Views */,
 				1ACA216A2AEDAFC000CCEF66 /* DreamrsApp.swift */,
 				1ACA216C2AEDAFC000CCEF66 /* ContentView.swift */,
 				1ACA216E2AEDAFC100CCEF66 /* Assets.xcassets */,
@@ -65,6 +98,53 @@
 				1ACA21712AEDAFC100CCEF66 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		1ACA21782AEDB17A00CCEF66 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				1ACA21852AEDC70700CCEF66 /* CommunityViews */,
+				1ACA21842AEDC6F000CCEF66 /* ProfileViews */,
+				1ACA217C2AEDC63100CCEF66 /* NavigationViews */,
+				1ACA217B2AEDC62500CCEF66 /* HomeViews */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		1ACA217B2AEDC62500CCEF66 /* HomeViews */ = {
+			isa = PBXGroup;
+			children = (
+				1ACA21792AEDB18800CCEF66 /* SingleDream.swift */,
+				1ACA217F2AEDC68600CCEF66 /* HomeMainView.swift */,
+				1ACA21882AEDCFA300CCEF66 /* CreateDream.swift */,
+				1A4055922B0AC4430025CBEF /* HomeView.swift */,
+			);
+			path = HomeViews;
+			sourceTree = "<group>";
+		};
+		1ACA217C2AEDC63100CCEF66 /* NavigationViews */ = {
+			isa = PBXGroup;
+			children = (
+				1ACA217D2AEDC63D00CCEF66 /* BottomNavBar.swift */,
+			);
+			path = NavigationViews;
+			sourceTree = "<group>";
+		};
+		1ACA21842AEDC6F000CCEF66 /* ProfileViews */ = {
+			isa = PBXGroup;
+			children = (
+				1ACA21862AEDC71A00CCEF66 /* ProfileMainView.swift */,
+				1A4395182B117D1800BA5C27 /* ProfileSettingsView.swift */,
+			);
+			path = ProfileViews;
+			sourceTree = "<group>";
+		};
+		1ACA21852AEDC70700CCEF66 /* CommunityViews */ = {
+			isa = PBXGroup;
+			children = (
+				1ACA21822AEDC6CC00CCEF66 /* CommunityMainView.swift */,
+			);
+			path = CommunityViews;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -137,8 +217,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A4055932B0AC4440025CBEF /* HomeView.swift in Sources */,
+				1ACA217E2AEDC63D00CCEF66 /* BottomNavBar.swift in Sources */,
+				1ACA21892AEDCFA300CCEF66 /* CreateDream.swift in Sources */,
+				1A4395192B117D1800BA5C27 /* ProfileSettingsView.swift in Sources */,
 				1ACA216D2AEDAFC000CCEF66 /* ContentView.swift in Sources */,
 				1ACA216B2AEDAFC000CCEF66 /* DreamrsApp.swift in Sources */,
+				1ACA21832AEDC6CD00CCEF66 /* CommunityMainView.swift in Sources */,
+				1ACA21802AEDC68600CCEF66 /* HomeMainView.swift in Sources */,
+				1ACA21872AEDC71A00CCEF66 /* ProfileMainView.swift in Sources */,
+				1ACA217A2AEDB18800CCEF66 /* SingleDream.swift in Sources */,
+				1A4676392B1508310007F3E6 /* User.swift in Sources */,
+				1A46763B2B1508B20007F3E6 /* Dream.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -270,11 +360,13 @@
 				DEVELOPMENT_TEAM = 283L88579N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Dreamrs/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -299,11 +391,13 @@
 				DEVELOPMENT_TEAM = 283L88579N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Dreamrs/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

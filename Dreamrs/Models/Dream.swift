@@ -6,3 +6,11 @@
 //
 
 import Foundation
+
+struct Dream: Codable {
+    var authorId: String?
+    var authorHandle: String?
+    var text: [[String: [Bool]]]?
+    var date: Date?
+//    var timestamp: Timestamp?
+}
