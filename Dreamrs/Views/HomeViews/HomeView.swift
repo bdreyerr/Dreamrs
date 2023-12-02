@@ -11,12 +11,13 @@ struct HomeView: View {
     
     @State var animationVal: Double = 0.0
     
-    @State var selectedMonth: Int = 11
+//    @State var selectedMonth: Int = 11
     @State var isMonthSelectorPopoverShowing: Bool = false
     @State var isSearchBarShowing: Bool = false
     @State var isCalPickerShowing: Bool = false
     
     @State var searchText: String = ""
+    @State var selectedMonth: String = "November"
     
     var body: some View {
         NavigationView {
@@ -47,10 +48,38 @@ struct HomeView: View {
                                     isMonthSelectorPopoverShowing = true
                                 }) {
                                     HStack {
-                                        Text("November")
-                                            .foregroundStyle(.black)
-                                            .bold()
-                                            .font(.system(size: 16, design: .serif))
+                                        VStack {
+                                            Text("November")
+                                                .foregroundStyle(.black)
+                                                .bold()
+                                                .font(.system(size: 16, design: .serif))
+                                                .onTapGesture {
+                                                    isMonthSelectorPopoverShowing.toggle()
+                                                }
+                                        }
+                                        .popover(isPresented: $isMonthSelectorPopoverShowing, arrowEdge: .top) {
+                                            Picker("Select an option", selection: $selectedMonth) {
+                                                Text("Option 1").tag("Option 1")
+                                                Text("Option 2").tag("Option 2")
+                                                Text("Option 3").tag("Option 3")
+                                            }
+//                                            .pickerStyle()
+                                            .padding()
+                                        }
+                                        
+                                        
+//                                        Picker("Month",
+//                                               selection: $selectedMonth) {
+//                                            Text("December")
+//                                                .tag("December")
+//                                            Text("January")
+//                                                .tag("January")
+//                                            Text("Febuary")
+//                                                .tag("Febuary")
+//                                            Text("March")
+//                                                .tag("March")
+//                                        }
+                                                    
                                         
                                         Image(systemName: "arrowtriangle.down.fill")
                                             .resizable()

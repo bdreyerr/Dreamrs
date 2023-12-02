@@ -10,7 +10,24 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         VStack {
-            BottomNavBar()
+            // check if user is logged in from userDefaults
+            if let loginStatus = UserDefaults.standard.object(forKey: loginStatusKey) as? Bool {
+                
+                // Show the register / login screen either if the loginStatus is nil, or false
+                if loginStatus == false {
+                    RegisterView()
+                }
+                
+                if loginStatus == true {
+                    BottomNavBar()
+                }
+                
+            } else {
+//                Text("No user default set, it should always be false or true though.")
+                
+                // Showing main app flow for testing
+                BottomNavBar()
+            }
         }
     }
 }

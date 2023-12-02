@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct HomeMainView: View {
+    
     var body: some View {
         NavigationView {
             ZStack {
