@@ -6,8 +6,13 @@
 //
 
 import SwiftUI
+import FirebaseAuth
+import AuthenticationServices
 
 struct ContentView: View {
+    @StateObject var authManager = AuthManager()
+    @StateObject var userManager = UserManager()
+    
     var body: some View {
         VStack {
             // check if user is logged in from userDefaults
@@ -15,20 +20,32 @@ struct ContentView: View {
                 
                 // Show the register / login screen either if the loginStatus is nil, or false
                 if loginStatus == false {
+//                    Text("not logged in")
                     RegisterView()
                 }
                 
                 if loginStatus == true {
+//                    Text("logged in")
                     BottomNavBar()
+                        .onAppear {
+                            if let userId = Auth.auth().currentUser?.uid {
+                                userManager.retrieverUserFromFirestore(userId: userId)
+                            } else {
+                                print("The current user could not be retrieved")
+                                authManager.logOut()
+                            }
+                        }
                 }
                 
             } else {
-//                Text("No user default set, it should always be false or true though.")
+                RegisterView()
                 
                 // Showing main app flow for testing
-                BottomNavBar()
+//                BottomNavBar()
             }
         }
+        .environmentObject(authManager)
+        .environmentObject(userManager)
     }
 }
 

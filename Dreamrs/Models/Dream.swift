@@ -13,4 +13,5 @@ struct Dream: Codable {
     var text: [[String: [Bool]]]?
     var date: Date?
 //    var timestamp: Timestamp?
+    var karma: Int?
 }

@@ -10,6 +10,8 @@ import FirebaseAuth
 import AuthenticationServices
 
 struct RegisterView: View {
+    @EnvironmentObject var authManager: AuthManager
+    
     var body: some View {
         ZStack {
             VStack {
@@ -35,20 +37,20 @@ struct RegisterView: View {
                     
                     Image("register")
                         .resizable()
-                        .frame(width: 400, height: 400)
+                        .frame(width: 500, height: 500)
                         .cornerRadius(20.0)
-                        .offset(y: 30)
+                        .offset(y: 35)
                     
                     
                     SignInWithAppleButton(
                         onRequest: { request in
-                            //                        let nonce = authStateManager.randomNonceString()
-                            //                        authStateManager.currentNonce = nonce
-                            //                        request.requestedScopes = [.fullName, .email]
-                            //                        request.nonce = authStateManager.sha256(nonce)
+                            let nonce = authManager.randomNonceString()
+                            authManager.currentNonce = nonce
+                            request.requestedScopes = [.fullName, .email]
+                            request.nonce = authManager.sha256(nonce)
                         },
                         onCompletion: { result in
-                            //                        authStateManager.appleSignInButtonOnCompletion(result: result)
+                            authManager.appleSignInButtonOnCompletion(result: result)
                         }
                     ).frame(width: 350, height: 60)
                         .cornerRadius(50)
@@ -56,7 +58,7 @@ struct RegisterView: View {
                         .overlay(
                             RoundedRectangle(cornerRadius: 50)
                                 .stroke(Color.white, lineWidth: 1))
-                        .padding(.top, 300)
+                        .padding(.top, 350)
                 }
             }
         }
@@ -65,4 +67,5 @@ struct RegisterView: View {
 
 #Preview {
     RegisterView()
+        .environmentObject(AuthManager())
 }

@@ -6,8 +6,12 @@
 //
 
 import Foundation
+import FirebaseCore
+import FirebaseFirestore
+import FirebaseFirestoreSwift
 
 struct User: Codable {
+    @DocumentID var id: String?
     var firstName: String?
     var lastName: String?
     var email: String?

@@ -11,13 +11,20 @@ struct HomeView: View {
     
     @State var animationVal: Double = 0.0
     
-//    @State var selectedMonth: Int = 11
-    @State var isMonthSelectorPopoverShowing: Bool = false
     @State var isSearchBarShowing: Bool = false
     @State var isCalPickerShowing: Bool = false
     
+    
     @State var searchText: String = ""
-    @State var selectedMonth: String = "November"
+    @State private var selectedMonth: String
+    var months = ["January", "Febuary", "March", "April", "May", "June", "July", "August", "September", "October", "Novemeber", "December"]
+    
+    @State private var selectedDate: Date
+    
+    init(_ selectedDate: Date) {
+        _selectedMonth = State(initialValue: months[10])
+        _selectedDate = State(initialValue: selectedDate)
+    }
     
     var body: some View {
         NavigationView {
@@ -44,43 +51,27 @@ struct HomeView: View {
                     HStack {
                         if !isSearchBarShowing {
                             Group {
-                                Button(action: {
-                                    isMonthSelectorPopoverShowing = true
-                                }) {
-                                    HStack {
-                                        VStack {
-                                            Text("November")
-                                                .foregroundStyle(.black)
-                                                .bold()
+                                
+                                Menu {
+                                    Picker(selection: $selectedMonth) {
+                                        ForEach(months, id: \.self) { value in
+                                            Text(value)
+                                                .tag(value)
                                                 .font(.system(size: 16, design: .serif))
-                                                .onTapGesture {
-                                                    isMonthSelectorPopoverShowing.toggle()
-                                                }
+                                                .accentColor(.black)
+                                                .bold()
+                                                
                                         }
-                                        .popover(isPresented: $isMonthSelectorPopoverShowing, arrowEdge: .top) {
-                                            Picker("Select an option", selection: $selectedMonth) {
-                                                Text("Option 1").tag("Option 1")
-                                                Text("Option 2").tag("Option 2")
-                                                Text("Option 3").tag("Option 3")
-                                            }
-//                                            .pickerStyle()
-                                            .padding()
-                                        }
-                                        
-                                        
-//                                        Picker("Month",
-//                                               selection: $selectedMonth) {
-//                                            Text("December")
-//                                                .tag("December")
-//                                            Text("January")
-//                                                .tag("January")
-//                                            Text("Febuary")
-//                                                .tag("Febuary")
-//                                            Text("March")
-//                                                .tag("March")
-//                                        }
-                                                    
-                                        
+                                    } label: {}
+                                    .accentColor(.black)
+                                    .padding(.leading, -12)
+                                    .font(.system(size: 16, design: .serif))
+                                } label: {
+                                    HStack {
+                                        Text(selectedMonth)
+                                            .font(.system(size: 16, design: .serif))
+                                            .accentColor(.black)
+                                            .bold()
                                         Image(systemName: "arrowtriangle.down.fill")
                                             .resizable()
                                             .frame(width: 12, height: 6)
@@ -90,6 +81,20 @@ struct HomeView: View {
                                 
                                 Spacer()
                                 
+//                                Menu {
+//                                    DatePicker(selection: $selectedDate, in: ...Date.now, displayedComponents: .date) {
+//                                        Text("Select a date")
+//                                    }
+//                                } label: {
+//                                    Image(systemName: "calendar")
+//                                        .resizable()
+//                                        .frame(width: 25, height: 25)
+//                                        .foregroundColor(.black)
+//                                }
+//                                DatePicker(selection: $selectedDate, in: ...Date.now, displayedComponents: .date) {
+//                                }
+                                
+                                
                                 Button(action: {
                                     
                                 }) {
@@ -97,6 +102,9 @@ struct HomeView: View {
                                         .resizable()
                                         .frame(width: 25, height: 25)
                                         .foregroundColor(.black)
+                                } .overlay {
+                                    DatePicker(selection: $selectedDate, in: ...Date.now, displayedComponents: .date) {
+                                    }.blendMode(.destinationOver)
                                 }
                                 
                                 Button(action: {
@@ -342,5 +350,5 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView()
+    HomeView(Date.now)
 }

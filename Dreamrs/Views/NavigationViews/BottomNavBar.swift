@@ -12,7 +12,7 @@ struct BottomNavBar: View {
         ZStack {
             TabView() {
                 Group() {
-                    HomeView()
+                    HomeView(Date.now)
                         .tabItem {
                             Label("", systemImage: "house")
                         }
