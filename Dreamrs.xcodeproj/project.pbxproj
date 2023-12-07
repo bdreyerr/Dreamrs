@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1A330DEC2B1EA613009663C6 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A330DEB2B1EA613009663C6 /* UserManager.swift */; };
+		1A330DEE2B21534F009663C6 /* CreateDreamManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A330DED2B21534F009663C6 /* CreateDreamManager.swift */; };
 		1A4055932B0AC4440025CBEF /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A4055922B0AC4430025CBEF /* HomeView.swift */; };
 		1A4260F62B1BE0880011B7BF /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A4260F52B1BE0880011B7BF /* RegisterView.swift */; };
 		1A4260F82B1BE4CB0011B7BF /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A4260F72B1BE4CB0011B7BF /* UserDefaults.swift */; };
@@ -47,6 +48,7 @@
 
 /* Begin PBXFileReference section */
 		1A330DEB2B1EA613009663C6 /* UserManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
+		1A330DED2B21534F009663C6 /* CreateDreamManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateDreamManager.swift; sourceTree = "<group>"; };
 		1A4055922B0AC4430025CBEF /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		1A4260F52B1BE0880011B7BF /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
 		1A4260F72B1BE4CB0011B7BF /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
@@ -111,6 +113,7 @@
 			children = (
 				1A4260FB2B1BEE600011B7BF /* AuthManager.swift */,
 				1A330DEB2B1EA613009663C6 /* UserManager.swift */,
+				1A330DED2B21534F009663C6 /* CreateDreamManager.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -318,6 +321,7 @@
 				1ACA216B2AEDAFC000CCEF66 /* DreamrsApp.swift in Sources */,
 				1ACA21832AEDC6CD00CCEF66 /* CommunityMainView.swift in Sources */,
 				1ACA21802AEDC68600CCEF66 /* HomeMainView.swift in Sources */,
+				1A330DEE2B21534F009663C6 /* CreateDreamManager.swift in Sources */,
 				1ACA21872AEDC71A00CCEF66 /* ProfileMainView.swift in Sources */,
 				1ACA217A2AEDB18800CCEF66 /* SingleDream.swift in Sources */,
 				1A4676392B1508310007F3E6 /* User.swift in Sources */,

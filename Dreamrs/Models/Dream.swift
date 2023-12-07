@@ -6,12 +6,15 @@
 //
 
 import Foundation
+import FirebaseCore
+import FirebaseFirestore
+import FirebaseFirestoreSwift
 
 struct Dream: Codable {
+    @DocumentID var id: String?
     var authorId: String?
     var authorHandle: String?
-    var text: [[String: [Bool]]]?
-    var date: Date?
-//    var timestamp: Timestamp?
+    var text: [FormattedText]?
+    var date: String?
     var karma: Int?
 }

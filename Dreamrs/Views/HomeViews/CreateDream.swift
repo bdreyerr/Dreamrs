@@ -9,14 +9,10 @@ import SwiftUI
 
 struct CreateDream: View {
     
-    @State var dreamText: String = ""
-    
-    // Text formatting
-    @State var isBoldSelected: Bool = false
-    @State var isItalicSelected: Bool = false
-    @State var isUnderlineSelected: Bool = false
+    @StateObject var createDreamManager = CreateDreamManager()
     
     @State var isKeyboardShowing: Bool = false
+    
     
     var body: some View {
         ZStack {
@@ -29,6 +25,7 @@ struct CreateDream: View {
                     .bold()
                 
                 
+                // TODO: show the current date formatted to day
                 Text("November 20th, 2023")
                     .font(.system(size: 18, design: .serif))
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -37,22 +34,220 @@ struct CreateDream: View {
 //                    .bold()
                 
                 ScrollView {
-                    // If keyboard is not showing, show a text field with a longer line limit
+                // If keyboard is not showing, show a text field with a longer line limit
                     
-                    TextField("Last night I....", text: $dreamText, axis: .vertical)
-                        .foregroundColor(.black)
-                        .font(.system(size: 14, design: .serif))
-                        .padding(10)
-                        .background(Color.white)
-                        .cornerRadius(20)
-                        .padding(.leading, 20)
-                        .padding(.trailing, 20)
-                        .lineLimit( isKeyboardShowing ? 5...10 : 20...22)
-                        .onTapGesture {
-                            if !isKeyboardShowing {
-                                isKeyboardShowing = true
+                Text("**will this be bold?**")
+                Text("_will this be italic?_")
+                Text("will this be underline?")
+                    
+                    
+                ForEach(createDreamManager.totalText) { textDict in
+                    let text = textDict.text
+                    let format = textDict.format
+                    
+                    
+                    switch format {
+                    case [false, false, false]:
+                        Text(text!)
+                            .foregroundColor(.black)
+                            .font(.system(size: 14, design: .serif))
+                    case [true, false, false]:
+                        Text(text!)
+                            .foregroundColor(.black)
+                            .font(.system(size: 14, design: .serif))
+                            .bold()
+                    case [false, true, false]:
+                        Text(text!)
+                            .foregroundColor(.black)
+                            .font(.system(size: 14, design: .serif))
+                            .italic()
+                    case [false, false, true]:
+                        Text(text!)
+                            .foregroundColor(.black)
+                            .font(.system(size: 14, design: .serif))
+                            .underline()
+                    case [true, true, false]:
+                        Text(text!)
+                            .foregroundColor(.black)
+                            .font(.system(size: 14, design: .serif))
+                            .bold()
+                            .italic()
+                    case [true, false, true]:
+                        Text(text!)
+                            .foregroundColor(.black)
+                            .font(.system(size: 14, design: .serif))
+                            .bold()
+                            .underline()
+                    case [false, true, true]:
+                        Text(text!)
+                            .foregroundColor(.black)
+                            .font(.system(size: 14, design: .serif))
+                            .italic()
+                            .underline()
+                    case [true, true, true]:
+                        Text(text!)
+                            .foregroundColor(.black)
+                            .font(.system(size: 14, design: .serif))
+                            .bold()
+                            .italic()
+                            .underline()
+                    default:
+                        Text(text!)
+                            .foregroundColor(.black)
+                            .font(.system(size: 14, design: .serif))
+                    }
+                }
+                    
+                    switch createDreamManager.currentFormat {
+                    case [false, false, false]: 
+                        TextField("Last night I....", text: $createDreamManager.currentText, axis: .vertical)
+                            .foregroundColor(.black)
+                            .font(.system(size: 14, design: .serif))
+                            .padding(10)
+                            .background(Color.white)
+                            .cornerRadius(20)
+                            .padding(.leading, 20)
+                            .padding(.trailing, 20)
+                            .lineLimit( isKeyboardShowing ? 5...10 : 20...22)
+                            .onTapGesture {
+                                if !isKeyboardShowing {
+                                    isKeyboardShowing = true
+                                }
                             }
-                        }
+                    case [true, false, false]:
+                        TextField("Last night I....", text: $createDreamManager.currentText, axis: .vertical)
+                            .bold()
+                            .foregroundColor(.black)
+                            .font(.system(size: 14, design: .serif))
+                            .padding(10)
+                            .background(Color.white)
+                            .cornerRadius(20)
+                            .padding(.leading, 20)
+                            .padding(.trailing, 20)
+                            .lineLimit( isKeyboardShowing ? 5...10 : 20...22)
+                            .onTapGesture {
+                                if !isKeyboardShowing {
+                                    isKeyboardShowing = true
+                                }
+                            }
+                    case [false, true, false]:
+                        TextField("Last night I....", text: $createDreamManager.currentText, axis: .vertical)
+                            .italic()
+                            .foregroundColor(.black)
+                            .font(.system(size: 14, design: .serif))
+                            .padding(10)
+                            .background(Color.white)
+                            .cornerRadius(20)
+                            .padding(.leading, 20)
+                            .padding(.trailing, 20)
+                            .lineLimit( isKeyboardShowing ? 5...10 : 20...22)
+                            .onTapGesture {
+                                if !isKeyboardShowing {
+                                    isKeyboardShowing = true
+                                }
+                            }
+                    case [false, false, true]:
+                        TextField("Last night I....", text: $createDreamManager.currentText, axis: .vertical)
+                            .underline()
+                            .foregroundColor(.black)
+                            .font(.system(size: 14, design: .serif))
+                            .padding(10)
+                            .background(Color.white)
+                            .cornerRadius(20)
+                            .padding(.leading, 20)
+                            .padding(.trailing, 20)
+                            .lineLimit( isKeyboardShowing ? 5...10 : 20...22)
+                            .onTapGesture {
+                                if !isKeyboardShowing {
+                                    isKeyboardShowing = true
+                                }
+                            }
+                    case [true, true, false]:
+                        TextField("Last night I....", text: $createDreamManager.currentText, axis: .vertical)
+                            .bold()
+                            .italic()
+                            .foregroundColor(.black)
+                            .font(.system(size: 14, design: .serif))
+                            .padding(10)
+                            .background(Color.white)
+                            .cornerRadius(20)
+                            .padding(.leading, 20)
+                            .padding(.trailing, 20)
+                            .lineLimit( isKeyboardShowing ? 5...10 : 20...22)
+                            .onTapGesture {
+                                if !isKeyboardShowing {
+                                    isKeyboardShowing = true
+                                }
+                            }
+                    case [true, false, true]:
+                        TextField("Last night I....", text: $createDreamManager.currentText, axis: .vertical)
+                            .bold()
+                            .underline()
+                            .foregroundColor(.black)
+                            .font(.system(size: 14, design: .serif))
+                            .padding(10)
+                            .background(Color.white)
+                            .cornerRadius(20)
+                            .padding(.leading, 20)
+                            .padding(.trailing, 20)
+                            .lineLimit( isKeyboardShowing ? 5...10 : 20...22)
+                            .onTapGesture {
+                                if !isKeyboardShowing {
+                                    isKeyboardShowing = true
+                                }
+                            }
+                    case [false, true, true]:
+                        TextField("Last night I....", text: $createDreamManager.currentText, axis: .vertical)
+                            .italic()
+                            .underline()
+                            .foregroundColor(.black)
+                            .font(.system(size: 14, design: .serif))
+                            .padding(10)
+                            .background(Color.white)
+                            .cornerRadius(20)
+                            .padding(.leading, 20)
+                            .padding(.trailing, 20)
+                            .lineLimit( isKeyboardShowing ? 5...10 : 20...22)
+                            .onTapGesture {
+                                if !isKeyboardShowing {
+                                    isKeyboardShowing = true
+                                }
+                            }
+                    case [true, true, true]:
+                        TextField("Last night I....", text: $createDreamManager.currentText, axis: .vertical)
+                            .bold()
+                            .italic()
+                            .underline()
+                            .foregroundColor(.black)
+                            .font(.system(size: 14, design: .serif))
+                            .padding(10)
+                            .background(Color.white)
+                            .cornerRadius(20)
+                            .padding(.leading, 20)
+                            .padding(.trailing, 20)
+                            .lineLimit( isKeyboardShowing ? 5...10 : 20...22)
+                            .onTapGesture {
+                                if !isKeyboardShowing {
+                                    isKeyboardShowing = true
+                                }
+                            }
+                    default: Text("argabarga")
+                    }
+                    
+//                    TextField("Last night I....", text: $createDreamManager.currentText, axis: .vertical)
+//                        .foregroundColor(.black)
+//                        .font(.system(size: 14, design: .serif))
+//                        .padding(10)
+//                        .background(Color.white)
+//                        .cornerRadius(20)
+//                        .padding(.leading, 20)
+//                        .padding(.trailing, 20)
+//                        .lineLimit( isKeyboardShowing ? 5...10 : 20...22)
+//                        .onTapGesture {
+//                            if !isKeyboardShowing {
+//                                isKeyboardShowing = true
+//                            }
+//                        }
                     
 //                    if !isKeyboardShowing {
 //                        TextField("Last night I....", text: $dreamText, axis: .vertical)
@@ -87,9 +282,9 @@ struct CreateDream: View {
                 HStack {
                     Button(action: {
                         print("Bold button clicked!")
-                        isBoldSelected = !isBoldSelected
+                        createDreamManager.toggleBold()
                     }) {
-                        if !isBoldSelected {
+                        if !createDreamManager.currentFormat[0] {
                             // Bold not selected
                             Image(systemName: "bold")
                                 .resizable()
@@ -113,13 +308,13 @@ struct CreateDream: View {
                                 .shadow(color: Color.black.opacity(0.2), radius: 10, x: 10, y: 10)
                         }
                     }
-                    .padding(.trailing, 20)
+                    .padding(.trailing, 15)
                     
                     Button(action: {
                         print("Italics button clicked!")
-                        isItalicSelected = !isItalicSelected
+                        createDreamManager.toggleItalic()
                     }) {
-                        if !isItalicSelected {
+                        if !createDreamManager.currentFormat[1] {
                             Image(systemName: "italic")
                                 .resizable()
                                 .frame(width: 14, height: 18)
@@ -141,13 +336,13 @@ struct CreateDream: View {
                                 .shadow(color: Color.black.opacity(0.2), radius: 10, x: 10, y: 10)
                         }
                     }
-                    .padding(.trailing, 20)
+                    .padding(.trailing, 15)
                     
                     Button(action: {
                         print("Underline button clicked!")
-                        isUnderlineSelected = !isUnderlineSelected
+                        createDreamManager.toggleUnderline()
                     }) {
-                        if !isUnderlineSelected {
+                        if !createDreamManager.currentFormat[2] {
                             Image(systemName: "underline")
                                 .resizable()
                                 .frame(width: 14, height: 18)
@@ -169,7 +364,23 @@ struct CreateDream: View {
                                 .shadow(color: Color.black.opacity(0.2), radius: 10, x: 10, y: 10)
                         }
                     }
-                    .padding(.trailing, 20)
+                    .padding(.trailing, 15)
+                    
+                    Button(action: {
+                        print("User wanted to add color to their text")
+                    }) {
+                        Circle()
+                            .fill(
+                                LinearGradient(
+                                    colors: [.red, .orange, .yellow, .green, .blue, .indigo],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 52, height: 52)
+                            .shadow(color: Color.black.opacity(0.2), radius: 10, x: 10, y: 10)
+                    }
+                    .padding(.trailing, 15)
                     
                     
                     Button(action: {
@@ -193,6 +404,7 @@ struct CreateDream: View {
                 isKeyboardShowing = false
             }
         }
+        .environmentObject(createDreamManager)
     }
 }
 
