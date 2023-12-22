@@ -10,11 +10,16 @@ import FirebaseCore
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 
-struct Dream: Codable {
+struct Dream : Codable, Identifiable {
     @DocumentID var id: String?
     var authorId: String?
     var authorHandle: String?
-    var text: [FormattedText]?
+    var title: String?
+    var plainText: String?
+    var archivedData: Data?
     var date: String?
+    var dayOfWeek: String?
     var karma: Int?
+    var sharedWithFriends: Bool?
+    var sharedWithCommunity: Bool?
 }

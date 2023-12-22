@@ -13,21 +13,7 @@ struct ProfileMainView: View {
         NavigationView {
             ZStack {
                 VStack {
-                    HStack {
-                        Spacer()
-                        Button(action: {
-                            isProfileSettingsPopupShowing = true
-                        }) {
-                            Image(systemName: "ellipsis")
-                                .foregroundColor(.black)
-                        }.sheet(isPresented: $isProfileSettingsPopupShowing) {
-                            ProfileSettingsView()
-                        }
-                    }
-                    .padding(.trailing, 20)
-//                    .padding(.bottom, 100)
-                    
-                    // Logo
+                    // Logo and settings
                     HStack {
                         Image("home_logo")
                             .resizable()
@@ -36,9 +22,21 @@ struct ProfileMainView: View {
                         Text("D R E A M B O A R D")
                             .font(.system(size: 14))
                             .padding(.trailing, 20)
-                            .padding(.bottom, 15)
+//                            .padding(.bottom, 5)
                             .font(.subheadline)
                             .bold()
+                            .padding(.trailing, 40)
+                        
+                        Button(action: {
+                            isProfileSettingsPopupShowing = true
+                        }) {
+                            Image(systemName: "gear")
+                                .resizable()
+                                .frame(width: 30, height: 30)
+                                .foregroundColor(.black)
+                        }.sheet(isPresented: $isProfileSettingsPopupShowing) {
+                            ProfileSettingsView()
+                        }
                     }
                     .padding(.bottom, 20)
                     

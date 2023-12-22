@@ -21,7 +21,7 @@ struct CommunityMainView: View {
                         Text("D R E A M B O A R D")
                             .font(.system(size: 14))
                             .padding(.trailing, 20)
-                            .padding(.bottom, 15)
+//                            .padding(.bottom, 15)
                             .font(.subheadline)
                             .bold()
                     }

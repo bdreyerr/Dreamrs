@@ -6,25 +6,12 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct HomeView: View {
     
-    @State var animationVal: Double = 0.0
-    
-    @State var isSearchBarShowing: Bool = false
-    @State var isCalPickerShowing: Bool = false
-    
-    
-    @State var searchText: String = ""
-    @State private var selectedMonth: String
-    var months = ["January", "Febuary", "March", "April", "May", "June", "July", "August", "September", "October", "Novemeber", "December"]
-    
-    @State private var selectedDate: Date
-    
-    init(_ selectedDate: Date) {
-        _selectedMonth = State(initialValue: months[10])
-        _selectedDate = State(initialValue: selectedDate)
-    }
+    @StateObject var homeManager = HomeManager()
+    @EnvironmentObject var userManager: UserManager
     
     var body: some View {
         NavigationView {
@@ -39,285 +26,64 @@ struct HomeView: View {
                         Text("D R E A M B O A R D")
                             .font(.system(size: 14))
                             .padding(.trailing, 20)
-                            .padding(.bottom, 15)
                             .font(.subheadline)
                             .bold()
                     }
                     .padding(.bottom, 20)
                     
-                    
-                    
-                    // Date Picker & Search
                     HStack {
-                        if !isSearchBarShowing {
-                            Group {
-                                
-                                Menu {
-                                    Picker(selection: $selectedMonth) {
-                                        ForEach(months, id: \.self) { value in
-                                            Text(value)
-                                                .tag(value)
-                                                .font(.system(size: 16, design: .serif))
-                                                .accentColor(.black)
-                                                .bold()
-                                                
-                                        }
-                                    } label: {}
-                                    .accentColor(.black)
-                                    .padding(.leading, -12)
-                                    .font(.system(size: 16, design: .serif))
-                                } label: {
-                                    HStack {
-                                        Text(selectedMonth)
-                                            .font(.system(size: 16, design: .serif))
-                                            .accentColor(.black)
-                                            .bold()
-                                        Image(systemName: "arrowtriangle.down.fill")
-                                            .resizable()
-                                            .frame(width: 12, height: 6)
-                                            .foregroundColor(.black)
-                                    }
+                        Menu {
+                            Picker(selection: $homeManager.selectedMonth) {
+                                ForEach(homeManager.months, id: \.self) { value in
+                                    Text(value)
+                                        .tag(value)
+                                        .font(.system(size: 16, design: .serif))
+                                        .accentColor(.black)
+                                        .bold()
+                                        
+                                }
+                            } label: {}
+                            .accentColor(.black)
+                            .padding(.leading, -12)
+                            .font(.system(size: 16, design: .serif))
+                            .onChange(of: homeManager.selectedMonth) { newValue in
+                                if let user = userManager.user {
+                                    homeManager.retrieveDreams(userId: user.id!)
                                 }
                                 
-                                Spacer()
-                                
-//                                Menu {
-//                                    DatePicker(selection: $selectedDate, in: ...Date.now, displayedComponents: .date) {
-//                                        Text("Select a date")
-//                                    }
-//                                } label: {
-//                                    Image(systemName: "calendar")
-//                                        .resizable()
-//                                        .frame(width: 25, height: 25)
-//                                        .foregroundColor(.black)
-//                                }
-//                                DatePicker(selection: $selectedDate, in: ...Date.now, displayedComponents: .date) {
-//                                }
-                                
-                                
-                                Button(action: {
-                                    
-                                }) {
-                                    Image(systemName: "calendar")
-                                        .resizable()
-                                        .frame(width: 25, height: 25)
-                                        .foregroundColor(.black)
-                                } .overlay {
-                                    DatePicker(selection: $selectedDate, in: ...Date.now, displayedComponents: .date) {
-                                    }.blendMode(.destinationOver)
-                                }
-                                
-                                Button(action: {
-                                    isSearchBarShowing = true
-                                    animationVal = 0.4
-                                }) {
-                                    Image(systemName: "magnifyingglass")
-                                        .resizable()
-                                        .frame(width: 20, height: 20)
-                                        .foregroundColor(.black)
-                                }
                             }
-                        } else {
-                            Group {
-                                HStack {
-                                    Image(systemName: "magnifyingglass")
-                                        .foregroundColor(.black)
-                                        .padding(.leading, 10)
-                                    
-                                    TextField("Search", text: $searchText)
-                                        .foregroundColor(.black)
-                                        .padding(10)
-                                        .background(Color.white)
-                                        .cornerRadius(20)
-                                        .padding(.trailing, 10)
-                                    
-                                    Button(action: {
-                                        isSearchBarShowing = false
-                                        animationVal = 0.0
-                                    }) {
-                                        Image(systemName: "xmark")
-                                            .resizable()
-                                            .frame(width: 20, height: 20)
-                                            .foregroundColor(.black)
-                                    }
-                                    .padding(.trailing, 20)
-                                }
+                        } label: {
+                            HStack {
+                                Text(homeManager.selectedMonth)
+                                    .font(.system(size: 16, design: .serif))
+                                    .accentColor(.black)
+                                    .bold()
+                                Image(systemName: "arrowtriangle.down.fill")
+                                    .resizable()
+                                    .frame(width: 12, height: 6)
+                                    .foregroundColor(.black)
                             }
                         }
+                        Spacer()
                     }
                     .padding(.leading, 20)
-                    .padding(.trailing, 20)
-                    .padding(.bottom, 10)
-                    .animation(.easeInOut(duration: animationVal))
+                    .padding(.bottom, 15)
                     
-                    ScrollView {
-                        NavigationLink(destination: SingleDream()) {
-                            VStack {
-                                Text("Saturday")
-                                    .foregroundStyle(.purple)
-                                    .bold()
-                                    .font(.system(size: 16, design: .serif))
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding(.bottom, 1)
-                                
-                                HStack {
-                                    Text("Driving with Dad, looking for puppies")
-                                        .foregroundStyle(.black)
-                                        .font(.system(size: 18, design: .serif))
-                                        .multilineTextAlignment(.leading)
-                                    Spacer()
-                                }
-                                .padding(.bottom, 1)
-                                
-                                Text("Nov 18th, 2023")
-                                    .foregroundStyle(.gray)
-                                    .font(.system(size: 14, design: .serif))
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                
-                            }
-                            .padding(.leading, 20)
+                    
+                    
+                    ScrollView(showsIndicators: false) {
+//                        ListDream()
+                        if homeManager.retrievedDreams.isEmpty {
+                            Image("sleep_face")
+                                .resizable()
+                                .frame(width: 100, height: 100)
+                                .opacity(0.6)
+                                .padding(.top, 60)
                         }
-                        .padding(.bottom, 10)
                         
-                        NavigationLink(destination: SingleDream()) {
-                            VStack {
-                                Text("Friday")
-                                    .foregroundStyle(.blue)
-                                    .bold()
-                                    .font(.system(size: 16, design: .serif))
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding(.bottom, 1)
-                                
-                                HStack {
-                                    Text("Joking at the pool with friends, flirting with girls")
-                                        .foregroundStyle(.black)
-                                        .font(.system(size: 18, design: .serif))
-                                        .multilineTextAlignment(.leading)
-                                    Spacer()
-                                }
-                                .padding(.bottom, 1)
-                                
-                                Text("Nov 17th, 2023")
-                                    .foregroundStyle(.gray)
-                                    .font(.system(size: 14, design: .serif))
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                
-                            }
-                            .padding(.leading, 20)
+                        ForEach(homeManager.retrievedDreams) { dream in
+                            ListDream(dream: dream, title: dream.title!, date: dream.date!, dayOfWeek: dream.dayOfWeek!)
                         }
-                        .padding(.bottom, 10)
-                        
-                        NavigationLink(destination: SingleDream()) {
-                            VStack {
-                                Text("Thursday")
-                                    .foregroundStyle(.green)
-                                    .bold()
-                                    .font(.system(size: 16, design: .serif))
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding(.bottom, 1)
-                                
-                                HStack {
-                                    Text("Skating through a mall on ice skates")
-                                        .foregroundStyle(.black)
-                                        .font(.system(size: 18, design: .serif))
-                                        .multilineTextAlignment(.leading)
-                                    Spacer()
-                                }
-                                .padding(.bottom, 1)
-                                
-                                Text("Nov 17th, 2023")
-                                    .foregroundStyle(.gray)
-                                    .font(.system(size: 14, design: .serif))
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                
-                            }
-                            .padding(.leading, 20)
-                        }
-                        .padding(.bottom, 10)
-                        
-                        NavigationLink(destination: SingleDream()) {
-                            VStack {
-                                Text("Wednesday")
-                                    .foregroundStyle(.red)
-                                    .bold()
-                                    .font(.system(size: 16, design: .serif))
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding(.bottom, 1)
-                                
-                                HStack {
-                                    Text("Discovering a hidden waterfall in the forest")
-                                        .foregroundStyle(.black)
-                                        .font(.system(size: 18, design: .serif))
-                                        .multilineTextAlignment(.leading)
-                                    Spacer()
-                                }
-                                .padding(.bottom, 1)
-                                
-                                Text("Nov 16th, 2023")
-                                    .foregroundStyle(.gray)
-                                    .font(.system(size: 14, design: .serif))
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                
-                            }
-                            .padding(.leading, 20)
-                        }
-                        .padding(.bottom, 10)
-                        
-                        NavigationLink(destination: SingleDream()) {
-                            VStack {
-                                Text("Tuesday")
-                                    .foregroundStyle(.purple)
-                                    .bold()
-                                    .font(.system(size: 16, design: .serif))
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding(.bottom, 1)
-                                
-                                HStack {
-                                    Text("Flying with colorful balloons over a rainbow")
-                                        .foregroundStyle(.black)
-                                        .font(.system(size: 18, design: .serif))
-                                        .multilineTextAlignment(.leading)
-                                    Spacer()
-                                }
-                                .padding(.bottom, 1)
-                                
-                                Text("Nov 15th, 2023")
-                                    .foregroundStyle(.gray)
-                                    .font(.system(size: 14, design: .serif))
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                
-                            }
-                            .padding(.leading, 20)
-                        }
-                        .padding(.bottom, 10)
-                        
-                        NavigationLink(destination: SingleDream()) {
-                            VStack {
-                                Text("Monday")
-                                    .foregroundStyle(.blue)
-                                    .bold()
-                                    .font(.system(size: 16, design: .serif))
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding(.bottom, 1)
-                                
-                                HStack {
-                                    Text("Talking to a girl I knew a long time ago")
-                                        .foregroundStyle(.black)
-                                        .font(.system(size: 18, design: .serif))
-                                        .multilineTextAlignment(.leading)
-                                    Spacer()
-                                }
-                                .padding(.bottom, 1)
-                                
-                                Text("Nov 14th, 2023")
-                                    .foregroundStyle(.gray)
-                                    .font(.system(size: 14, design: .serif))
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                
-                            }
-                            .padding(.leading, 20)
-                        }
-                        .padding(.bottom, 10)
                     }
                 }
                 .padding(.top, 10)
@@ -327,22 +93,65 @@ struct HomeView: View {
                     Spacer()
                     HStack {
                         Spacer()
-                        NavigationLink(destination: CreateDream()) {
-                            Image(systemName: "pencil.and.outline")
+//                        NavigationLink(destination: CreateDreamRichText()) {
+////                            Image(systemName: "plus.square")
+////                                .resizable()
+////                                .frame(width: 25, height: 25)
+////                                .font(.title)
+////                                .foregroundColor(.white)
+////                                .padding(20)
+////                                .background(Color.red)
+////                                .clipShape(Circle())
+////                                .shadow(color: Color.black.opacity(0.3), radius: 10, x: 10, y: 10)
+//                            
+//                            Image("pencil")
+//                                .resizable()
+//                                .frame(width: 60, height: 60)
+//                                .clipShape(Circle())
+//                                .shadow(color: Color.black.opacity(0.3), radius: 10, x: 10, y: 10)
+//                            
+//                        }
+                        Button(action: {
+                            homeManager.isCreateDreamPopupShowing = true
+                        }) {
+                            Image("pencil")
                                 .resizable()
-                                .frame(width: 25, height: 25)
-                                .font(.title)
-                                .foregroundColor(.white)
-                                .padding(20)
-                                .background(Color.red)
+                                .frame(width: 60, height: 60)
                                 .clipShape(Circle())
                                 .shadow(color: Color.black.opacity(0.3), radius: 10, x: 10, y: 10)
-                            
+                        }
+                        .sheet(isPresented: $homeManager.isCreateDreamPopupShowing) {
+                            CreateDreamRichText()
                         }
                     }
                     .padding(.trailing, 20)
                     .padding(.bottom, 20)
                 }
+            }
+            .sheet(isPresented: $homeManager.isViewNewlyCreatedDreamPopupShowing) {
+                
+                if homeManager.isNewDreamLoading {
+                    Image("sleep_face")
+                        .resizable()
+                        .frame(width: 100, height: 100)
+                        .opacity(0.6)
+                        .padding(.top, 60)
+                } else if homeManager.isErrorLoadingNewDream {
+                    Text("Error loading Dream")
+                } else {
+                    SingleDream()
+                }
+            }
+            .onDisappear {
+                homeManager.isViewNewlyCreatedDreamPopupShowing = false
+            }
+        }
+        .environmentObject(homeManager)
+        .onAppear {
+            if let user = Auth.auth().currentUser {
+                homeManager.retrieveDreams(userId: user.uid)
+            } else {
+                print("no user yet")
             }
         }
         
@@ -350,5 +159,95 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView(Date.now)
+    HomeView()
+}
+
+struct ListDream: View {
+    
+    @EnvironmentObject var homeManager: HomeManager
+
+    var dream: Dream
+    var title: String
+    var date: String
+    var dayOfWeek: String
+    
+    var body: some View {
+        NavigationLink(destination: SingleDream()) {
+            HStack {
+                VStack {
+                    TitleTextView(dayOfWeek: dayOfWeek)
+                        .bold()
+                        .font(.system(size: 16, design: .serif))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.bottom, 1)
+                    
+                    HStack {
+                        Text(title)
+                            .foregroundStyle(.black)
+                            .font(.system(size: 18, design: .serif))
+                            .multilineTextAlignment(.leading)
+                        Spacer()
+                    }
+                    .padding(.bottom, 1)
+                    
+                    Text(date)
+                        .foregroundStyle(.gray)
+                        .font(.system(size: 14, design: .serif))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                }
+                .padding(.leading, 20)
+                .padding(.bottom, 10)
+                
+                Image(homeManager.randomImage())
+                    .resizable()
+                    .frame(width: 100, height: 60)
+                    .clipShape(Circle())
+            }
+            
+        }
+        .simultaneousGesture(TapGesture().onEnded {
+            homeManager.displayDream(dream: self.dream)
+        })
+    }
+}
+
+struct TitleTextView: View {
+    let dayOfWeek: String
+    
+    var body: some View {
+        switch(dayOfWeek) {
+        case "Monday":
+            Text(dayOfWeek)
+                .foregroundStyle(.purple)
+                
+        case "Tuesday":
+            Text(dayOfWeek)
+                .foregroundStyle(.blue)
+                
+        case "Wednesday":
+            Text(dayOfWeek)
+                .foregroundStyle(.green)
+                
+        case "Thursday":
+            Text(dayOfWeek)
+                .foregroundStyle(.red)
+
+        case "Friday":
+            Text(dayOfWeek)
+                .foregroundStyle(.mint)
+                
+        case "Saturday":
+            Text(dayOfWeek)
+                .foregroundStyle(.orange)
+                
+        case "Sunday":
+            Text(dayOfWeek)
+                .foregroundStyle(.indigo)
+                
+        default:
+            Text(dayOfWeek)
+                .foregroundStyle(.black)
+        }
+    }
 }

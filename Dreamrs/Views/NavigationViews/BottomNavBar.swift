@@ -12,7 +12,7 @@ struct BottomNavBar: View {
         ZStack {
             TabView() {
                 Group() {
-                    HomeView(Date.now)
+                    HomeView()
                         .tabItem {
                             Label("", systemImage: "house")
                         }
@@ -22,6 +22,7 @@ struct BottomNavBar: View {
                             Label("", systemImage: "person.3.fill")
                         }
                     
+//                    TestSingleDream()
                     ProfileMainView()
                         .tabItem {
                             Label("", systemImage: "person.fill")

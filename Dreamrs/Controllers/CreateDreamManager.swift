@@ -7,102 +7,108 @@
 
 import Foundation
 import FirebaseFirestore
+import FirebaseAuth
+import RichTextKit
 
 class CreateDreamManager : ObservableObject {
+    // Dream Content
+    @Published var title: String = ""
+    @Published var text = NSAttributedString(string: "")
+    @Published var context = RichTextContext()
     
-    // Total text object, array of text to bool array mappings
-    // [{"this is the first line that has no formatting" : [0,0,0]}, {"this line is bold" : [1,0,0]}, {"this line is underline" : [0,0,1]}]
-    @Published var totalText: [FormattedText] = []
-    @Published var concatTextForView: String = ""
+    @Published var isReadyToSubmitPopupShowing: Bool = false
     
-    // Current text (text may be split up depending on format)
-    @Published var currentText: String = ""
-    // current formatting options
-    @Published var currentFormat: [Bool] = [false, false, false]
+    // AI
+    @Published var shouldVisualizeDream: Bool = true
+    @Published var shouldAnalyzeDream: Bool = true
+    // Community
+    @Published var shareWithFriends: Bool = false
+    @Published var shareWithCommunity: Bool = false
+    
+    @Published var retrievedText: NSAttributedString?
+    
+    var date: String?
+    let dateFormatter = DateFormatter()
     
     // Firestore
     let db = Firestore.firestore()
     
-    // Enable the Bold formatting button
-    func toggleBold() {
-        // Add the current text and format to the totalText
-        if currentText != "" {
-            let currentId = self.totalText.count
-            let formattedText = FormattedText(id: "\(currentId)", text: currentText, format: currentFormat)
-            totalText.append(formattedText)
-        }
+    init() {
+        context.fontName = "Hoefler Text"
+        context.fontSize = 15
+//        context.isEditingText = true
         
-        // Rest the currentText
-        currentText = ""
-        // Change the format
-        currentFormat[0].toggle()
-        
-        print(totalText)
+        dateFormatter.dateFormat = "MMMM dd'th', yyyy"
+        date = dateFormatter.string(from: Date.now)
     }
     
-    // Enable the Italic formatting button
-    func toggleItalic() {
-        // Add the current text and format to the totalText
-        if currentText != "" {
-            let currentId = self.totalText.count
-            let formattedText = FormattedText(id: "\(currentId)", text: currentText, format: currentFormat)
-            totalText.append(formattedText)
-        }
-        
-        currentText = ""
-        currentFormat[1].toggle()
-        print(totalText)
-    }
+//    deinit {
+//        print("leaving")
+//        context.isEditingText = false
+//    }
     
-    // Enable the Underline formatting button
-    func toggleUnderline() {
-        // Add the current text and format to the totalText
-        if currentText != "" {
-            let currentId = self.totalText.count
-            let formattedText = FormattedText(id: "\(currentId)", text: currentText, format: currentFormat)
-            totalText.append(formattedText)
-        }
-        
-        currentText = ""
-        currentFormat[2].toggle()
-        print(totalText)
-    }
     
     // TODO: Decide how we grab the userId, either from view or check Auth or whatever
-    func submitDream(userId: String, userHandle: String) {
+    func submitDream(userId: String, userHandle: String) -> Dream? {
         // Check the userId passed from view matches the Auth.auth().currentuser
+        if Auth.auth().currentUser?.uid != userId {
+            print("user ids do not match")
+            return nil
+        }
         
-        print("The total text currently looks like: ", totalText)
+        if self.title == "" || self.text == NSAttributedString(string: "") {
+            print("content is empty")
+        }
+        
+        // plain text and formatting data
+        let string = self.text.string
+        let archivedData: Data = try! NSKeyedArchiver.archivedData(withRootObject: self.text, requiringSecureCoding: false)
         
         
         let date = Date()
         let formattedDate = date.formatted(date: .abbreviated, time: .omitted)
+        // Get today's day of week
+        let calendar = Calendar.current
+        let dayOfWeek = calendar.component(.weekday, from: Date())
+        let dayOfWeekString = calendar.weekdaySymbols[dayOfWeek - 1]
         
         // Create a dream object
-        let dream = Dream(authorId: userId, authorHandle: userHandle, text: totalText, date: formattedDate, karma: 1)
+        let dream = Dream(authorId: userId, authorHandle: userHandle, title: self.title, plainText: string, archivedData: archivedData, date: formattedDate, dayOfWeek: dayOfWeekString, karma: 1, sharedWithFriends: self.shareWithFriends, sharedWithCommunity: self.shareWithCommunity)
+        
+        
+        // Get the month and year
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMMMYYYY" // Format for full month name and year
+        let currentMonthYearString = dateFormatter.string(from: Date())
+
+        print(currentMonthYearString) // Example output: "December 2023"
         
         // Save the dream to firestore
-        let dreamsRef = db.collection("dreams")
+        let dreamsRef = db.collection("dreams" + currentMonthYearString)
         do {
             let newDreamRef = try dreamsRef.addDocument(from: dream)
-            print("Dream stored with new document reference: ", newDreamRef)
-        }
-        catch {
-            print(error)
+            print("Dream stored with new doc reference: ", newDreamRef.documentID)
+            return dream
+        } catch {
+            print("Error saving dream to firestore: ", error.localizedDescription)
+            return nil
         }
     }
     
+    func retrieveDream() {
+        let docRef = db.collection("dreams").document("hfMdmDmZpnrmtn9wIObg")
+        
+        docRef.getDocument { (document, error) in
+            if let document = document, document.exists {
+                let dataDescription = document.data().map(String.init(describing:)) ?? "nil"
+                print("Document data: \(dataDescription)")
+                // Set the archived Data
+                let archivedData = document.data()!["archivedData"] as! Data
+                self.retrievedText = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(archivedData) as? NSAttributedString
+            } else {
+                print("Document does not exist")
+            }
+        }
+    }
     
-}
-
-struct FormattedText : Identifiable, Codable {
-    var id: String
-    var text: String?
-    var format: [Bool]?
-    
-    init(id: String, text: String, format: [Bool]) {
-        self.id = id
-        self.text = text
-        self.format = format
-      }
 }
