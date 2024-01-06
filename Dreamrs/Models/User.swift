@@ -18,5 +18,6 @@ struct User: Codable {
     var handle: String?
     var following: [String]?
     var followers: [String]?
+    var numDreams: Int?
     var karma: Int?
 }

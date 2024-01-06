@@ -9,6 +9,9 @@ import SwiftUI
 
 struct ProfileMainView: View {
     @State var isProfileSettingsPopupShowing: Bool = false
+    
+    @EnvironmentObject var userManager: UserManager
+    
     var body: some View {
         NavigationView {
             ZStack {
@@ -56,10 +59,24 @@ struct ProfileMainView: View {
                     HStack {
                         // Dreams Recorded
                         VStack {
-                            Text("34")
-                                .font(.system(size: 18))
-                                .fontDesign(.serif)
-                                .bold()
+                            if let user = userManager.user {
+                                if let numDreams = user.numDreams {
+                                    Text("\(numDreams)")
+                                        .font(.system(size: 18))
+                                        .fontDesign(.serif)
+                                        .bold()
+                                } else {
+                                    Text("34")
+                                        .font(.system(size: 18))
+                                        .fontDesign(.serif)
+                                        .bold()
+                                }
+                            } else {
+                                Text("34")
+                                    .font(.system(size: 18))
+                                    .fontDesign(.serif)
+                                    .bold()
+                            }
                             Text("Dreams")
                                 .font(.system(size: 16))
                                 .fontDesign(.serif)
@@ -68,10 +85,24 @@ struct ProfileMainView: View {
                         
                         // Dream Karma
                         VStack {
-                            Text("1,453")
-                                .font(.system(size: 18))
-                                .fontDesign(.serif)
-                                .bold()
+                            if let user = userManager.user {
+                                if let karma = user.karma {
+                                    Text("\(karma)")
+                                        .font(.system(size: 18))
+                                        .fontDesign(.serif)
+                                        .bold()
+                                } else {
+                                    Text("1")
+                                        .font(.system(size: 18))
+                                        .fontDesign(.serif)
+                                        .bold()
+                                }
+                            } else {
+                                Text("1")
+                                    .font(.system(size: 18))
+                                    .fontDesign(.serif)
+                                    .bold()
+                            }
                             Text("Karma")
                                 .font(.system(size: 16))
                                 .fontDesign(.serif)
@@ -81,10 +112,25 @@ struct ProfileMainView: View {
                         
                         // Friends
                         VStack {
-                            Text("64")
-                                .font(.system(size: 18))
-                                .fontDesign(.serif)
-                                .bold()
+                            if let user = userManager.user {
+                                if let followers = user.followers {
+                                    Text("\(followers.count)")
+                                        .font(.system(size: 18))
+                                        .fontDesign(.serif)
+                                        .bold()
+                                } else {
+                                    Text("0")
+                                        .font(.system(size: 18))
+                                        .fontDesign(.serif)
+                                        .bold()
+                                }
+                            } else {
+                                Text("0")
+                                    .font(.system(size: 18))
+                                    .fontDesign(.serif)
+                                    .bold()
+                            }
+                            
                             Text("Followers")
                                 .font(.system(size: 16))
                                 .fontDesign(.serif)
@@ -178,8 +224,7 @@ struct ProfileMainView: View {
     }
 }
 
-struct ProfileMainView_Previews: PreviewProvider {
-    static var previews: some View {
-        ProfileMainView()
-    }
+#Preview {
+    ProfileMainView()
+        .environmentObject(UserManager())
 }

@@ -53,195 +53,237 @@ struct CreateDreamRichText: View {
                     .overlay {
                         
                     }
-                        
-//                    if createDreamManager.text.isEqual(to: NSAttributedString(string: "")) && !createDreamManager.context.isEditingText {
-//                        Text("Last Night I...")
-//                            .font(.system(size: 15, design: .serif))
-//                            .frame(maxWidth: .infinity, alignment: .leading)
-//                            .padding(.leading, 25)
-//                            .foregroundColor(.gray)
-//                            
-//                    }
-                    
-                    
                 }
-                
-                
-                
-                Button(action: {
-
-                    createDreamManager.isReadyToSubmitPopupShowing = true
-                }) {
-                    Image(systemName: "checkmark")
-                        .resizable()
-                        .frame(width: 18, height: 18)
-                        .font(.title)
-                        .foregroundColor(.white)
-                        .padding(20)
-                        .background(Color(hue: 0.352, saturation: 0.69, brightness: 0.81))
-                        .clipShape(Circle())
-                        .shadow(color: Color.black.opacity(0.2), radius: 10, x: 10, y: 10)
-                }
-                .padding(.bottom, 10)
-                .popover(isPresented: $createDreamManager.isReadyToSubmitPopupShowing, content: {
-                    VStack {
-                        let atrbText = AttributedString(createDreamManager.text)
-                        Text(createDreamManager.title)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .font(.system(size: 20, design: .serif))
-                            .padding(.top, 40)
-                            .padding(.leading, 20)
-                            .font(.subheadline)
-                        ScrollView {
-                            Text(atrbText)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.leading, 20)
-                        }
-                        .padding(.top, 10)
-                        .padding(.bottom, 20)
-                        
-                        
-                        // AI choices
-                        HStack {
-                            Text("Visualize this dream with AI?")
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .font(.system(size: 16, design: .serif))
-                            
-                            Button(action: {
-                                createDreamManager.shouldVisualizeDream.toggle()
-                            }) {
-                                if !createDreamManager.shouldVisualizeDream {
-                                    Image(systemName: "square")
-                                        .resizable()
-                                        .frame(width: 20, height: 20)
-                                        .foregroundColor(.black)
-                                } else {
-                                    Image(systemName: "checkmark.square")
-                                        .resizable()
-                                        .frame(width: 20, height: 20)
-                                        .foregroundColor(.green)
-                                }
-                            }
-                            .padding(.trailing, 20)
-                        }
-                        .padding(.leading, 20)
-                        .padding(.bottom, 10)
-                        
-                        HStack {
-                            Text("Analyze this dream with AI?")
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .font(.system(size: 16, design: .serif))
-                            
-                            Button(action: {
-                                createDreamManager.shouldAnalyzeDream.toggle()
-                            }) {
-                                if !createDreamManager.shouldAnalyzeDream {
-                                    Image(systemName: "square")
-                                        .resizable()
-                                        .frame(width: 20, height: 20)
-                                        .foregroundColor(.black)
-                                } else {
-                                    Image(systemName: "checkmark.square")
-                                        .resizable()
-                                        .frame(width: 20, height: 20)
-                                        .foregroundColor(.green)
-                                }
-                            }
-                            .padding(.trailing, 20)
-                        }
-                        .padding(.leading, 20)
-                        .padding(.bottom, 10)
-                        
-                        // Community Sharing
-                        HStack {
-                            Text("Share this dream with your followers?")
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .font(.system(size: 16, design: .serif))
-                            
-                            
-                            Button(action: {
-                                createDreamManager.shareWithFriends.toggle()
-                            }) {
-                                if !createDreamManager.shareWithFriends {
-                                    Image(systemName: "square")
-                                        .resizable()
-                                        .frame(width: 20, height: 20)
-                                        .foregroundColor(.black)
-                                } else {
-                                    Image(systemName: "checkmark.square")
-                                        .resizable()
-                                        .frame(width: 20, height: 20)
-                                        .foregroundColor(.green)
-                                }
-                            }
-                            .padding(.trailing, 20)
-                            
-                        }
-                        .padding(.leading, 20)
-                        .padding(.bottom, 10)
-                        
-                        HStack {
-                            Text("Share this dream with the community?")
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .font(.system(size: 16, design: .serif))
-                            
-                            Button(action: {
-                                createDreamManager.shareWithCommunity.toggle()
-                            }) {
-                                if !createDreamManager.shareWithCommunity {
-                                    Image(systemName: "square")
-                                        .resizable()
-                                        .frame(width: 20, height: 20)
-                                        .foregroundColor(.black)
-                                } else {
-                                    Image(systemName: "checkmark.square")
-                                        .resizable()
-                                        .frame(width: 20, height: 20)
-                                        .foregroundColor(.green)
-                                }
-                            }
-                            .padding(.trailing, 20)
-                        }
-                        .padding(.leading, 20)
-                        .padding(.bottom, 20)
-                        
-                        
+                    
+                // Tags
+                HStack {
+                    // Text Field
+                    TextField("Family", text: $createDreamManager.tagText, axis: .horizontal)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .frame(maxWidth: 80)
+                        .font(.system(size: 15, design: .serif))
+                        .padding(.leading, 25)
+                        .font(.subheadline)
+                    
+                    if !createDreamManager.tagText.isEmpty {
                         Button(action: {
-                            // Grab the userId and userHandle from userManager
-                            if let user = userManager.user {
-                                if let dream = createDreamManager.submitDream(userId: user.id!, userHandle: user.handle!) {
-                                    homeManager.displayDream(dream: dream)
-                                    // dismiss the create popup
-                                    homeManager.isCreateDreamPopupShowing = false
-                                    
-                                    // call the view published popup
-                                    homeManager.isViewNewlyCreatedDreamPopupShowing = true
-                                    homeManager.isNewDreamLoading = true
-                                    homeManager.processNewDream(dream: dream, shouldVisualizeDream: createDreamManager.shouldVisualizeDream, shouldAnalyzeDream: createDreamManager.shouldAnalyzeDream)
-                                } else {
-                                    homeManager.isCreateDreamPopupShowing = false
-//                                    
-//                                    // call the view published popup
-//                                    homeManager.isViewNewlyCreatedDreamPopupShowing = true
-//                                    homeManager.isNewDreamLoading = false
-//                                    homeManager.isErrorLoadingNewDream = true
-                                }
-                                
-                                
-                            }
+                            print("User wanted to add a tag to their dream")
+                            createDreamManager.addTagtoDream(text: createDreamManager.tagText)
+                            createDreamManager.tagText = ""
                         }) {
-                            Image(systemName: "checkmark")
+                            Image(systemName: "arrow.right.circle.fill")
                                 .resizable()
-                                .frame(width: 14, height: 14)
-                                .font(.title)
-                                .foregroundColor(.white)
-                                .padding(20)
-                                .background(Color(hue: 0.352, saturation: 0.69, brightness: 0.81))
-                                .clipShape(Circle())
-                                .shadow(color: Color.black.opacity(0.2), radius: 10, x: 10, y: 10)
+                                .frame(width: 20, height: 20)
+                                .foregroundColor(.green)
+                                .padding(.trailing, 5)
+                        }
+                        
+                    }
+                    
+                    // Tag List
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack {
+                            
+                            if createDreamManager.tags.isEmpty {
+                                TagView(index: -1, text: "Add a Tag", icon: "sun.max", color: Color.blue)
+                            }
+                            
+                            
+                            ForEach(createDreamManager.tags) { tag in
+                                TagView(index: tag.index, text: tag.text, icon: tag.icon, color: tag.convertColorStringToView())
+                            }
                         }
                     }
-                })
+                }
+                
+                // Only show submission button once the title and text have been filled
+                if (createDreamManager.title != "" && createDreamManager.text != NSAttributedString(string: "")) {
+                    Button(action: {
+                        createDreamManager.isReadyToSubmitPopupShowing = true
+                    }) {
+                        Image("check")
+                            .resizable()
+                            .frame(width: 65, height: 65)
+//                            .font(.title)
+//                            .foregroundColor(.white)
+//                            .padding(20)
+//                            .background(Color(hue: 0.352, saturation: 0.69, brightness: 0.81))
+                            .clipShape(Circle())
+                            .shadow(color: Color.black.opacity(0.2), radius: 10, x: 10, y: 10)
+                    }
+                    .padding(.bottom, 10)
+                    .popover(isPresented: $createDreamManager.isReadyToSubmitPopupShowing, content: {
+                        VStack {
+                            let atrbText = AttributedString(createDreamManager.text)
+                            Text(createDreamManager.title)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .font(.system(size: 20, design: .serif))
+                                .padding(.top, 40)
+                                .padding(.leading, 20)
+                                .font(.subheadline)
+                            ScrollView {
+                                Text(atrbText)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.leading, 20)
+                            }
+                            .padding(.top, 10)
+                            .padding(.bottom, 20)
+                            
+                            // Tag List
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack {
+                                    ForEach(createDreamManager.tags) { tag in
+                                        TagView(index: tag.index, text: tag.text, icon: tag.icon, color: tag.convertColorStringToView())
+                                    }
+                                }
+                                .padding(.leading, 20)
+                                .padding(.bottom, 10)
+                            }
+                            
+                            // AI choices
+                            HStack {
+                                Text("Visualize this dream with AI?")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .font(.system(size: 16, design: .serif))
+                                
+                                Button(action: {
+                                    createDreamManager.shouldVisualizeDream.toggle()
+                                }) {
+                                    if !createDreamManager.shouldVisualizeDream {
+                                        Image(systemName: "square")
+                                            .resizable()
+                                            .frame(width: 20, height: 20)
+                                            .foregroundColor(.black)
+                                    } else {
+                                        Image(systemName: "checkmark.square")
+                                            .resizable()
+                                            .frame(width: 20, height: 20)
+                                            .foregroundColor(.green)
+                                    }
+                                }
+                                .padding(.trailing, 20)
+                            }
+                            .padding(.leading, 20)
+                            .padding(.bottom, 10)
+                            
+                            HStack {
+                                Text("Analyze this dream with AI?")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .font(.system(size: 16, design: .serif))
+                                
+                                Button(action: {
+                                    createDreamManager.shouldAnalyzeDream.toggle()
+                                }) {
+                                    if !createDreamManager.shouldAnalyzeDream {
+                                        Image(systemName: "square")
+                                            .resizable()
+                                            .frame(width: 20, height: 20)
+                                            .foregroundColor(.black)
+                                    } else {
+                                        Image(systemName: "checkmark.square")
+                                            .resizable()
+                                            .frame(width: 20, height: 20)
+                                            .foregroundColor(.green)
+                                    }
+                                }
+                                .padding(.trailing, 20)
+                            }
+                            .padding(.leading, 20)
+                            .padding(.bottom, 10)
+                            
+                            // Community Sharing
+                            HStack {
+                                Text("Share this dream with your followers?")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .font(.system(size: 16, design: .serif))
+                                
+                                
+                                Button(action: {
+                                    createDreamManager.shareWithFriends.toggle()
+                                }) {
+                                    if !createDreamManager.shareWithFriends {
+                                        Image(systemName: "square")
+                                            .resizable()
+                                            .frame(width: 20, height: 20)
+                                            .foregroundColor(.black)
+                                    } else {
+                                        Image(systemName: "checkmark.square")
+                                            .resizable()
+                                            .frame(width: 20, height: 20)
+                                            .foregroundColor(.green)
+                                    }
+                                }
+                                .padding(.trailing, 20)
+                                
+                            }
+                            .padding(.leading, 20)
+                            .padding(.bottom, 10)
+                            
+                            HStack {
+                                Text("Share this dream with the community?")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .font(.system(size: 16, design: .serif))
+                                
+                                Button(action: {
+                                    createDreamManager.shareWithCommunity.toggle()
+                                }) {
+                                    if !createDreamManager.shareWithCommunity {
+                                        Image(systemName: "square")
+                                            .resizable()
+                                            .frame(width: 20, height: 20)
+                                            .foregroundColor(.black)
+                                    } else {
+                                        Image(systemName: "checkmark.square")
+                                            .resizable()
+                                            .frame(width: 20, height: 20)
+                                            .foregroundColor(.green)
+                                    }
+                                }
+                                .padding(.trailing, 20)
+                            }
+                            .padding(.leading, 20)
+                            .padding(.bottom, 20)
+                            
+                            
+                            Button(action: {
+                                // Grab the userId and userHandle from userManager
+                                if let user = userManager.user {
+                                    if let dream = createDreamManager.submitDream(userId: user.id!, userHandle: user.handle!) {
+                                        homeManager.displayDream(dream: dream)
+                                        // dismiss the create popup
+                                        homeManager.isCreateDreamPopupShowing = false
+                                        
+                                        // call the view published popup
+                                        homeManager.isViewNewlyCreatedDreamPopupShowing = true
+                                        homeManager.isNewDreamLoading = true
+                                        homeManager.processNewDream(dream: dream, shouldVisualizeDream: createDreamManager.shouldVisualizeDream, shouldAnalyzeDream: createDreamManager.shouldAnalyzeDream)
+                                    } else {
+                                        homeManager.isCreateDreamPopupShowing = false
+    //
+    //                                    // call the view published popup
+    //                                    homeManager.isViewNewlyCreatedDreamPopupShowing = true
+    //                                    homeManager.isNewDreamLoading = false
+    //                                    homeManager.isErrorLoadingNewDream = true
+                                    }
+                                    
+                                    
+                                }
+                            }) {
+                                Image("check")
+                                    .resizable()
+                                    .frame(width: 65, height: 65)
+        //                            .font(.title)
+        //                            .foregroundColor(.white)
+        //                            .padding(20)
+        //                            .background(Color(hue: 0.352, saturation: 0.69, brightness: 0.81))
+                                    .clipShape(Circle())
+                                    .shadow(color: Color.black.opacity(0.2), radius: 10, x: 10, y: 10)
+                            }
+                        }
+                    })
+                }
+                
+                
                 
                 RichTextKeyboardToolbar(
                     context: createDreamManager.context,
@@ -261,4 +303,70 @@ struct CreateDreamRichText: View {
 
 #Preview {
     CreateDreamRichText()
+}
+
+
+struct TagView: View {
+    var index: Int
+    var text: String
+    var icon: String
+    var color: Color
+    
+    @State var isEditPopupShowing: Bool = false
+    
+    var body: some View {
+        
+        VStack {
+            
+            if self.isEditPopupShowing {
+                TagEditPopupView(tagIndex: index)
+//                    .frame(width: 300, height: 100)
+                    .opacity(0.5)
+                    .transition(.slide)
+            }
+            
+            Label(text, systemImage: icon)
+                .font(.system(size: 11, design: .serif))
+                .foregroundColor(.white)
+                .padding(13)
+                .background(color.opacity(0.75), in: Capsule())
+                .onTapGesture {
+                    self.isEditPopupShowing.toggle()
+                }
+        }
+        
+    }
+}
+
+struct TagEditPopupView: View {
+    
+    var tagIndex: Int
+    @EnvironmentObject var createDreamManager: CreateDreamManager
+    
+    var body: some View {
+        VStack {
+            HStack {
+                Text("Color")
+                    .padding()
+                    .background(Color.gray.opacity(0.8))
+                    .cornerRadius(10)
+                
+                Text("Icon")
+                    .padding()
+                    .background(Color.gray.opacity(0.8))
+                    .cornerRadius(10)
+            }
+            Button(action: {
+                createDreamManager.removeTagFromDream(index: self.tagIndex)
+            }) {
+                Text("Remove")
+                    .padding()
+                    .background(Color.red.opacity(1.0))
+                    .cornerRadius(10)
+            }
+            
+        }
+        
+        
+    }
 }

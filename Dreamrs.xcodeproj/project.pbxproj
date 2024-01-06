@@ -34,6 +34,10 @@
 		1A4676662B150E1C0007F3E6 /* FirebaseRemoteConfigSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 1A4676652B150E1C0007F3E6 /* FirebaseRemoteConfigSwift */; };
 		1A4676682B150E1C0007F3E6 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 1A4676672B150E1C0007F3E6 /* FirebaseStorage */; };
 		1A46766A2B150E1C0007F3E6 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 1A4676692B150E1C0007F3E6 /* FirebaseStorageCombine-Community */; };
+		1A762C742B477F8E0047A436 /* CommunityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A762C732B477F8E0047A436 /* CommunityManager.swift */; };
+		1A762C762B478D340047A436 /* SingleCommunityDream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A762C752B478D340047A436 /* SingleCommunityDream.swift */; };
+		1A762C782B48BD840047A436 /* CommunityFollowingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A762C772B48BD840047A436 /* CommunityFollowingView.swift */; };
+		1A762C7A2B48BD9B0047A436 /* CommunityForYouView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A762C792B48BD9B0047A436 /* CommunityForYouView.swift */; };
 		1A986FD62B227AED001D9CD0 /* RichTextKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1A986FD52B227AED001D9CD0 /* RichTextKit */; };
 		1A986FD82B227B07001D9CD0 /* CreateDreamRichText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A986FD72B227B07001D9CD0 /* CreateDreamRichText.swift */; };
 		1A986FDA2B229A04001D9CD0 /* TestSingleDream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A986FD92B229A04001D9CD0 /* TestSingleDream.swift */; };
@@ -61,6 +65,10 @@
 		1A4676382B1508310007F3E6 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		1A46763A2B1508B20007F3E6 /* Dream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dream.swift; sourceTree = "<group>"; };
 		1A46763E2B150DB50007F3E6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Desktop/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		1A762C732B477F8E0047A436 /* CommunityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityManager.swift; sourceTree = "<group>"; };
+		1A762C752B478D340047A436 /* SingleCommunityDream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleCommunityDream.swift; sourceTree = "<group>"; };
+		1A762C772B48BD840047A436 /* CommunityFollowingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityFollowingView.swift; sourceTree = "<group>"; };
+		1A762C792B48BD9B0047A436 /* CommunityForYouView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityForYouView.swift; sourceTree = "<group>"; };
 		1A986FD72B227B07001D9CD0 /* CreateDreamRichText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateDreamRichText.swift; sourceTree = "<group>"; };
 		1A986FD92B229A04001D9CD0 /* TestSingleDream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSingleDream.swift; sourceTree = "<group>"; };
 		1AB041182B27D2D70067E94E /* HomeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeManager.swift; sourceTree = "<group>"; };
@@ -121,6 +129,7 @@
 				1A330DEB2B1EA613009663C6 /* UserManager.swift */,
 				1A330DED2B21534F009663C6 /* CreateDreamManager.swift */,
 				1AB041182B27D2D70067E94E /* HomeManager.swift */,
+				1A762C732B477F8E0047A436 /* CommunityManager.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -221,6 +230,9 @@
 			isa = PBXGroup;
 			children = (
 				1ACA21822AEDC6CC00CCEF66 /* CommunityMainView.swift */,
+				1A762C752B478D340047A436 /* SingleCommunityDream.swift */,
+				1A762C772B48BD840047A436 /* CommunityFollowingView.swift */,
+				1A762C792B48BD9B0047A436 /* CommunityForYouView.swift */,
 			);
 			path = CommunityViews;
 			sourceTree = "<group>";
@@ -328,6 +340,7 @@
 				1A4395192B117D1800BA5C27 /* ProfileSettingsView.swift in Sources */,
 				1A330DEC2B1EA613009663C6 /* UserManager.swift in Sources */,
 				1ACA216D2AEDAFC000CCEF66 /* ContentView.swift in Sources */,
+				1A762C7A2B48BD9B0047A436 /* CommunityForYouView.swift in Sources */,
 				1ACA216B2AEDAFC000CCEF66 /* DreamrsApp.swift in Sources */,
 				1ACA21832AEDC6CD00CCEF66 /* CommunityMainView.swift in Sources */,
 				1A986FDA2B229A04001D9CD0 /* TestSingleDream.swift in Sources */,
@@ -336,7 +349,10 @@
 				1A986FD82B227B07001D9CD0 /* CreateDreamRichText.swift in Sources */,
 				1ACA217A2AEDB18800CCEF66 /* SingleDream.swift in Sources */,
 				1AB041192B27D2D70067E94E /* HomeManager.swift in Sources */,
+				1A762C782B48BD840047A436 /* CommunityFollowingView.swift in Sources */,
+				1A762C762B478D340047A436 /* SingleCommunityDream.swift in Sources */,
 				1A4676392B1508310007F3E6 /* User.swift in Sources */,
+				1A762C742B477F8E0047A436 /* CommunityManager.swift in Sources */,
 				1A4260F82B1BE4CB0011B7BF /* UserDefaults.swift in Sources */,
 				1A46763B2B1508B20007F3E6 /* Dream.swift in Sources */,
 			);

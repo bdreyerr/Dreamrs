@@ -46,7 +46,7 @@ class HomeManager : ObservableObject {
         
         // read from only the selected month of the current year
         // TODO(bendreyer): add multi year functionality later
-        let dreamSubcollection = selectedMonth+"2023"
+        let dreamSubcollection = selectedMonth+"2024"
         
         // start with getting all documents from a current user (build dream individualy)
         db.collection("dreams" + dreamSubcollection).whereField("authorId", isEqualTo: userId).order(by: "date")

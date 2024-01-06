@@ -9,12 +9,17 @@ import Foundation
 import FirebaseFirestore
 import FirebaseAuth
 import RichTextKit
+import SwiftUI
 
 class CreateDreamManager : ObservableObject {
     // Dream Content
     @Published var title: String = ""
     @Published var text = NSAttributedString(string: "")
     @Published var context = RichTextContext()
+    
+    // Tags
+    @Published var tagText: String = ""
+    @Published var tags : [Tag] = []
     
     @Published var isReadyToSubmitPopupShowing: Bool = false
     
@@ -36,7 +41,7 @@ class CreateDreamManager : ObservableObject {
     init() {
         context.fontName = "Hoefler Text"
         context.fontSize = 15
-//        context.isEditingText = true
+        context.isEditingText = true
         
         dateFormatter.dateFormat = "MMMM dd'th', yyyy"
         date = dateFormatter.string(from: Date.now)
@@ -46,6 +51,17 @@ class CreateDreamManager : ObservableObject {
 //        print("leaving")
 //        context.isEditingText = false
 //    }
+    
+    func addTagtoDream(text: String) {
+        let colors = ["red", "blue", "green", "orange", "purple"]
+        let newTag = Tag(id: UUID().uuidString, index: self.tags.count, text: text, icon: "sun.max", color: colors.randomElement()!)
+        self.tags.append(newTag)
+        print("added new tag, index: ", newTag.index)
+    }
+    
+    func removeTagFromDream(index: Int) {
+        self.tags.remove(at: index)
+    }
     
     
     // TODO: Decide how we grab the userId, either from view or check Auth or whatever
@@ -88,6 +104,14 @@ class CreateDreamManager : ObservableObject {
         do {
             let newDreamRef = try dreamsRef.addDocument(from: dream)
             print("Dream stored with new doc reference: ", newDreamRef.documentID)
+            
+            // Add 1 to users num derams
+            // TODO add error handling
+            let userRef = db.collection("users").document(userId)
+            userRef.updateData([
+                "numDreams": FieldValue.increment(Int64(1))
+            ])
+            
             return dream
         } catch {
             print("Error saving dream to firestore: ", error.localizedDescription)
@@ -111,4 +135,34 @@ class CreateDreamManager : ObservableObject {
         }
     }
     
+}
+
+struct Tag : Identifiable {
+    var id: String
+    
+    var index: Int
+    var text: String
+    var icon: String
+    var color: String
+    
+    func convertColorStringToView() -> Color {
+        switch self.color{
+        case "red":
+            return Color.red
+        case "blue":
+            return Color.blue
+        case "green":
+            return Color.green
+        case "purple":
+            return Color.purple
+        case "cyan":
+            return Color.cyan
+        case "yellow":
+            return Color.yellow
+        case "orange":
+            return Color.orange
+        default:
+            return Color.red
+        }
+    }
 }
