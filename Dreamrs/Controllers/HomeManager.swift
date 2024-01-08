@@ -8,6 +8,7 @@
 import Foundation
 import FirebaseAuth
 import FirebaseFirestore
+import SwiftUI
 
 
 class HomeManager : ObservableObject {
@@ -64,8 +65,9 @@ class HomeManager : ObservableObject {
                         let karma = document.data()["karma"] as? Int
                         let sharedWithFriends = document.data()["sharedWithFriends"] as? Bool
                         let sharedWithCommunity = document.data()["sharedWithCommunity"] as? Bool
+                        let tags = document.data()["tags"] as? [[String : String]]
                         
-                        let dream = Dream(id: id, authorId: userId, title: title, plainText: plainText, archivedData: archivedData, date: date, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity)
+                        let dream = Dream(id: id, authorId: userId, title: title, plainText: plainText, archivedData: archivedData, date: date, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity, tags: tags)
                         self.retrievedDreams.append(dream)
                     }
                 }
@@ -111,5 +113,27 @@ class HomeManager : ObservableObject {
     func randomImage() -> String {
         let randomNumber = Int.random(in: 2...6)
         return "dream\(randomNumber)"
+    }
+    
+    func convertStringToColor(color: String) -> Color {
+        switch color {
+        case "red":
+            return Color.red
+        case "blue":
+            return Color.blue
+        case "green":
+            return Color.green
+        case "purple":
+            return Color.purple
+        case "cyan":
+            return Color.cyan
+        case "yellow":
+            return Color.yellow
+        case "orange":
+            return Color.orange
+        default:
+            return Color.red
+            
+        }
     }
 }

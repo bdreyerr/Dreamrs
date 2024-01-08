@@ -22,4 +22,5 @@ struct Dream : Codable, Identifiable {
     var karma: Int?
     var sharedWithFriends: Bool?
     var sharedWithCommunity: Bool?
+    var tags: [[String : String]]?
 }

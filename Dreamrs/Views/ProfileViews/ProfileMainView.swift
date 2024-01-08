@@ -111,31 +111,38 @@ struct ProfileMainView: View {
                         
                         
                         // Friends
-                        VStack {
-                            if let user = userManager.user {
-                                if let followers = user.followers {
-                                    Text("\(followers.count)")
-                                        .font(.system(size: 18))
-                                        .fontDesign(.serif)
-                                        .bold()
+                        NavigationLink(destination: ProfileFollowerListView()) {
+                            VStack {
+                                if let user = userManager.user {
+                                    if let followers = user.followers {
+                                        Text("\(followers.count)")
+                                            .font(.system(size: 18))
+                                            .fontDesign(.serif)
+                                            .bold()
+                                    } else {
+                                        Text("0")
+                                            .font(.system(size: 18))
+                                            .fontDesign(.serif)
+                                            .bold()
+                                    }
                                 } else {
                                     Text("0")
                                         .font(.system(size: 18))
                                         .fontDesign(.serif)
                                         .bold()
                                 }
-                            } else {
-                                Text("0")
-                                    .font(.system(size: 18))
+                                
+                                Text("Followers")
+                                    .font(.system(size: 16))
                                     .fontDesign(.serif)
-                                    .bold()
+                                    .opacity(0.8)
                             }
-                            
-                            Text("Followers")
-                                .font(.system(size: 16))
-                                .fontDesign(.serif)
-                                .opacity(0.8)
                         }
+                        .foregroundStyle(Color.black)
+                        .simultaneousGesture(TapGesture().onEnded {
+                            userManager.loadFollowers()
+                        })
+                        
                     }
                     .padding(.top, 40)
                     .padding(.bottom, 40)

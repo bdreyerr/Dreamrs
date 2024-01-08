@@ -54,21 +54,17 @@ struct SingleDream: View {
                         
                         // Tags
                         HStack() {
-                            Label("Family", systemImage: "sun.max")
-                                .font(.system(size: 11, design: .serif))
-                                .foregroundColor(.white)
-                                .padding(13)
-                                .background(.blue.opacity(0.75), in: Capsule())
-                            Label("Transitions", systemImage: "sun.max")
-                                .font(.system(size: 11, design: .serif))
-                                .foregroundColor(.white)
-                                .padding(13)
-                                .background(.purple.opacity(0.75), in: Capsule())
-                            Label("Future", systemImage: "sun.max")
-                                .font(.system(size: 11, design: .serif))
-                                .foregroundColor(.white)
-                                .padding(13)
-                                .background(.red.opacity(0.75), in: Capsule())
+                            if let tags = dream.tags {
+                                if !tags.isEmpty {
+                                    ScrollView(.horizontal, showsIndicators: false) {
+                                        HStack {
+                                            ForEach(tags, id: \.self) { tag in
+                                                TagView(index: 0, text: tag["text"] ?? "Dream", icon: tag["icon"] ?? "sun.max", color: homeManager.convertStringToColor(color: tag["color"] ?? "red"), isEditable: false)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                             Spacer()
                         }
                         .padding(.bottom, 20)

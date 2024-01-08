@@ -83,14 +83,8 @@ struct CreateDreamRichText: View {
                     // Tag List
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
-                            
-                            if createDreamManager.tags.isEmpty {
-                                TagView(index: -1, text: "Add a Tag", icon: "sun.max", color: Color.blue)
-                            }
-                            
-                            
                             ForEach(createDreamManager.tags) { tag in
-                                TagView(index: tag.index, text: tag.text, icon: tag.icon, color: tag.convertColorStringToView())
+                                TagView(index: tag.index, text: tag.text, icon: tag.icon, color: tag.convertColorStringToView(), isEditable: true)
                             }
                         }
                     }
@@ -133,7 +127,7 @@ struct CreateDreamRichText: View {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack {
                                     ForEach(createDreamManager.tags) { tag in
-                                        TagView(index: tag.index, text: tag.text, icon: tag.icon, color: tag.convertColorStringToView())
+                                        TagView(index: tag.index, text: tag.text, icon: tag.icon, color: tag.convertColorStringToView(), isEditable: false)
                                     }
                                 }
                                 .padding(.leading, 20)
@@ -311,6 +305,7 @@ struct TagView: View {
     var text: String
     var icon: String
     var color: Color
+    var isEditable: Bool
     
     @State var isEditPopupShowing: Bool = false
     
@@ -321,7 +316,7 @@ struct TagView: View {
             if self.isEditPopupShowing {
                 TagEditPopupView(tagIndex: index)
 //                    .frame(width: 300, height: 100)
-                    .opacity(0.5)
+                    .opacity(0.75)
                     .transition(.slide)
             }
             
@@ -331,7 +326,9 @@ struct TagView: View {
                 .padding(13)
                 .background(color.opacity(0.75), in: Capsule())
                 .onTapGesture {
-                    self.isEditPopupShowing.toggle()
+                    if isEditable {
+                        self.isEditPopupShowing.toggle()
+                    }   
                 }
         }
         
@@ -346,27 +343,43 @@ struct TagEditPopupView: View {
     var body: some View {
         VStack {
             HStack {
-                Text("Color")
-                    .padding()
-                    .background(Color.gray.opacity(0.8))
-                    .cornerRadius(10)
                 
-                Text("Icon")
-                    .padding()
-                    .background(Color.gray.opacity(0.8))
-                    .cornerRadius(10)
+                if !createDreamManager.tags.isEmpty {
+                    Picker("", selection: $createDreamManager.tags[tagIndex].color) {
+                        ForEach(createDreamManager.colorOptions, id: \.self) { color in
+                            Text(color)
+                                .foregroundStyle(Color.red)
+                        }
+                    }
+                    .pickerStyle(.automatic)
+                }
+                
+                
+                if !createDreamManager.tags.isEmpty {
+                    Picker("", selection: $createDreamManager.tags[tagIndex].icon) {
+                        ForEach(createDreamManager.iconOptions, id: \.self) { image in
+                            Image(systemName: image)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 50, height: 50)  // Adjust size as needed
+                                .foregroundColor(.black)
+                                .tag(createDreamManager.iconOptions.firstIndex(of: image)!)
+                        }
+                    }
+                    .foregroundColor(.black)
+                    .pickerStyle(.automatic)
+                }
             }
             Button(action: {
                 createDreamManager.removeTagFromDream(index: self.tagIndex)
             }) {
-                Text("Remove")
-                    .padding()
-                    .background(Color.red.opacity(1.0))
-                    .cornerRadius(10)
+                Image(systemName: "trash.fill")
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                    .foregroundStyle(Color.red)
+                    .opacity(1.0)
             }
             
         }
-        
-        
     }
 }

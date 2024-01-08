@@ -37,15 +37,21 @@ struct SingleCommunityDream: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.leading, 20)
                         }
+
+                        // Author Handle
+                        NavigationLink(destination: CommunityProfileView()) {
+                            Text("@" + dream.authorHandle!)
+                                .font(.system(size: 20, design: .serif))
+                                .fontWeight(.bold)
+                                .foregroundColor(.cyan)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.leading, 20)
+                                .padding(.trailing, 10)
+                                .padding(.bottom, 20)
+                        }.simultaneousGesture(TapGesture().onEnded {
+                            communityManager.retrieverUserFromFirestore(userId: dream.authorId!)
+                        })
                         
-                        Text("@" + dream.authorHandle!)
-                            .font(.system(size: 16, design: .default))
-                            .fontWeight(.bold)
-                            .foregroundColor(.blue)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.leading, 20)
-                            .padding(.trailing, 10)
-                            .padding(.bottom, 20)
                         
                         // Dream details text
                         HStack {
@@ -66,25 +72,23 @@ struct SingleCommunityDream: View {
                         
                         // Tags
                         HStack() {
-                            Label("Family", systemImage: "sun.max")
-                                .font(.system(size: 11, design: .serif))
-                                .foregroundColor(.white)
-                                .padding(13)
-                                .background(.blue.opacity(0.75), in: Capsule())
-                            Label("Transitions", systemImage: "sun.max")
-                                .font(.system(size: 11, design: .serif))
-                                .foregroundColor(.white)
-                                .padding(13)
-                                .background(.purple.opacity(0.75), in: Capsule())
-                            Label("Future", systemImage: "sun.max")
-                                .font(.system(size: 11, design: .serif))
-                                .foregroundColor(.white)
-                                .padding(13)
-                                .background(.red.opacity(0.75), in: Capsule())
+                            if let tags = dream.tags {
+                                if !tags.isEmpty {
+                                    ScrollView(.horizontal, showsIndicators: false) {
+                                        HStack {
+                                            ForEach(tags, id: \.self) { tag in
+                                                TagView(index: 0, text: tag["text"] ?? "Dream", icon: tag["icon"] ?? "sun.max", color: communityManager.convertStringToColor(color: tag["color"] ?? "red"), isEditable: false)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                             Spacer()
                         }
-                        .padding(.bottom, 10)
+                        .padding(.bottom, 20)
                         .padding(.leading, 20)
+                        
+                        
                         
                         HStack {
                             RoundedRectangle(cornerRadius: 25.0)

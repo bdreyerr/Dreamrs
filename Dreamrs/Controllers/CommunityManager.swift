@@ -24,6 +24,8 @@ class CommunityManager : ObservableObject {
     @Published var focusedDream: Dream?
     @Published var focusedTextFormatted: NSAttributedString?
     
+    @Published var focusedProfile: User?
+    
     // Firestore
     let db = Firestore.firestore()
     
@@ -96,8 +98,9 @@ class CommunityManager : ObservableObject {
                     let karma = document.data()["karma"] as? Int
                     let sharedWithFriends = document.data()["sharedWithFriends"] as? Bool
                     let sharedWithCommunity = document.data()["sharedWithCommunity"] as? Bool
+                    let tags = document.data()["tags"] as? [[String : String]]
                     
-                    let dream = Dream(id: id, authorId: authorId, authorHandle: authorHandle, title: title, plainText: plainText, archivedData: archivedData, date: date, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity)
+                    let dream = Dream(id: id, authorId: authorId, authorHandle: authorHandle, title: title, plainText: plainText, archivedData: archivedData, date: date, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity, tags: tags)
                     
                     if dream.sharedWithFriends ?? false {
                         if self.selectedTimeFilter == self.timeFilters[0] {
@@ -176,6 +179,44 @@ class CommunityManager : ObservableObject {
             return .cyan
         default:
             return .gray
+        }
+    }
+    
+    func convertStringToColor(color: String) -> Color {
+        switch color {
+        case "red":
+            return Color.red
+        case "blue":
+            return Color.blue
+        case "green":
+            return Color.green
+        case "purple":
+            return Color.purple
+        case "cyan":
+            return Color.cyan
+        case "yellow":
+            return Color.yellow
+        case "orange":
+            return Color.orange
+        default:
+            return Color.red
+            
+        }
+    }
+    
+    func retrieverUserFromFirestore(userId: String) {
+        // Grab Document
+        let docRef = db.collection("users").document(userId)
+        docRef.getDocument(as: User.self) { result in
+            switch result {
+            case .success(let userObject):
+                // A user value was successfully initialized from the Documentsnapshot
+                self.focusedProfile = userObject
+                print("The community user was successfully retrieved from firestore, access them with communityManager.focusedProfile")
+            case .failure(let error):
+                // A user value could not be initialized from the DocumentSnapshot
+                print("Failure retrieving user from firestore: ", error.localizedDescription)
+            }
         }
     }
     

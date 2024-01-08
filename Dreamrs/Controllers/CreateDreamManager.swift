@@ -19,7 +19,10 @@ class CreateDreamManager : ObservableObject {
     
     // Tags
     @Published var tagText: String = ""
-    @Published var tags : [Tag] = []
+    @Published var tags : [Tag] = [Tag(id: UUID().uuidString, index: 0, text: "Dream", icon: "sun.max", color: "red")]
+    var colorOptions = ["red", "blue", "green", "purple", "cyan", "yellow", "orange"]
+    var iconOptions = ["message.fill", "phone.down.fill", "sun.max", "cloud.bolt.rain", "figure.walk.circle", "car", "paperplane.fill", "studentdesk", "display.2", "candybarphone", "photo.fill", "arrow.triangle.2.circlepath", "flag.checkered", "gamecontroller", "network.badge.shield.half.filled", "dot.radiowaves.left.and.right", "airplane.circle.fill", "bicycle", "snowflake.circle", "key.fill", "person.fill", "person.3", "house.fill", "party.popper.fill", "figure.archery", "sportscourt.fill", "globe.americas.fill", "sun.snow", "moon.fill", "wind.snow", "bolt.square.fill", "wand.and.stars.inverse", "bandage.fill", "textformat.abc", "play.rectangle.fill", "shuffle", "command.circle.fill", "keyboard.fill", "cart.fill", "giftcard.fill", "pesosign.circle", "chineseyuanrenminbisign.circle.fill", "hourglass.circle.fill", "heart.fill", "pill.fill", "eye", "brain.fill", "percent"]
+    
     
     @Published var isReadyToSubmitPopupShowing: Bool = false
     
@@ -88,8 +91,18 @@ class CreateDreamManager : ObservableObject {
         let dayOfWeek = calendar.component(.weekday, from: Date())
         let dayOfWeekString = calendar.weekdaySymbols[dayOfWeek - 1]
         
+        
+        // Create Tags Array
+        var tagArray: [[String : String]] = []
+        for i in 0...self.tags.count - 1{
+            let tagDict: [String:String] = ["text":self.tags[i].text, "icon":self.tags[i].icon, "color":self.tags[i].color]
+            tagArray.append(tagDict)
+        }
+        print("Tag array looks like: ")
+        print(tagArray)
+        
         // Create a dream object
-        let dream = Dream(authorId: userId, authorHandle: userHandle, title: self.title, plainText: string, archivedData: archivedData, date: formattedDate, dayOfWeek: dayOfWeekString, karma: 1, sharedWithFriends: self.shareWithFriends, sharedWithCommunity: self.shareWithCommunity)
+        let dream = Dream(authorId: userId, authorHandle: userHandle, title: self.title, plainText: string, archivedData: archivedData, date: formattedDate, dayOfWeek: dayOfWeekString, karma: 1, sharedWithFriends: self.shareWithFriends, sharedWithCommunity: self.shareWithCommunity, tags: tagArray)
         
         
         // Get the month and year
@@ -135,6 +148,13 @@ class CreateDreamManager : ObservableObject {
         }
     }
     
+    func convertSingleTagToDict(tag: Tag) -> [String : String] {
+        var innerDict = [String : String]()
+        innerDict["text"] = tag.text
+        innerDict["icon"] = tag.icon
+        innerDict["color"] = tag.color
+        return innerDict
+    }
 }
 
 struct Tag : Identifiable {
@@ -166,3 +186,5 @@ struct Tag : Identifiable {
         }
     }
 }
+
+
