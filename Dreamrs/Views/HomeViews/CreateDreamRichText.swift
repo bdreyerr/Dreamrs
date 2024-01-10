@@ -58,7 +58,7 @@ struct CreateDreamRichText: View {
                 // Tags
                 HStack {
                     // Text Field
-                    TextField("Family", text: $createDreamManager.tagText, axis: .horizontal)
+                    TextField("Tags", text: $createDreamManager.tagText, axis: .horizontal)
                         .frame(maxWidth: .infinity, alignment: .center)
                         .frame(maxWidth: 80)
                         .font(.system(size: 15, design: .serif))
@@ -331,20 +331,20 @@ struct TagView: View {
                     }   
                 }
         }
-        
     }
 }
 
 struct TagEditPopupView: View {
     
     var tagIndex: Int
+    @State var shouldDisplaySelf: Bool = true
     @EnvironmentObject var createDreamManager: CreateDreamManager
     
     var body: some View {
         VStack {
             HStack {
                 
-                if !createDreamManager.tags.isEmpty {
+                if !createDreamManager.tags.isEmpty && self.shouldDisplaySelf {
                     Picker("", selection: $createDreamManager.tags[tagIndex].color) {
                         ForEach(createDreamManager.colorOptions, id: \.self) { color in
                             Text(color)
@@ -355,7 +355,7 @@ struct TagEditPopupView: View {
                 }
                 
                 
-                if !createDreamManager.tags.isEmpty {
+                if !createDreamManager.tags.isEmpty && self.shouldDisplaySelf {
                     Picker("", selection: $createDreamManager.tags[tagIndex].icon) {
                         ForEach(createDreamManager.iconOptions, id: \.self) { image in
                             Image(systemName: image)
@@ -372,6 +372,7 @@ struct TagEditPopupView: View {
             }
             Button(action: {
                 createDreamManager.removeTagFromDream(index: self.tagIndex)
+                self.shouldDisplaySelf = false
             }) {
                 Image(systemName: "trash.fill")
                     .resizable()

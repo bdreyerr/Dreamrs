@@ -29,6 +29,8 @@ class HomeManager : ObservableObject {
     @Published var isNewDreamLoading: Bool = true
     @Published var isErrorLoadingNewDream: Bool = false
     
+    @Published var isConfirmPinnedDreamPopupShowing: Bool = false
+    
     // Firestore
     let db = Firestore.firestore()
     

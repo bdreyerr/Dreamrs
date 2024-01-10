@@ -76,7 +76,7 @@ class AuthManager: ObservableObject {
                                 // No user account matches this email, create a firestore user, new user is registering
                                 
                                 // Create the user object (only define some fields, the user will update the rest of the info in the welcome survey)
-                                let userObject = User(email: self.email, following: [user.uid], followers: [user.uid], numDreams: 0, karma: 0)
+                                let userObject = User(email: self.email, following: [user.uid], followers: [user.uid], numDreams: 0, karma: 0, pinnedDreams: [])
                                 // Add the user to firestore user collection
                                 let collectionRef = self.db.collection("users")
                                 do {

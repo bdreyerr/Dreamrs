@@ -12,6 +12,9 @@ struct ProfileMainView: View {
     
     @EnvironmentObject var userManager: UserManager
     
+    
+    @StateObject var homeManager = HomeManager()
+    
     var body: some View {
         NavigationView {
             ZStack {
@@ -43,17 +46,29 @@ struct ProfileMainView: View {
                     }
                     .padding(.bottom, 20)
                     
-                    // Full Name
-                    Text("Ben Dreyer")
-                        .font(.system(size: 20))
-                        .fontDesign(.serif)
-                        .bold()
+                    if let user = userManager.user {
+                        if let firstName = user.firstName {
+                            if let lastName = user.lastName {
+                                // Full Name
+                                Text(firstName + " " + lastName)
+                                    .font(.system(size: 20))
+                                    .fontDesign(.serif)
+                                    .bold()
+                            }
+                        }
+                        
+                        if let handle = user.handle {
+                            // Handle
+                            Text("@" + handle)
+                                .font(.system(size: 16))
+                                .fontDesign(.serif)
+                                .opacity(0.8)
+                        }
+                    }
                     
-                    // Handle
-                    Text("@bendreyer")
-                        .font(.system(size: 16))
-                        .fontDesign(.serif)
-                        .opacity(0.8)
+                    
+                    
+                    
                     
                     // Dream Stats
                     HStack {
@@ -155,70 +170,8 @@ struct ProfileMainView: View {
                             .fontDesign(.serif)
                             .bold()
                         
-                        NavigationLink(destination: SingleDream()) {
-                            HStack {
-                                VStack {
-                                    Text("Driving with Dad, looking for puppies")
-                                        .foregroundStyle(.black)
-                                        .font(.system(size: 14, design: .serif))
-                                        .multilineTextAlignment(.leading)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                    
-                                        Text("Nov 18th, 2023")
-                                            .foregroundStyle(.gray)
-                                            .font(.system(size: 14, design: .serif))
-                                            .frame(maxWidth: .infinity, alignment: .leading)
-                                }
-                                
-                                Image("dad_dog")
-                                    .resizable()
-                                    .frame(width: 100, height: 60)
-                                    .clipShape(Circle())
-                            }
-                        }
-                        
-                        NavigationLink(destination: SingleDream()) {
-                            HStack {
-                                VStack {
-                                    Text("Skating through a mall on ice skates")
-                                        .foregroundStyle(.black)
-                                        .font(.system(size: 14, design: .serif))
-                                        .multilineTextAlignment(.leading)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                    
-                                        Text("Jan 18th, 2021")
-                                            .foregroundStyle(.gray)
-                                            .font(.system(size: 14, design: .serif))
-                                            .frame(maxWidth: .infinity, alignment: .leading)
-                                }
-                                
-                                Image("dream2")
-                                    .resizable()
-                                    .frame(width: 100, height: 60)
-                                    .clipShape(Circle())
-                            }
-                        }
-                        
-                        NavigationLink(destination: SingleDream()) {
-                            HStack {
-                                VStack {
-                                    Text("Swimming with mermaids")
-                                        .foregroundStyle(.black)
-                                        .font(.system(size: 14, design: .serif))
-                                        .multilineTextAlignment(.leading)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                    
-                                        Text("Oct 9th, 2023")
-                                            .foregroundStyle(.gray)
-                                            .font(.system(size: 14, design: .serif))
-                                            .frame(maxWidth: .infinity, alignment: .leading)
-                                }
-                                
-                                Image("dream3")
-                                    .resizable()
-                                    .frame(width: 100, height: 60)
-                                    .clipShape(Circle())
-                            }
+                        ForEach(userManager.pinnedDreams) { dream in
+                            PinnedDream(dream: dream)
                         }
                         
                     }
@@ -228,10 +181,50 @@ struct ProfileMainView: View {
                 .frame(maxHeight: .infinity, alignment: .top)
             }
         }
+        .environmentObject(homeManager)
+        .onAppear {
+            userManager.loadPinnedDreams(loadingNewDream: false)
+        }
     }
 }
 
 #Preview {
     ProfileMainView()
         .environmentObject(UserManager())
+        .environmentObject(HomeManager())
+}
+
+
+struct PinnedDream : View {
+    
+    var dream: Dream
+    
+    @EnvironmentObject var homeManager: HomeManager
+    
+    var body : some View {
+        NavigationLink(destination: SingleDream()) {
+            HStack {
+                VStack {
+                    Text(dream.title!)
+                        .foregroundStyle(.black)
+                        .font(.system(size: 14, design: .serif))
+                        .multilineTextAlignment(.leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    Text(dream.date!)
+                            .foregroundStyle(.gray)
+                            .font(.system(size: 14, design: .serif))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                
+                Image(homeManager.randomImage())
+                    .resizable()
+                    .frame(width: 100, height: 60)
+                    .clipShape(Circle())
+            }
+        }
+        .simultaneousGesture(TapGesture().onEnded {
+            homeManager.displayDream(dream: self.dream)
+        })
+    }
 }

@@ -42,7 +42,6 @@
 		1A762C7A2B48BD9B0047A436 /* CommunityForYouView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A762C792B48BD9B0047A436 /* CommunityForYouView.swift */; };
 		1A986FD62B227AED001D9CD0 /* RichTextKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1A986FD52B227AED001D9CD0 /* RichTextKit */; };
 		1A986FD82B227B07001D9CD0 /* CreateDreamRichText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A986FD72B227B07001D9CD0 /* CreateDreamRichText.swift */; };
-		1A986FDA2B229A04001D9CD0 /* TestSingleDream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A986FD92B229A04001D9CD0 /* TestSingleDream.swift */; };
 		1AB041192B27D2D70067E94E /* HomeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AB041182B27D2D70067E94E /* HomeManager.swift */; };
 		1ACA216B2AEDAFC000CCEF66 /* DreamrsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ACA216A2AEDAFC000CCEF66 /* DreamrsApp.swift */; };
 		1ACA216D2AEDAFC000CCEF66 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ACA216C2AEDAFC000CCEF66 /* ContentView.swift */; };
@@ -74,7 +73,6 @@
 		1A762C772B48BD840047A436 /* CommunityFollowingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityFollowingView.swift; sourceTree = "<group>"; };
 		1A762C792B48BD9B0047A436 /* CommunityForYouView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityForYouView.swift; sourceTree = "<group>"; };
 		1A986FD72B227B07001D9CD0 /* CreateDreamRichText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateDreamRichText.swift; sourceTree = "<group>"; };
-		1A986FD92B229A04001D9CD0 /* TestSingleDream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSingleDream.swift; sourceTree = "<group>"; };
 		1AB041182B27D2D70067E94E /* HomeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeManager.swift; sourceTree = "<group>"; };
 		1ACA21672AEDAFC000CCEF66 /* Dreamrs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Dreamrs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1ACA216A2AEDAFC000CCEF66 /* DreamrsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DreamrsApp.swift; sourceTree = "<group>"; };
@@ -208,7 +206,6 @@
 				1ACA21882AEDCFA300CCEF66 /* CreateDream.swift */,
 				1A4055922B0AC4430025CBEF /* HomeView.swift */,
 				1A986FD72B227B07001D9CD0 /* CreateDreamRichText.swift */,
-				1A986FD92B229A04001D9CD0 /* TestSingleDream.swift */,
 			);
 			path = HomeViews;
 			sourceTree = "<group>";
@@ -349,7 +346,6 @@
 				1A762C7A2B48BD9B0047A436 /* CommunityForYouView.swift in Sources */,
 				1ACA216B2AEDAFC000CCEF66 /* DreamrsApp.swift in Sources */,
 				1ACA21832AEDC6CD00CCEF66 /* CommunityMainView.swift in Sources */,
-				1A986FDA2B229A04001D9CD0 /* TestSingleDream.swift in Sources */,
 				1A330DEE2B21534F009663C6 /* CreateDreamManager.swift in Sources */,
 				1ACA21872AEDC71A00CCEF66 /* ProfileMainView.swift in Sources */,
 				1A5767822B4B4CB5002030ED /* CommunityProfileView.swift in Sources */,

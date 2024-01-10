@@ -56,14 +56,27 @@ class CreateDreamManager : ObservableObject {
 //    }
     
     func addTagtoDream(text: String) {
-        let colors = ["red", "blue", "green", "orange", "purple"]
-        let newTag = Tag(id: UUID().uuidString, index: self.tags.count, text: text, icon: "sun.max", color: colors.randomElement()!)
-        self.tags.append(newTag)
-        print("added new tag, index: ", newTag.index)
+        // Cap at 5 Tags
+        if self.tags.count < 5 {
+            if self.tagText.count < 35 {
+                let newTag = Tag(id: UUID().uuidString, index: self.tags.count, text: text, icon: self.iconOptions.randomElement()!, color: self.colorOptions.randomElement()!)
+                self.tags.append(newTag)
+                print("added new tag, index: ", newTag.index)
+            }
+        }
     }
     
     func removeTagFromDream(index: Int) {
+        print(self.tags)
+        print("tag index to be deleted: ", index)
         self.tags.remove(at: index)
+        
+        if !self.tags.isEmpty {
+            for i in 0...self.tags.count - 1 {
+                self.tags[i].index = i
+            }
+        }
+        
     }
     
     

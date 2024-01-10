@@ -20,4 +20,5 @@ struct User: Codable, Identifiable {
     var followers: [String]?
     var numDreams: Int?
     var karma: Int?
+    var pinnedDreams: [[String : String]]?
 }
