@@ -88,7 +88,7 @@ class UserManager : ObservableObject {
         }
     }
     
-    func pinDream(dreamId: String, date: String, indexOfReplacedDream: Int) {
+    func pinDream(dreamId: String, date: String) {
         if let user = self.user {
             // Verify signed in user is the user attatched to userManager
             if user.id == Auth.auth().currentUser?.uid {
@@ -112,32 +112,54 @@ class UserManager : ObservableObject {
                     "dreamId": dreamId
                 ]
                 
-                // Write the pinned dream to firestore, replacing an old dream if need be
-                if indexOfReplacedDream == -1 {
-                    self.db.collection("users").document(user.id!).updateData([
-                        "pinnedDreams": FieldValue.arrayUnion([pinnedDream])
-                    ]) { err in
-                        if let err = err {
-                            print("Error updating pinned dreams: \(err)")
-                        } else {
-                            print("Pinned Dreams successfully updated")
-                            // Update locally as well.
-                            self.user?.pinnedDreams?.append(pinnedDream)
-                            self.loadPinnedDreams(loadingNewDream: true)
-                        }
+                // Write the pinned dream to firestore
+                self.db.collection("users").document(user.id!).updateData([
+                    "pinnedDreams": FieldValue.arrayUnion([pinnedDream])
+                ]) { err in
+                    if let err = err {
+                        print("Error updating pinned dreams: \(err)")
+                    } else {
+                        print("Pinned Dreams successfully updated")
+                        // update array locallay (need to do this because we dont refresh userManager.user) when loading the pinned dreams
+                        self.user?.pinnedDreams!.append(pinnedDream)
+                        self.loadPinnedDreams(isRefresh: true)
+                    }
+                }
+                
+            }
+        }
+    }
+    
+    func removePinnedDream(indexOfRemovedDream: Int) {
+        if let user = self.user {
+            if user.id == Auth.auth().currentUser?.uid {
+                // Remove the already pinned dream at given index from firestore, then reload the pinned dreams array via the loadPinnedDreams function
+                self.db.collection("users").document(user.id!).updateData([
+                    "pinnedDreams": FieldValue.arrayRemove([self.user?.pinnedDreams![indexOfRemovedDream]])
+                ]) { err in
+                    if let err = err {
+                        print("Error removing pinned Dream")
+                    } else {
+                        print("Pinned dream successfully removed")
+                        self.user?.pinnedDreams!.remove(at: indexOfRemovedDream)
+                        self.loadPinnedDreams(isRefresh: true)
                     }
                 }
             }
         }
     }
     
-    func loadPinnedDreams(loadingNewDream: Bool) {
+    func loadPinnedDreams(isRefresh: Bool) {
         if let user = self.user {
             if let pinnedDreams = user.pinnedDreams {
                 
-                // If dreams are already loaded don't re-read
-                if !self.pinnedDreams.isEmpty && !loadingNewDream {
-                    return
+                
+                // If the call isn't for a refresh, and the array is already populated, do nothing
+                // In this case refresh means a new dream has been pinned, and we want to reload the array from firebase.
+                if !isRefresh {
+                    if !self.pinnedDreams.isEmpty {
+                        return
+                    }
                 }
                 
                 self.pinnedDreams = []

@@ -52,7 +52,7 @@ class HomeManager : ObservableObject {
         let dreamSubcollection = selectedMonth+"2024"
         
         // start with getting all documents from a current user (build dream individualy)
-        db.collection("dreams" + dreamSubcollection).whereField("authorId", isEqualTo: userId).order(by: "date")
+        db.collection("dreams" + dreamSubcollection).whereField("authorId", isEqualTo: userId).order(by: "rawTimestamp", descending: false)
             .getDocuments() { (querySnapshot, err) in
                 if let err = err {
                     print("Error getting documents: ", err.localizedDescription)
@@ -63,13 +63,14 @@ class HomeManager : ObservableObject {
                         let plainText = document.data()["plainText"] as? String
                         let archivedData = document.data()["archivedData"] as? Data
                         let date = document.data()["date"] as? String
+                        let rawTimestamp = document.data()["rawTimestamp"] as? Date
                         let dayOfWeek = document.data()["dayOfWeek"] as? String
                         let karma = document.data()["karma"] as? Int
                         let sharedWithFriends = document.data()["sharedWithFriends"] as? Bool
                         let sharedWithCommunity = document.data()["sharedWithCommunity"] as? Bool
                         let tags = document.data()["tags"] as? [[String : String]]
                         
-                        let dream = Dream(id: id, authorId: userId, title: title, plainText: plainText, archivedData: archivedData, date: date, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity, tags: tags)
+                        let dream = Dream(id: id, authorId: userId, title: title, plainText: plainText, archivedData: archivedData, date: date, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity, tags: tags)
                         self.retrievedDreams.append(dream)
                     }
                 }

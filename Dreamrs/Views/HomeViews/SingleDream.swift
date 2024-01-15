@@ -12,6 +12,8 @@ struct SingleDream: View {
     @EnvironmentObject var homeManager: HomeManager
     @EnvironmentObject var userManager: UserManager
     
+    @State var isDreamAlreadyPinned: Bool = false
+    
     var body: some View {
         ZStack {
             ScrollView {
@@ -24,37 +26,22 @@ struct SingleDream: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.leading, 20)
                             
-                            Button(action: {
-                                homeManager.isConfirmPinnedDreamPopupShowing = true
-                            }) {
-                                Image(systemName: "plus.app")
-                                    .resizable()
-                                    .frame(width: 20, height: 20)
-                                    .foregroundStyle(Color.black)
-                            }.popover(isPresented: $homeManager.isConfirmPinnedDreamPopupShowing) {
-                                Text("Are you sure you want to pin this dream?")
-                                Button(action: {
-                                    if let user = userManager.user {
-                                        if let dream = homeManager.focusedDream {
-                                            if user.pinnedDreams!.count < 3 {
-                                                userManager.pinDream(dreamId: dream.id!, date: dream.date!, indexOfReplacedDream: -1)
-                                            } else {
-                                                print("User already has three dreams pinned")
-                                            }
-                                            homeManager.isConfirmPinnedDreamPopupShowing = false
-                                        }
-                                    }
-                                }) {
-                                    Text("Yes")
-                                }
-                                Button(action: {
-                                    homeManager.isConfirmPinnedDreamPopupShowing = false
-                                }) {
-                                    Text("No")
-                                }
-                            }
-                            .padding(.trailing, 20)
                             
+                            
+                            // Display pin dream button if the dream is not already pinned
+                            if !self.isDreamAlreadyPinned {
+                                Button(action: {
+                                    homeManager.isConfirmPinnedDreamPopupShowing = true
+                                }) {
+                                    Image(systemName: "plus.app")
+                                        .resizable()
+                                        .frame(width: 20, height: 20)
+                                        .foregroundStyle(Color.black)
+                                }.popover(isPresented: $homeManager.isConfirmPinnedDreamPopupShowing) {
+                                    PinDreamView()
+                                }
+                                .padding(.trailing, 20)
+                            }
                         }
                         .padding(.top, 10)
                         
@@ -136,6 +123,19 @@ struct SingleDream: View {
                 }
             }
             .padding(.bottom, 20)
+        }
+        .onAppear {
+            self.isDreamAlreadyPinned = false
+            if let map = userManager.user?.pinnedDreams {
+                if let dreamId = homeManager.focusedDream!.id {
+                    // Constant loop, only 3 max dreamMaps
+                    for dreamMap in map {
+                        if dreamMap["dreamId"] == dreamId {
+                            self.isDreamAlreadyPinned = true
+                        }
+                    }
+                }
+            }
         }
     }
 }

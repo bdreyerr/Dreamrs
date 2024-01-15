@@ -183,7 +183,7 @@ struct ProfileMainView: View {
         }
         .environmentObject(homeManager)
         .onAppear {
-            userManager.loadPinnedDreams(loadingNewDream: false)
+            userManager.loadPinnedDreams(isRefresh: false)
         }
     }
 }

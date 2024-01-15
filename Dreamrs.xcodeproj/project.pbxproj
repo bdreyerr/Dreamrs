@@ -36,6 +36,7 @@
 		1A46766A2B150E1C0007F3E6 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 1A4676692B150E1C0007F3E6 /* FirebaseStorageCombine-Community */; };
 		1A5767822B4B4CB5002030ED /* CommunityProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A5767812B4B4CB5002030ED /* CommunityProfileView.swift */; };
 		1A5767842B4B6DEA002030ED /* ProfileFollowerListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A5767832B4B6DEA002030ED /* ProfileFollowerListView.swift */; };
+		1A5767862B4F3B6B002030ED /* PinDreamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A5767852B4F3B6B002030ED /* PinDreamView.swift */; };
 		1A762C742B477F8E0047A436 /* CommunityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A762C732B477F8E0047A436 /* CommunityManager.swift */; };
 		1A762C762B478D340047A436 /* SingleCommunityDream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A762C752B478D340047A436 /* SingleCommunityDream.swift */; };
 		1A762C782B48BD840047A436 /* CommunityFollowingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A762C772B48BD840047A436 /* CommunityFollowingView.swift */; };
@@ -68,6 +69,7 @@
 		1A46763E2B150DB50007F3E6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Desktop/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1A5767812B4B4CB5002030ED /* CommunityProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityProfileView.swift; sourceTree = "<group>"; };
 		1A5767832B4B6DEA002030ED /* ProfileFollowerListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFollowerListView.swift; sourceTree = "<group>"; };
+		1A5767852B4F3B6B002030ED /* PinDreamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinDreamView.swift; sourceTree = "<group>"; };
 		1A762C732B477F8E0047A436 /* CommunityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityManager.swift; sourceTree = "<group>"; };
 		1A762C752B478D340047A436 /* SingleCommunityDream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleCommunityDream.swift; sourceTree = "<group>"; };
 		1A762C772B48BD840047A436 /* CommunityFollowingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityFollowingView.swift; sourceTree = "<group>"; };
@@ -206,6 +208,7 @@
 				1ACA21882AEDCFA300CCEF66 /* CreateDream.swift */,
 				1A4055922B0AC4430025CBEF /* HomeView.swift */,
 				1A986FD72B227B07001D9CD0 /* CreateDreamRichText.swift */,
+				1A5767852B4F3B6B002030ED /* PinDreamView.swift */,
 			);
 			path = HomeViews;
 			sourceTree = "<group>";
@@ -353,6 +356,7 @@
 				1ACA217A2AEDB18800CCEF66 /* SingleDream.swift in Sources */,
 				1AB041192B27D2D70067E94E /* HomeManager.swift in Sources */,
 				1A762C782B48BD840047A436 /* CommunityFollowingView.swift in Sources */,
+				1A5767862B4F3B6B002030ED /* PinDreamView.swift in Sources */,
 				1A5767842B4B6DEA002030ED /* ProfileFollowerListView.swift in Sources */,
 				1A762C762B478D340047A436 /* SingleCommunityDream.swift in Sources */,
 				1A4676392B1508310007F3E6 /* User.swift in Sources */,

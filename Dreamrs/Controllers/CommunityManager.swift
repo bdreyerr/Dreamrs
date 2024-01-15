@@ -94,6 +94,7 @@ class CommunityManager : ObservableObject {
                     let plainText = document.data()["plainText"] as? String
                     let archivedData = document.data()["archivedData"] as? Data
                     let date = document.data()["date"] as? String
+                    let rawTimestamp = document.data()["rawTimestamp"] as? Date
                     let dayOfWeek = document.data()["dayOfWeek"] as? String
                     let karma = document.data()["karma"] as? Int
                     let sharedWithFriends = document.data()["sharedWithFriends"] as? Bool

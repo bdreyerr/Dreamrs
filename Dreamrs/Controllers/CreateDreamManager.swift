@@ -103,6 +103,7 @@ class CreateDreamManager : ObservableObject {
         let calendar = Calendar.current
         let dayOfWeek = calendar.component(.weekday, from: Date())
         let dayOfWeekString = calendar.weekdaySymbols[dayOfWeek - 1]
+        let rawTimestamp = Date.now
         
         
         // Create Tags Array
@@ -115,7 +116,7 @@ class CreateDreamManager : ObservableObject {
         print(tagArray)
         
         // Create a dream object
-        let dream = Dream(authorId: userId, authorHandle: userHandle, title: self.title, plainText: string, archivedData: archivedData, date: formattedDate, dayOfWeek: dayOfWeekString, karma: 1, sharedWithFriends: self.shareWithFriends, sharedWithCommunity: self.shareWithCommunity, tags: tagArray)
+        let dream = Dream(authorId: userId, authorHandle: userHandle, title: self.title, plainText: string, archivedData: archivedData, date: formattedDate, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeekString, karma: 1, sharedWithFriends: self.shareWithFriends, sharedWithCommunity: self.shareWithCommunity, tags: tagArray)
         
         
         // Get the month and year
@@ -145,21 +146,21 @@ class CreateDreamManager : ObservableObject {
         }
     }
     
-    func retrieveDream() {
-        let docRef = db.collection("dreams").document("hfMdmDmZpnrmtn9wIObg")
-        
-        docRef.getDocument { (document, error) in
-            if let document = document, document.exists {
-                let dataDescription = document.data().map(String.init(describing:)) ?? "nil"
-                print("Document data: \(dataDescription)")
-                // Set the archived Data
-                let archivedData = document.data()!["archivedData"] as! Data
-                self.retrievedText = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(archivedData) as? NSAttributedString
-            } else {
-                print("Document does not exist")
-            }
-        }
-    }
+//    func retrieveDream() {
+//        let docRef = db.collection("dreams").document("hfMdmDmZpnrmtn9wIObg")
+//        
+//        docRef.getDocument { (document, error) in
+//            if let document = document, document.exists {
+//                let dataDescription = document.data().map(String.init(describing:)) ?? "nil"
+//                print("Document data: \(dataDescription)")
+//                // Set the archived Data
+//                let archivedData = document.data()!["archivedData"] as! Data
+//                self.retrievedText = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(archivedData) as? NSAttributedString
+//            } else {
+//                print("Document does not exist")
+//            }
+//        }
+//    }
     
     func convertSingleTagToDict(tag: Tag) -> [String : String] {
         var innerDict = [String : String]()
