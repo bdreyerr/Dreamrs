@@ -23,6 +23,7 @@ class HomeManager : ObservableObject {
     
     @Published var focusedDream: Dream?
     @Published var focusedTextFormatted: NSAttributedString?
+    @Published var isFocusedDreamPinned: Bool = false
     
     // Post Publish Vars (Viewing newly created dreams)
     @Published var isViewNewlyCreatedDreamPopupShowing: Bool = false

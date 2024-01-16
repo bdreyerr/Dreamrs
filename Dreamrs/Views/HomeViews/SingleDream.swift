@@ -12,7 +12,7 @@ struct SingleDream: View {
     @EnvironmentObject var homeManager: HomeManager
     @EnvironmentObject var userManager: UserManager
     
-    @State var isDreamAlreadyPinned: Bool = false
+//    @State var isDreamAlreadyPinned: Bool = false
     
     var body: some View {
         ZStack {
@@ -29,7 +29,7 @@ struct SingleDream: View {
                             
                             
                             // Display pin dream button if the dream is not already pinned
-                            if !self.isDreamAlreadyPinned {
+                            if !homeManager.isFocusedDreamPinned {
                                 Button(action: {
                                     homeManager.isConfirmPinnedDreamPopupShowing = true
                                 }) {
@@ -125,13 +125,13 @@ struct SingleDream: View {
             .padding(.bottom, 20)
         }
         .onAppear {
-            self.isDreamAlreadyPinned = false
+            homeManager.isFocusedDreamPinned = false
             if let map = userManager.user?.pinnedDreams {
                 if let dreamId = homeManager.focusedDream!.id {
                     // Constant loop, only 3 max dreamMaps
                     for dreamMap in map {
                         if dreamMap["dreamId"] == dreamId {
-                            self.isDreamAlreadyPinned = true
+                            homeManager.isFocusedDreamPinned = true
                         }
                     }
                 }

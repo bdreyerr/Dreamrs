@@ -14,18 +14,15 @@ struct ContentView: View {
     @StateObject var userManager = UserManager()
     
     var body: some View {
-        VStack {
+        ZStack {
             // check if user is logged in from userDefaults
             if let loginStatus = UserDefaults.standard.object(forKey: loginStatusKey) as? Bool {
                 
-                // Show the register / login screen either if the loginStatus is nil, or false
                 if loginStatus == false {
-//                    Text("not logged in")
                     RegisterView()
                 }
                 
                 if loginStatus == true {
-//                    Text("logged in")
                     BottomNavBar()
                         .onAppear {
                             if let userId = Auth.auth().currentUser?.uid {
@@ -35,13 +32,16 @@ struct ContentView: View {
                                 authManager.logOut()
                             }
                         }
+                    
+                    if let hasUserCompletedWelcomeSurvey = userManager.user?.hasUserCompletedWelcomeSurvey {
+                        if hasUserCompletedWelcomeSurvey == false {
+                            WelcomeSurveyView()
+                        }
+                    }
                 }
                 
             } else {
-                RegisterView()
-                
-                // Showing main app flow for testing
-//                BottomNavBar()
+                Text("No User default set")
             }
         }
         .environmentObject(authManager)

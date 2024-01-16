@@ -16,9 +16,11 @@ struct User: Codable, Identifiable {
     var lastName: String?
     var email: String?
     var handle: String?
+    var userColor: String?
     var following: [String]?
     var followers: [String]?
     var numDreams: Int?
     var karma: Int?
     var pinnedDreams: [[String : String]]?
+    var hasUserCompletedWelcomeSurvey: Bool?
 }

@@ -46,6 +46,7 @@ struct PinDreamView: View {
                                     userManager.pinDream(dreamId: homeManager.focusedDream!.id!, date: homeManager.focusedDream!.date!)
                                     print("Action confirmed, adding dream!")
                                     homeManager.isConfirmPinnedDreamPopupShowing = false
+                                    homeManager.isFocusedDreamPinned = true
                                 }
                                 Button("Cancel", role: .cancel) { }
                             }

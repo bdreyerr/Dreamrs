@@ -12,9 +12,6 @@ struct SingleCommunityDream: View {
     @EnvironmentObject var communityManager: CommunityManager
     @EnvironmentObject var userManager: UserManager
     
-    @State var isDreamUpvoted : Bool = false
-    @State var isDreamDownvoted : Bool = false
-    
     var body: some View {
         ZStack {
             ScrollView {
@@ -98,38 +95,67 @@ struct SingleCommunityDream: View {
                                     HStack {
                                         Button(action: {
                                             if let user = userManager.user {
-                                                if !self.isDreamUpvoted {
-                                                    communityManager.processKarmaVote(userId: user.id!, dream: communityManager.focusedDream!, isUpvote: true)
-                                                    self.isDreamUpvoted = true
-                                                    self.isDreamDownvoted = false
-                                                }
+                                                communityManager.processKarmaVote(userId: user.id!, dream: communityManager.focusedDream!, isUpvote: true)
                                             }
                                         }) {
-                                            Image(systemName: "arrowshape.up")
-                                                .resizable()
-                                                .frame(width: 18, height: 18)
-                                                .foregroundColor(self.isDreamUpvoted ? .orange : .black)
+                                            if !communityManager.localKarmaVotes.keys.contains(dream.id!) {
+                                                Image(systemName: "arrowshape.up")
+                                                    .resizable()
+                                                    .frame(width: 18, height: 18)
+                                                    .foregroundColor(.black)
+                                            } else if communityManager.localKarmaVotes[dream.id!] == true {
+                                                Image(systemName: "arrowshape.up")
+                                                    .resizable()
+                                                    .frame(width: 18, height: 18)
+                                                    .foregroundColor(.orange)
+                                            } else {
+                                                Image(systemName: "arrowshape.up")
+                                                    .resizable()
+                                                    .frame(width: 18, height: 18)
+                                                    .foregroundColor(.black)
+                                            }
                                         }
                                         
-                                        Text("\(dream.karma ?? 1)")
-                                            .foregroundStyle(self.isDreamUpvoted ? .orange : .black)
+                                        
+                                        // Define different colors for the text based on the local votes
+                                        if !communityManager.localKarmaVotes.keys.contains(dream.id!) {
+                                            Text("\(dream.karma!)")
+                                                .foregroundStyle(.black)
+                                        } else if communityManager.localKarmaVotes[dream.id!] == true {
+                                            Text("\(dream.karma! + 1)")
+                                                .foregroundStyle(.orange)
+                                        } else {
+                                            Text("\(dream.karma! - 1)")
+                                                .foregroundStyle(.blue)
+                                        }
+                                        
                                         
                                         Divider()
                                             .foregroundColor(.black)
                                         
                                         Button(action: {
                                             if let user = userManager.user {
-                                                if !self.isDreamDownvoted {
-                                                    communityManager.processKarmaVote(userId: user.id!, dream: communityManager.focusedDream!, isUpvote: false)
-                                                    self.isDreamDownvoted = true
-                                                    self.isDreamUpvoted = false
-                                                }
+                                                communityManager.processKarmaVote(userId: user.id!, dream: communityManager.focusedDream!, isUpvote: false)
+                                                
                                             }
                                         }) {
-                                            Image(systemName: "arrowshape.down")
-                                                .resizable()
-                                                .frame(width: 18, height: 18)
-                                                .foregroundColor(self.isDreamDownvoted ? .blue : .black)
+                                            
+                                            if !communityManager.localKarmaVotes.keys.contains(dream.id!) {
+                                                Image(systemName: "arrowshape.down")
+                                                    .resizable()
+                                                    .frame(width: 18, height: 18)
+                                                    .foregroundColor(.black)
+                                            } else if communityManager.localKarmaVotes[dream.id!] == true {
+                                                Image(systemName: "arrowshape.down")
+                                                    .resizable()
+                                                    .frame(width: 18, height: 18)
+                                                    .foregroundColor(.black)
+                                            } else {
+                                                Image(systemName: "arrowshape.down")
+                                                    .resizable()
+                                                    .frame(width: 18, height: 18)
+                                                    .foregroundColor(.blue)
+                                            }
                                         }
                                     }
                                 }

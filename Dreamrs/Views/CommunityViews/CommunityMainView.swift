@@ -155,9 +155,6 @@ struct CommunityDream : View {
     var date: String
     var karma: Int
     
-    @State var isDreamUpvoted: Bool = false
-    @State var isDreamDownvoted: Bool = false
-    
     var body : some View {
         NavigationLink(destination: SingleCommunityDream()) {
             VStack {
@@ -196,38 +193,64 @@ struct CommunityDream : View {
                             HStack {
                                 Button(action: {
                                     if let user = userManager.user {
-                                        if !self.isDreamUpvoted {
-                                            communityManager.processKarmaVote(userId: user.id!, dream: self.dream, isUpvote: true)
-                                            self.isDreamUpvoted = true
-                                            self.isDreamDownvoted = false
-                                        }
+                                        communityManager.processKarmaVote(userId: user.id!, dream: self.dream, isUpvote: true)
                                     }
                                 }) {
-                                    Image(systemName: "arrowshape.up")
-                                        .resizable()
-                                        .frame(width: 14, height: 14)
-                                        .foregroundColor(self.isDreamUpvoted ? .orange : .black)
+                                    if !communityManager.localKarmaVotes.keys.contains(dream.id!) {
+                                        Image(systemName: "arrowshape.up")
+                                            .resizable()
+                                            .frame(width: 14, height: 14)
+                                            .foregroundColor(.black)
+                                    } else if communityManager.localKarmaVotes[dream.id!] == true {
+                                        Image(systemName: "arrowshape.up")
+                                            .resizable()
+                                            .frame(width: 14, height: 14)
+                                            .foregroundColor(.orange)
+                                    } else {
+                                        Image(systemName: "arrowshape.up")
+                                            .resizable()
+                                            .frame(width: 14, height: 14)
+                                            .foregroundColor(.black)
+                                    }
                                 }
                                 
-                                Text("\(karma)")
-                                    .foregroundStyle(self.isDreamUpvoted ? .orange : .black)
+                                // different colors based on local votes
+                                if !communityManager.localKarmaVotes.keys.contains(dream.id!) {
+                                    Text("\(karma)")
+                                        .foregroundStyle(.black)
+                                } else if communityManager.localKarmaVotes[dream.id!] == true {
+                                    Text("\(karma + 1)")
+                                        .foregroundStyle(.orange)
+                                } else {
+                                    Text("\(karma - 1)")
+                                        .foregroundStyle(.blue)
+                                }
+                                
                                 
                                 Divider()
                                     .foregroundColor(.black)
                                 
                                 Button(action: {
                                     if let user = userManager.user {
-                                        if !self.isDreamDownvoted {
-                                            communityManager.processKarmaVote(userId: user.id!, dream: self.dream, isUpvote: false)
-                                            self.isDreamDownvoted = true
-                                            self.isDreamUpvoted = false
-                                        }
+                                        communityManager.processKarmaVote(userId: user.id!, dream: self.dream, isUpvote: false)
                                     }
                                 }) {
-                                    Image(systemName: "arrowshape.down")
-                                        .resizable()
-                                        .frame(width: 14, height: 14)
-                                        .foregroundColor(self.isDreamDownvoted ? .blue : .black)
+                                    if !communityManager.localKarmaVotes.keys.contains(dream.id!) {
+                                        Image(systemName: "arrowshape.down")
+                                            .resizable()
+                                            .frame(width: 14, height: 14)
+                                            .foregroundColor(.black)
+                                    } else if communityManager.localKarmaVotes[dream.id!] == true {
+                                        Image(systemName: "arrowshape.down")
+                                            .resizable()
+                                            .frame(width: 14, height: 14)
+                                            .foregroundColor(.black)
+                                    } else {
+                                        Image(systemName: "arrowshape.down")
+                                            .resizable()
+                                            .frame(width: 14, height: 14)
+                                            .foregroundColor(.blue)
+                                    }
                                 }
                             }
                         }

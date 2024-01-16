@@ -24,6 +24,8 @@ class CommunityManager : ObservableObject {
     @Published var focusedDream: Dream?
     @Published var focusedTextFormatted: NSAttributedString?
     
+    @Published var localKarmaVotes : [String: Bool] = [:]
+    
     @Published var focusedProfile: User?
     
     // Firestore
@@ -123,6 +125,7 @@ class CommunityManager : ObservableObject {
     
     // Karma Voting
     func processKarmaVote(userId: String, dream: Dream, isUpvote: Bool) {
+        
         // Get current month and year for collection string.
         let calendar = Calendar.current
         let dateComponents = calendar.dateComponents([.month, .year], from: Date())
@@ -132,9 +135,40 @@ class CommunityManager : ObservableObject {
         let collectionString = "dreams\(currentDateString)"
         print(collectionString)
         
-        // Update the posts Karma
+        // Update the posts Karma based on what the user has already voted already (update a local map and firestore simultaneously so the user can observe the local change while the db updates - we don't re-read the document in firestore).
+        // Options:
+        //   If the user hasn't voted on the dream already
+        //      1. Update the karma based on upvote or downvote
+        //   If the user has upvoted already
+        //      1. If upvoting again, karma -= 1
+        //      2. If downvoting, karma -= 2
+        //   If the user has downvoted already
+        //      1. If upvoting, karma += 2
+        //      2. If downvoting, karma += 1
+        
+        var netKarma = 0
+        
+        if !self.localKarmaVotes.keys.contains(dream.id!) {
+            netKarma = isUpvote ? 1 : -1
+            self.localKarmaVotes[dream.id!] = isUpvote ? true : false
+        } else if self.localKarmaVotes[dream.id!] == true {
+            netKarma  = isUpvote ? -1 : -2
+            if isUpvote {
+                self.localKarmaVotes.removeValue(forKey: dream.id!)
+            } else {
+                self.localKarmaVotes[dream.id!] = false
+            }
+        } else if self.localKarmaVotes[dream.id!] == false {
+            netKarma = isUpvote ? 2 : 1
+            if isUpvote {
+                self.localKarmaVotes[dream.id!] = true
+            } else {
+                self.localKarmaVotes.removeValue(forKey: dream.id!)
+            }
+        }
+        
         db.collection(collectionString).document(dream.id!).updateData([
-            "karma": FieldValue.increment(Int64(isUpvote ? 1 : -1))
+            "karma": FieldValue.increment(Int64(netKarma))
         ]) { err in
             if let err = err {
                 print("Error updating dream karma: \(err)")
@@ -142,6 +176,7 @@ class CommunityManager : ObservableObject {
                 print("Dream Karma successfully updated")
             }
         }
+        
         
         print(dream.authorId!)
         print(dream.authorHandle!)
@@ -153,6 +188,8 @@ class CommunityManager : ObservableObject {
                 print("Error updating user's karma: ", err.localizedDescription)
             } else {
                 print("Successfully updated user's karma")
+                
+                
             }
         }
         

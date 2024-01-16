@@ -10,3 +10,5 @@ import Foundation
 
 // Need to add something for apple sign in
 let loginStatusKey = "loginStatus"
+// User default for completing the welcome survey
+let hasUserCompletedWelcomeSurveyKey = "hasUserCompletedWelcomeSurvey"

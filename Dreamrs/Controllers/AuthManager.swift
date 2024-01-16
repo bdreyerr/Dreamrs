@@ -60,10 +60,6 @@ class AuthManager: ObservableObject {
                     
                     print("signed in with apple")
                     print("\(String(describing: user.uid))")
-                    self.isLoggedIn = true
-                    
-                    // Set user defaults
-                    UserDefaults.standard.set(self.isLoggedIn, forKey: loginStatusKey)
                     
                     
                     // Figure out if the user already has an account or is signing up for the first time (email is either blank or filled, can't be null)
@@ -76,12 +72,16 @@ class AuthManager: ObservableObject {
                                 // No user account matches this email, create a firestore user, new user is registering
                                 
                                 // Create the user object (only define some fields, the user will update the rest of the info in the welcome survey)
-                                let userObject = User(email: self.email, following: [user.uid], followers: [user.uid], numDreams: 0, karma: 0, pinnedDreams: [])
+                                let userObject = User(firstName: "", lastName: "", email: self.email, handle: "", userColor: "black", following: [user.uid], followers: [user.uid], numDreams: 0, karma: 0, pinnedDreams: [], hasUserCompletedWelcomeSurvey: false)
                                 // Add the user to firestore user collection
                                 let collectionRef = self.db.collection("users")
                                 do {
                                     try collectionRef.document(user.uid).setData(from: userObject)
                                     print("Apple sign in user stored in firestore with new user reference: ", user.uid)
+                                    
+                                    self.isLoggedIn = true
+                                    // Set user defaults
+                                    UserDefaults.standard.set(self.isLoggedIn, forKey: loginStatusKey)
                                 } catch {
                                     print("Error saving the new user to firestore")
                                 }
@@ -90,10 +90,17 @@ class AuthManager: ObservableObject {
                                 print("A current user with that same email already exists: ")
                                 print(querySnapshot!.documents[0].documentID)
                                 
+//                                let dataDescription = querySnapshot!.documents[0].data().map(String.init(describing:))
+                                
+                                
                                 print("The auth user id is: ")
                                 if let user = Auth.auth().currentUser {
                                     print(user.uid)
                                 }
+                                
+                                self.isLoggedIn = true
+                                // Set user defaults
+                                UserDefaults.standard.set(self.isLoggedIn, forKey: loginStatusKey)
                             }
                         }
                     }
@@ -116,6 +123,7 @@ class AuthManager: ObservableObject {
         }
         self.isLoggedIn = false
         UserDefaults.standard.set(isLoggedIn, forKey: loginStatusKey)
+        UserDefaults.standard.set(false, forKey: hasUserCompletedWelcomeSurveyKey)
         print("The user logged out")
     }
     

@@ -37,6 +37,8 @@
 		1A5767822B4B4CB5002030ED /* CommunityProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A5767812B4B4CB5002030ED /* CommunityProfileView.swift */; };
 		1A5767842B4B6DEA002030ED /* ProfileFollowerListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A5767832B4B6DEA002030ED /* ProfileFollowerListView.swift */; };
 		1A5767862B4F3B6B002030ED /* PinDreamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A5767852B4F3B6B002030ED /* PinDreamView.swift */; };
+		1A688D3E2B55DB9B004AFB64 /* WelcomeSurveyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A688D3D2B55DB9A004AFB64 /* WelcomeSurveyView.swift */; };
+		1A688D402B55DCFE004AFB64 /* WelcomeSurveyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A688D3F2B55DCFD004AFB64 /* WelcomeSurveyManager.swift */; };
 		1A762C742B477F8E0047A436 /* CommunityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A762C732B477F8E0047A436 /* CommunityManager.swift */; };
 		1A762C762B478D340047A436 /* SingleCommunityDream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A762C752B478D340047A436 /* SingleCommunityDream.swift */; };
 		1A762C782B48BD840047A436 /* CommunityFollowingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A762C772B48BD840047A436 /* CommunityFollowingView.swift */; };
@@ -70,6 +72,8 @@
 		1A5767812B4B4CB5002030ED /* CommunityProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityProfileView.swift; sourceTree = "<group>"; };
 		1A5767832B4B6DEA002030ED /* ProfileFollowerListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFollowerListView.swift; sourceTree = "<group>"; };
 		1A5767852B4F3B6B002030ED /* PinDreamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinDreamView.swift; sourceTree = "<group>"; };
+		1A688D3D2B55DB9A004AFB64 /* WelcomeSurveyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeSurveyView.swift; sourceTree = "<group>"; };
+		1A688D3F2B55DCFD004AFB64 /* WelcomeSurveyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeSurveyManager.swift; sourceTree = "<group>"; };
 		1A762C732B477F8E0047A436 /* CommunityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityManager.swift; sourceTree = "<group>"; };
 		1A762C752B478D340047A436 /* SingleCommunityDream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleCommunityDream.swift; sourceTree = "<group>"; };
 		1A762C772B48BD840047A436 /* CommunityFollowingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityFollowingView.swift; sourceTree = "<group>"; };
@@ -134,6 +138,7 @@
 				1A330DED2B21534F009663C6 /* CreateDreamManager.swift */,
 				1AB041182B27D2D70067E94E /* HomeManager.swift */,
 				1A762C732B477F8E0047A436 /* CommunityManager.swift */,
+				1A688D3F2B55DCFD004AFB64 /* WelcomeSurveyManager.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -227,6 +232,7 @@
 				1ACA21862AEDC71A00CCEF66 /* ProfileMainView.swift */,
 				1A4395182B117D1800BA5C27 /* ProfileSettingsView.swift */,
 				1A5767832B4B6DEA002030ED /* ProfileFollowerListView.swift */,
+				1A688D3D2B55DB9A004AFB64 /* WelcomeSurveyView.swift */,
 			);
 			path = ProfileViews;
 			sourceTree = "<group>";
@@ -351,6 +357,7 @@
 				1ACA21832AEDC6CD00CCEF66 /* CommunityMainView.swift in Sources */,
 				1A330DEE2B21534F009663C6 /* CreateDreamManager.swift in Sources */,
 				1ACA21872AEDC71A00CCEF66 /* ProfileMainView.swift in Sources */,
+				1A688D3E2B55DB9B004AFB64 /* WelcomeSurveyView.swift in Sources */,
 				1A5767822B4B4CB5002030ED /* CommunityProfileView.swift in Sources */,
 				1A986FD82B227B07001D9CD0 /* CreateDreamRichText.swift in Sources */,
 				1ACA217A2AEDB18800CCEF66 /* SingleDream.swift in Sources */,
@@ -361,6 +368,7 @@
 				1A762C762B478D340047A436 /* SingleCommunityDream.swift in Sources */,
 				1A4676392B1508310007F3E6 /* User.swift in Sources */,
 				1A762C742B477F8E0047A436 /* CommunityManager.swift in Sources */,
+				1A688D402B55DCFE004AFB64 /* WelcomeSurveyManager.swift in Sources */,
 				1A4260F82B1BE4CB0011B7BF /* UserDefaults.swift in Sources */,
 				1A46763B2B1508B20007F3E6 /* Dream.swift in Sources */,
 			);

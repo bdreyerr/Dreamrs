@@ -14,6 +14,7 @@ struct RegisterView: View {
     
     var body: some View {
         ZStack {
+            Color.white // Background
             VStack {
                 // Logo
                 HStack {
