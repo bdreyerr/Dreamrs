@@ -33,43 +33,108 @@ struct CommunityMainView: View {
                     
                     // Following vs. For You
                     HStack {
-                        Button(action: {
-                            communityManager.selectedTrafficSlice = communityManager.trafficSlices[0]
-                        }) {
-                            
-                            if communityManager.selectedTrafficSlice == communityManager.trafficSlices[0] {
-                                Text("Following")
-                                    .font(.system(size: 16))
-                                    .fontDesign(.serif)
-                                    .bold()
-                                    .foregroundColor(.black)
-                            } else {
-                                Text("Following")
-                                    .font(.system(size: 16))
-                                    .fontDesign(.serif)
-                                    .opacity(0.5)
-                                    .foregroundColor(.black)
+                        
+                        if !communityManager.isSearchBarShowing {
+                            Button(action: {
+                                communityManager.selectedTrafficSlice = communityManager.trafficSlices[0]
+                            }) {
+                                
+                                if communityManager.selectedTrafficSlice == communityManager.trafficSlices[0] {
+                                    Text("Following")
+                                        .font(.system(size: 16))
+                                        .fontDesign(.serif)
+                                        .bold()
+                                        .foregroundColor(.black)
+                                } else {
+                                    Text("Following")
+                                        .font(.system(size: 16))
+                                        .fontDesign(.serif)
+                                        .opacity(0.5)
+                                        .foregroundColor(.black)
+                                }
+                                
                             }
                             
+                            Button(action: {
+                                communityManager.selectedTrafficSlice = communityManager.trafficSlices[1]
+                            }) {
+                                if communityManager.selectedTrafficSlice == communityManager.trafficSlices[1] {
+                                    Text("For You")
+                                        .font(.system(size: 16))
+                                        .fontDesign(.serif)
+                                        .bold()
+                                        .foregroundColor(.black)
+                                } else {
+                                    Text("For You")
+                                        .font(.system(size: 16))
+                                        .fontDesign(.serif)
+                                        .opacity(0.5)
+                                        .foregroundColor(.black)
+                                }
+                            }
+                            
+                            Button(action: {
+                                communityManager.isSearchBarShowing = true
+                            }) {
+                                Image(systemName: "magnifyingglass")
+                                    .resizable()
+                                    .frame(width: 20, height: 20)
+    //                                .frame(maxWidth: .infinity, alignment: .trailing)
+                                    .foregroundStyle(Color.black)
+                            }
+                            .offset(x: 80)
+                        } else {
+                            
+                            
+                            
+                            
+                            HStack {
+                                // Text field
+                                TextField("User Handle", text: $communityManager.searchText)
+                                    .textInputAutocapitalization(.never)
+                                    .padding(10) // Add some padding for better visual spacing
+                                    .background(Color.clear) // Make the text field background transparent
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 25) // Define the shape of the border
+                                            .stroke(Color.black, lineWidth: 1) // Set the border color and width
+                                    )
+                                    .padding(.leading, 80)
+                                
+                                
+                                // Submit button
+                                if communityManager.searchText != "" {
+                                    
+                                    NavigationLink(destination: CommunitySearchedProiflesView()) {
+                                        Image(systemName: "arrow.right.circle")
+                                            .resizable()
+                                            .frame(width: 25, height: 25)
+                                            .clipShape(Circle())
+                                            .foregroundStyle(Color.green)
+                                    }
+                                    .simultaneousGesture(TapGesture().onEnded {
+                                        communityManager.searchCommunityProfiles()
+                                    })
+                                    
+                                }
+                                
+                                // Cancel button
+                                Button(action: {
+                                    communityManager.isSearchBarShowing = false
+                                }) {
+                                    Image(systemName: "x.circle")
+                                        .resizable()
+                                        .frame(width: 25, height: 25)
+                                        .clipShape(Circle())
+                                        .foregroundStyle(Color.red)
+                                }
+                                
+                            }
+                            .padding(.trailing, 80)
                         }
                         
-                        Button(action: {
-                            communityManager.selectedTrafficSlice = communityManager.trafficSlices[1]
-                        }) {
-                            if communityManager.selectedTrafficSlice == communityManager.trafficSlices[1] {
-                                Text("For You")
-                                    .font(.system(size: 16))
-                                    .fontDesign(.serif)
-                                    .bold()
-                                    .foregroundColor(.black)
-                            } else {
-                                Text("For You")
-                                    .font(.system(size: 16))
-                                    .fontDesign(.serif)
-                                    .opacity(0.5)
-                                    .foregroundColor(.black)
-                            }
-                        }
+                        
+                        
+                        
                     }
                     .padding(.bottom, 10)
                     

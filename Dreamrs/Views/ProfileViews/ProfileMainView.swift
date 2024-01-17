@@ -62,7 +62,8 @@ struct ProfileMainView: View {
                             Text("@" + handle)
                                 .font(.system(size: 16))
                                 .fontDesign(.serif)
-                                .opacity(0.8)
+                                .foregroundStyle(userManager.convertColorStringToView())
+                                .opacity(1.0)
                         }
                     }
                     

@@ -8,6 +8,7 @@
 import Foundation
 import FirebaseFirestore
 import FirebaseAuth
+import SwiftUI
 
 class UserManager : ObservableObject {
     // ToDo
@@ -181,6 +182,29 @@ class UserManager : ObservableObject {
                     }
                 }
             }
+        }
+    }
+    
+    func convertColorStringToView() -> Color {
+        switch self.user?.userColor {
+        case "Black":
+            return Color.black
+        case "Red":
+            return Color.red
+        case "Blue":
+            return Color.blue
+        case "Green":
+            return Color.green
+        case "Purple":
+            return Color.purple
+        case "Cyan":
+            return Color.cyan
+        case "Yellow":
+            return Color.yellow
+        case "Orange":
+            return Color.orange
+        default:
+            return Color.red
         }
     }
 }

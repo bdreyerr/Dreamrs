@@ -28,6 +28,10 @@ class CommunityManager : ObservableObject {
     
     @Published var focusedProfile: User?
     
+    @Published var isSearchBarShowing: Bool = false
+    @Published var searchText: String = ""
+    @Published var searchedProfiles: [User] = []
+    
     // Firestore
     let db = Firestore.firestore()
     
@@ -254,6 +258,44 @@ class CommunityManager : ObservableObject {
             case .failure(let error):
                 // A user value could not be initialized from the DocumentSnapshot
                 print("Failure retrieving user from firestore: ", error.localizedDescription)
+            }
+        }
+    }
+    
+    func searchCommunityProfiles() {
+        // Search the user collection in firestore for the exact userHandle
+        
+        // Options to implement this function:
+            // 1. search once when a user presses the search button
+            // 2. search at every new character added to the handle query (real time update)
+        
+        // Lets go with option one for now
+        // we can create a list of Published Users which match this search query, and when a user clicks on one, we can use the focusedProfile to display that users profile
+        let userHandle = self.searchText
+        self.searchedProfiles = []
+        
+        let docRef = db.collection("users").whereField("handle", isEqualTo: userHandle).order(by: "karma", descending: true)
+        docRef.getDocuments() { (querySnapshot, err) in
+            if let err = err {
+                print("Error searching community profiles: ", err.localizedDescription)
+            } else if let qSnapshot = querySnapshot {
+                for document in qSnapshot.documents {
+                    let user = User(
+                        id: document.documentID,
+                        firstName: document.data()["firstName"] as? String,
+                        lastName: document.data()["lastName"] as? String,
+                        email: document.data()["email"] as? String,
+                        handle: document.data()["handle"] as? String,
+                        userColor: document.data()["userColor"] as? String,
+                        following: document.data()["following"] as? [String],
+                        followers: document.data()["followers"] as? [String],
+                        numDreams: document.data()["numDreams"] as? Int,
+                        karma: document.data()["karma"] as? Int,
+                        pinnedDreams: document.data()["pinnedDreams"] as? [[String: String]],
+                        hasUserCompletedWelcomeSurvey: document.data()["hasUserCompletedWelcomeSurvey"] as? Bool
+                    )
+                    self.searchedProfiles.append(user)
+                }
             }
         }
     }

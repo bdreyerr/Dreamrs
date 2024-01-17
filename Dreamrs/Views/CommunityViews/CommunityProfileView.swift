@@ -45,7 +45,8 @@ struct CommunityProfileView: View {
                     Text("@" + profile.handle!)
                         .font(.system(size: 16))
                         .fontDesign(.serif)
-                        .opacity(0.8)
+                        .opacity(1.0)
+                        .foregroundStyle(communityManager.convertStringToColor(color: profile.userColor!))
                     
                     // Dream Stats
                     HStack {
