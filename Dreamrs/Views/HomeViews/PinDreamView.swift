@@ -42,11 +42,17 @@ struct PinDreamView: View {
                             }
                             .alert("Pin Dream?", isPresented: self.$confirmPin) {
                                 Button("Confirm") {
-                                    // Perform the action here
-                                    userManager.pinDream(dreamId: homeManager.focusedDream!.id!, date: homeManager.focusedDream!.date!)
-                                    print("Action confirmed, adding dream!")
-                                    homeManager.isConfirmPinnedDreamPopupShowing = false
-                                    homeManager.isFocusedDreamPinned = true
+                                    // Rate Limiting check
+                                    if let _ = userManager.user {
+                                        if let rateLimit = userManager.processFirestoreWrite() {
+                                            print(rateLimit)
+                                        } else {
+                                            userManager.pinDream(dreamId: homeManager.focusedDream!.id!, date: homeManager.focusedDream!.date!)
+                                            print("Action confirmed, adding dream!")
+                                            homeManager.isConfirmPinnedDreamPopupShowing = false
+                                            homeManager.isFocusedDreamPinned = true
+                                        }
+                                    }
                                 }
                                 Button("Cancel", role: .cancel) { }
                             }
@@ -82,7 +88,7 @@ struct PinDreamView: View {
             }
         }
         .onAppear {
-            if let user = userManager.user {
+            if let _ = userManager.user {
                 userManager.loadPinnedDreams(isRefresh: false)
             }
         }
@@ -137,7 +143,6 @@ struct AlreadyPinnedDream : View {
         }
         .alert("Delete Pinned Dream \(index + 1)?", isPresented: $confirmPin) {
             Button("Confirm") {
-                // Perform the action here
                 userManager.removePinnedDream(indexOfRemovedDream: self.index)
                 print("Replacing the pinned dream!")
             }

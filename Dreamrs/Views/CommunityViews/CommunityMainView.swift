@@ -120,6 +120,7 @@ struct CommunityMainView: View {
                                 // Cancel button
                                 Button(action: {
                                     communityManager.isSearchBarShowing = false
+                                    communityManager.searchText = ""
                                 }) {
                                     Image(systemName: "x.circle")
                                         .resizable()
@@ -184,6 +185,7 @@ struct CommunityMainView: View {
                     }
                 }
                 .frame(maxHeight: .infinity, alignment: .top)
+                .padding(.bottom, 25)
             }
         }
         .environmentObject(communityManager)
@@ -258,7 +260,12 @@ struct CommunityDream : View {
                             HStack {
                                 Button(action: {
                                     if let user = userManager.user {
-                                        communityManager.processKarmaVote(userId: user.id!, dream: self.dream, isUpvote: true)
+                                        // Rate limiting check
+                                        if let rateLimit = userManager.processFirestoreWrite() {
+                                            print(rateLimit)
+                                        } else {
+                                            communityManager.processKarmaVote(userId: user.id!, dream: self.dream, isUpvote: true)
+                                        }
                                     }
                                 }) {
                                     if !communityManager.localKarmaVotes.keys.contains(dream.id!) {
@@ -297,7 +304,12 @@ struct CommunityDream : View {
                                 
                                 Button(action: {
                                     if let user = userManager.user {
-                                        communityManager.processKarmaVote(userId: user.id!, dream: self.dream, isUpvote: false)
+                                        // Rate limiting check
+                                        if let rateLimit = userManager.processFirestoreWrite() {
+                                            print(rateLimit)
+                                        } else {
+                                            communityManager.processKarmaVote(userId: user.id!, dream: self.dream, isUpvote: false)
+                                        }
                                     }
                                 }) {
                                     if !communityManager.localKarmaVotes.keys.contains(dream.id!) {

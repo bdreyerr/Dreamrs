@@ -54,7 +54,7 @@ struct CreateDreamRichText: View {
                         
                     }
                 }
-                    
+                
                 // Tags
                 HStack {
                     // Text Field
@@ -98,10 +98,10 @@ struct CreateDreamRichText: View {
                         Image("check")
                             .resizable()
                             .frame(width: 65, height: 65)
-//                            .font(.title)
-//                            .foregroundColor(.white)
-//                            .padding(20)
-//                            .background(Color(hue: 0.352, saturation: 0.69, brightness: 0.81))
+                        //                            .font(.title)
+                        //                            .foregroundColor(.white)
+                        //                            .padding(20)
+                        //                            .background(Color(hue: 0.352, saturation: 0.69, brightness: 0.81))
                             .clipShape(Circle())
                             .shadow(color: Color.black.opacity(0.2), radius: 10, x: 10, y: 10)
                     }
@@ -242,34 +242,37 @@ struct CreateDreamRichText: View {
                             Button(action: {
                                 // Grab the userId and userHandle from userManager
                                 if let user = userManager.user {
-                                    if let dream = createDreamManager.submitDream(userId: user.id!, userHandle: user.handle!) {
-                                        homeManager.displayDream(dream: dream)
-                                        // dismiss the create popup
-                                        homeManager.isCreateDreamPopupShowing = false
-                                        
-                                        // call the view published popup
-                                        homeManager.isViewNewlyCreatedDreamPopupShowing = true
-                                        homeManager.isNewDreamLoading = true
-                                        homeManager.processNewDream(dream: dream, shouldVisualizeDream: createDreamManager.shouldVisualizeDream, shouldAnalyzeDream: createDreamManager.shouldAnalyzeDream)
+                                    // Rate limiting check
+                                    if let rateLimit = userManager.processFirestoreWrite() {
+                                        print(rateLimit)
                                     } else {
-                                        homeManager.isCreateDreamPopupShowing = false
-    //
-    //                                    // call the view published popup
-    //                                    homeManager.isViewNewlyCreatedDreamPopupShowing = true
-    //                                    homeManager.isNewDreamLoading = false
-    //                                    homeManager.isErrorLoadingNewDream = true
+                                        if let dream = createDreamManager.submitDream(userId: user.id!, userHandle: user.handle!) {
+                                            homeManager.displayDream(dream: dream)
+                                            // dismiss the create popup
+                                            homeManager.isCreateDreamPopupShowing = false
+                                            
+                                            // call the view published popup
+                                            homeManager.isViewNewlyCreatedDreamPopupShowing = true
+                                            homeManager.isNewDreamLoading = true
+                                            homeManager.processNewDream(dream: dream, shouldVisualizeDream: createDreamManager.shouldVisualizeDream, shouldAnalyzeDream: createDreamManager.shouldAnalyzeDream)
+                                        } else {
+                                            homeManager.isCreateDreamPopupShowing = false
+                                            //
+                                            //                                    // call the view published popup
+                                            //                                    homeManager.isViewNewlyCreatedDreamPopupShowing = true
+                                            //                                    homeManager.isNewDreamLoading = false
+                                            //                                    homeManager.isErrorLoadingNewDream = true
+                                        }
                                     }
-                                    
-                                    
                                 }
                             }) {
                                 Image("check")
                                     .resizable()
                                     .frame(width: 65, height: 65)
-        //                            .font(.title)
-        //                            .foregroundColor(.white)
-        //                            .padding(20)
-        //                            .background(Color(hue: 0.352, saturation: 0.69, brightness: 0.81))
+                                //                            .font(.title)
+                                //                            .foregroundColor(.white)
+                                //                            .padding(20)
+                                //                            .background(Color(hue: 0.352, saturation: 0.69, brightness: 0.81))
                                     .clipShape(Circle())
                                     .shadow(color: Color.black.opacity(0.2), radius: 10, x: 10, y: 10)
                             }
@@ -315,7 +318,7 @@ struct TagView: View {
             
             if self.isEditPopupShowing {
                 TagEditPopupView(tagIndex: index)
-//                    .frame(width: 300, height: 100)
+                //                    .frame(width: 300, height: 100)
                     .opacity(0.75)
                     .transition(.slide)
             }
@@ -328,7 +331,7 @@ struct TagView: View {
                 .onTapGesture {
                     if isEditable {
                         self.isEditPopupShowing.toggle()
-                    }   
+                    }
                 }
         }
     }

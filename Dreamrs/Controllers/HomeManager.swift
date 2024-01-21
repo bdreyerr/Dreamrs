@@ -15,6 +15,8 @@ class HomeManager : ObservableObject {
     
     @Published var selectedMonth: String
     var months = ["January", "Febuary", "March", "April", "May", "June", "July", "August", "September", "October", "Novemeber", "December"]
+    @Published var selectedYear: String
+    var years = ["2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026", "2027", "2028", "2029", "2030"]
     
     
     @Published var retrievedDreams : [Dream] = []
@@ -40,6 +42,8 @@ class HomeManager : ObservableObject {
         let calendar = Calendar.current
         let currentMonth = calendar.component(.month, from: Date())
         selectedMonth = months[currentMonth - 1]
+        // Hardcoded to 2024, eventually set to current year based on calendar
+        selectedYear = years[5]
     }
     
     func retrieveDreams(userId: String) {
@@ -50,7 +54,7 @@ class HomeManager : ObservableObject {
         
         // read from only the selected month of the current year
         // TODO(bendreyer): add multi year functionality later
-        let dreamSubcollection = selectedMonth+"2024"
+        let dreamSubcollection = selectedMonth+selectedYear
         
         // start with getting all documents from a current user (build dream individualy)
         db.collection("dreams" + dreamSubcollection).whereField("authorId", isEqualTo: userId).order(by: "rawTimestamp", descending: false)
@@ -121,22 +125,22 @@ class HomeManager : ObservableObject {
     
     func convertStringToColor(color: String) -> Color {
         switch color {
-        case "red":
+        case "Red":
             return Color.red
-        case "blue":
+        case "Blue":
             return Color.blue
-        case "green":
+        case "Green":
             return Color.green
-        case "purple":
+        case "Purple":
             return Color.purple
-        case "cyan":
+        case "Cyan":
             return Color.cyan
-        case "yellow":
+        case "Yellow":
             return Color.yellow
-        case "orange":
+        case "Orange":
             return Color.orange
         default:
-            return Color.red
+            return Color.blue
             
         }
     }

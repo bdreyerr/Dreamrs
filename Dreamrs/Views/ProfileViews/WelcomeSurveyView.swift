@@ -83,6 +83,16 @@ struct WelcomeSurveyView: View {
                 }
                 .padding(.bottom, 100)
                 
+                
+                if welcomeSurveyManager.isLoadingWheelVisisble {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .black))
+                        .scaleEffect(2)  // Adjust size if needed
+                        .animation(.linear(duration: 1.0).repeatForever(autoreverses: true))
+                        .padding(.bottom, 20)
+                }
+                
+                
                 if welcomeSurveyManager.errorString != "" {
                     Text(welcomeSurveyManager.errorString)
                         .font(.system(size: 16))
@@ -97,8 +107,11 @@ struct WelcomeSurveyView: View {
                 
                 Button(action: {
                     welcomeSurveyManager.completeWelcomeSurvey()
-                    // Re-load the user manager to get rid of the welcome survey view
-                    userManager.retrieverUserFromFirestore(userId: userManager.user!.id!)
+                    // Re-load the user manager to get rid of the welcome survey view - but wait 2 seconds (spagehtti code rip)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(4)) {
+                        userManager.retrieverUserFromFirestore(userId: userManager.user!.id!)
+                    }
+                    
                 }) {
                     Text("Continue")
                         .font(.headline)

@@ -95,7 +95,12 @@ struct SingleCommunityDream: View {
                                     HStack {
                                         Button(action: {
                                             if let user = userManager.user {
-                                                communityManager.processKarmaVote(userId: user.id!, dream: communityManager.focusedDream!, isUpvote: true)
+                                                // Rate limiting check
+                                                if let rateLimit = userManager.processFirestoreWrite() {
+                                                    print(rateLimit)
+                                                } else {
+                                                    communityManager.processKarmaVote(userId: user.id!, dream: communityManager.focusedDream!, isUpvote: true)
+                                                }
                                             }
                                         }) {
                                             if !communityManager.localKarmaVotes.keys.contains(dream.id!) {
@@ -135,8 +140,12 @@ struct SingleCommunityDream: View {
                                         
                                         Button(action: {
                                             if let user = userManager.user {
-                                                communityManager.processKarmaVote(userId: user.id!, dream: communityManager.focusedDream!, isUpvote: false)
-                                                
+                                                // Rate limiting checl
+                                                if let rateLimit = userManager.processFirestoreWrite() {
+                                                    print(rateLimit)
+                                                } else {
+                                                    communityManager.processKarmaVote(userId: user.id!, dream: communityManager.focusedDream!, isUpvote: false)
+                                                }
                                             }
                                         }) {
                                             

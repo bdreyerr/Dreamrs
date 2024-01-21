@@ -55,7 +55,6 @@
 		1ACA217E2AEDC63D00CCEF66 /* BottomNavBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ACA217D2AEDC63D00CCEF66 /* BottomNavBar.swift */; };
 		1ACA21832AEDC6CD00CCEF66 /* CommunityMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ACA21822AEDC6CC00CCEF66 /* CommunityMainView.swift */; };
 		1ACA21872AEDC71A00CCEF66 /* ProfileMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ACA21862AEDC71A00CCEF66 /* ProfileMainView.swift */; };
-		1ACA21892AEDCFA300CCEF66 /* CreateDream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ACA21882AEDCFA300CCEF66 /* CreateDream.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -91,7 +90,6 @@
 		1ACA217D2AEDC63D00CCEF66 /* BottomNavBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomNavBar.swift; sourceTree = "<group>"; };
 		1ACA21822AEDC6CC00CCEF66 /* CommunityMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityMainView.swift; sourceTree = "<group>"; };
 		1ACA21862AEDC71A00CCEF66 /* ProfileMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileMainView.swift; sourceTree = "<group>"; };
-		1ACA21882AEDCFA300CCEF66 /* CreateDream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateDream.swift; sourceTree = "<group>"; };
 		1ACA218A2AEDDD3000CCEF66 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -212,7 +210,6 @@
 			isa = PBXGroup;
 			children = (
 				1ACA21792AEDB18800CCEF66 /* SingleDream.swift */,
-				1ACA21882AEDCFA300CCEF66 /* CreateDream.swift */,
 				1A4055922B0AC4430025CBEF /* HomeView.swift */,
 				1A986FD72B227B07001D9CD0 /* CreateDreamRichText.swift */,
 				1A5767852B4F3B6B002030ED /* PinDreamView.swift */,
@@ -350,7 +347,6 @@
 				1A4055932B0AC4440025CBEF /* HomeView.swift in Sources */,
 				1ACA217E2AEDC63D00CCEF66 /* BottomNavBar.swift in Sources */,
 				1A4260F62B1BE0880011B7BF /* RegisterView.swift in Sources */,
-				1ACA21892AEDCFA300CCEF66 /* CreateDream.swift in Sources */,
 				1A4260FC2B1BEE600011B7BF /* AuthManager.swift in Sources */,
 				1A688D422B5773C9004AFB64 /* CommunitySearchedProiflesView.swift in Sources */,
 				1A4395192B117D1800BA5C27 /* ProfileSettingsView.swift in Sources */,

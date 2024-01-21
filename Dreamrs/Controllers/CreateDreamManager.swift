@@ -20,7 +20,7 @@ class CreateDreamManager : ObservableObject {
     // Tags
     @Published var tagText: String = ""
     @Published var tags : [Tag] = [Tag(id: UUID().uuidString, index: 0, text: "Dream", icon: "sun.max", color: "red")]
-    var colorOptions = ["red", "blue", "green", "purple", "cyan", "yellow", "orange"]
+    var colorOptions = ["Red", "Blue", "Green", "Purple", "Cyan", "Yellow", "Orange"]
     var iconOptions = ["message.fill", "phone.down.fill", "sun.max", "cloud.bolt.rain", "figure.walk.circle", "car", "paperplane.fill", "studentdesk", "display.2", "candybarphone", "photo.fill", "arrow.triangle.2.circlepath", "flag.checkered", "gamecontroller", "network.badge.shield.half.filled", "dot.radiowaves.left.and.right", "airplane.circle.fill", "bicycle", "snowflake.circle", "key.fill", "person.fill", "person.3", "house.fill", "party.popper.fill", "figure.archery", "sportscourt.fill", "globe.americas.fill", "sun.snow", "moon.fill", "wind.snow", "bolt.square.fill", "wand.and.stars.inverse", "bandage.fill", "textformat.abc", "play.rectangle.fill", "shuffle", "command.circle.fill", "keyboard.fill", "cart.fill", "giftcard.fill", "pesosign.circle", "chineseyuanrenminbisign.circle.fill", "hourglass.circle.fill", "heart.fill", "pill.fill", "eye", "brain.fill", "percent"]
     
     
@@ -181,19 +181,19 @@ struct Tag : Identifiable {
     
     func convertColorStringToView() -> Color {
         switch self.color{
-        case "red":
+        case "Red":
             return Color.red
-        case "blue":
+        case "Blue":
             return Color.blue
-        case "green":
+        case "Green":
             return Color.green
-        case "purple":
+        case "Purple":
             return Color.purple
-        case "cyan":
+        case "Cyan":
             return Color.cyan
-        case "yellow":
+        case "Yellow":
             return Color.yellow
-        case "orange":
+        case "Orange":
             return Color.orange
         default:
             return Color.red

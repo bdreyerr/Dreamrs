@@ -27,6 +27,7 @@ class CommunityManager : ObservableObject {
     @Published var localKarmaVotes : [String: Bool] = [:]
     
     @Published var focusedProfile: User?
+    @Published var focusedProfilesPinnedDreams: [Dream] = []
     
     @Published var isSearchBarShowing: Bool = false
     @Published var searchText: String = ""
@@ -36,7 +37,7 @@ class CommunityManager : ObservableObject {
     let db = Firestore.firestore()
     
     init() {
-        selectedTimeFilter = timeFilters[0]
+        selectedTimeFilter = timeFilters[1]
         selectedTrafficSlice = trafficSlices[0]
     }
     
@@ -81,10 +82,10 @@ class CommunityManager : ObservableObject {
             let formattedDate = dateFormatter.string(from: today) // Format the date
 
             print(formattedDate) // Output: Jan 5, 2024 (assuming today's date)
-            dreamRef = db.collection(collectionString).whereField("authorId", in: following).whereField("date", isEqualTo: formattedDate)
+            dreamRef = db.collection(collectionString).whereField("authorId", in: following).whereField("date", isEqualTo: formattedDate).order(by: "rawTimestamp", descending: false)
         } else if self.selectedTimeFilter == self.timeFilters[1] {
             // Retrieve all dreams this month
-            dreamRef = db.collection(collectionString).whereField("authorId", in: following)
+            dreamRef = db.collection(collectionString).whereField("authorId", in: following).order(by: "rawTimestamp", descending: false)
         }
         
         // Get all dreams from all users in the following array
@@ -226,23 +227,22 @@ class CommunityManager : ObservableObject {
     
     func convertStringToColor(color: String) -> Color {
         switch color {
-        case "red":
+        case "Red":
             return Color.red
-        case "blue":
+        case "Blue":
             return Color.blue
-        case "green":
+        case "Green":
             return Color.green
-        case "purple":
+        case "Purple":
             return Color.purple
-        case "cyan":
+        case "Cyan":
             return Color.cyan
-        case "yellow":
+        case "Yellow":
             return Color.yellow
-        case "orange":
+        case "Orange":
             return Color.orange
         default:
             return Color.red
-            
         }
     }
     
@@ -255,11 +255,44 @@ class CommunityManager : ObservableObject {
                 // A user value was successfully initialized from the Documentsnapshot
                 self.focusedProfile = userObject
                 print("The community user was successfully retrieved from firestore, access them with communityManager.focusedProfile")
+                self.loadPinnedDreams()
             case .failure(let error):
                 // A user value could not be initialized from the DocumentSnapshot
                 print("Failure retrieving user from firestore: ", error.localizedDescription)
             }
         }
+    }
+    
+    func loadPinnedDreams() {
+        // We'll re-call this function every time the communityProfileView appears because there's no way to tell if it's a different user or not
+        print("In load pinned dreams")
+        
+        self.focusedProfilesPinnedDreams = []
+        
+        if let user = self.focusedProfile {
+            if let pinnedDreams = user.pinnedDreams {
+                for dream in pinnedDreams {
+                    // Grab Document
+                    let docRef = db.collection(dream["dreamCollection"]!).document(dream["dreamId"]!)
+                    docRef.getDocument(as: Dream.self) { result in
+                        switch result {
+                        case .success(let dreamObject):
+                            // A user value was successfully initialized from the Documentsnapshot
+                            self.focusedProfilesPinnedDreams.append(dreamObject)
+                        case .failure(let error):
+                            // A user value could not be initialized from the DocumentSnapshot
+                            print("Failure retrieving dream from firestore: ", error.localizedDescription)
+                        }
+                    }
+                }
+            } else {
+                print("no pinned dreams")
+            }
+            
+        } else {
+            print("no user")
+        }
+        
     }
     
     func searchCommunityProfiles() {

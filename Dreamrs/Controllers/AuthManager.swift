@@ -17,6 +17,9 @@ class AuthManager: ObservableObject {
     // Unhashed nonce. (used for Apple sign in)
     @Published var currentNonce:String?
     
+    @Published var errorString: String = ""
+    @Published var isErrorStringShowing: Bool = false
+
     // Firestore
     let db = Firestore.firestore()
     
@@ -173,5 +176,31 @@ class AuthManager: ObservableObject {
         }
         
         return result
+    }
+    
+    func deleteUser(userId: String) {
+        print("starting user delete")
+        // First update the user in firestore marking their account as deleted
+        self.db.collection("users").document(userId).updateData([
+            "isUserDeleted": true
+        ]) { err in
+            if let err = err {
+                print("error updating user in firestore as deleted")
+            } else {
+                print("successfully updated user as deleted")
+                // Delete the auth user
+                let user = Auth.auth().currentUser
+                user?.delete() { error in
+                    if let error = error {
+                        print("Error deleting auth user: ", error.localizedDescription)
+                        self.errorString = "Your credentials are out of date, please log out and log in again to delete your account."
+                        self.isErrorStringShowing = true
+                    } else {
+                        print("Auth user got deleted successfully")
+                        self.logOut()
+                    }
+                }
+            }
+        }
     }
 }

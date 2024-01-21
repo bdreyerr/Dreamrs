@@ -35,6 +35,17 @@ struct CommunityProfileView: View {
                 
                 if let profile = communityManager.focusedProfile {
                     
+                    // Account deactivated status
+                    if let isDeletedProfile = profile.isUserDeleted {
+                        if isDeletedProfile {
+                            Text("User Innactive")
+                                .font(.system(size: 18))
+                                .fontDesign(.serif)
+                                .bold()
+                                .foregroundStyle(Color.red)
+                        }
+                    }
+                    
                     // Full Name
                     Text(profile.firstName! + " " + profile.lastName!)
                         .font(.system(size: 20))
@@ -123,10 +134,15 @@ struct CommunityProfileView: View {
                                         }
                                         if self.isUnfollowPopupShowing {
                                             Button(action: {
-                                                // Remove the following locally, and in firestore.
-                                                userManager.user!.following! = userManager.user!.following!.filter { $0 != profile.id! }
-                                                self.isUnfollowPopupShowing.toggle()
-                                                 userManager.unfollowProfile(profileId: profile.id!)
+                                                // Rate limiting check
+                                                if let rateLimit = userManager.processFirestoreWrite() {
+                                                    print(rateLimit)
+                                                } else {
+                                                    // Remove the following locally, and in firestore.
+                                                    userManager.user!.following! = userManager.user!.following!.filter { $0 != profile.id! }
+                                                    self.isUnfollowPopupShowing.toggle()
+                                                     userManager.unfollowProfile(profileId: profile.id!)
+                                                }
                                             }) {
                                                 ZStack {
                                                     RoundedRectangle(cornerRadius: 25.0)
@@ -149,10 +165,16 @@ struct CommunityProfileView: View {
                                 .padding(.bottom, 40)
                             } else {
                                 Button(action: {
-                                    print("User wanted to follow")
-                                    userManager.user!.following!.append(profile.id!)
-                                    self.isUnfollowPopupShowing = false
-                                    userManager.followProfile(profileId: profile.id!)
+                                    
+                                    // Rate limiting check
+                                    if let rateLimit = userManager.processFirestoreWrite() {
+                                        print(rateLimit)
+                                    } else {
+//                                        print("User wanted to follow")
+                                        userManager.user!.following!.append(profile.id!)
+                                        self.isUnfollowPopupShowing = false
+                                        userManager.followProfile(profileId: profile.id!)
+                                    }
                                 }) {
                                     ZStack {
                                         RoundedRectangle(cornerRadius: 25.0)
@@ -180,71 +202,32 @@ struct CommunityProfileView: View {
                             .fontDesign(.serif)
                             .bold()
                         
-                        NavigationLink(destination: SingleDream()) {
-                            HStack {
-                                VStack {
-                                    Text("Driving with Dad, looking for puppies")
-                                        .foregroundStyle(.black)
-                                        .font(.system(size: 14, design: .serif))
-                                        .multilineTextAlignment(.leading)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                    
-                                    Text("Nov 18th, 2023")
-                                        .foregroundStyle(.gray)
-                                        .font(.system(size: 14, design: .serif))
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                }
-                                
-                                Image("dad_dog")
-                                    .resizable()
-                                    .frame(width: 100, height: 60)
-                                    .clipShape(Circle())
-                            }
+                        
+                        ForEach(communityManager.focusedProfilesPinnedDreams) { dream in
+                            CommunityPinnedDream(dream: dream)
                         }
                         
-                        NavigationLink(destination: SingleDream()) {
-                            HStack {
-                                VStack {
-                                    Text("Skating through a mall on ice skates")
-                                        .foregroundStyle(.black)
-                                        .font(.system(size: 14, design: .serif))
-                                        .multilineTextAlignment(.leading)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                    
-                                    Text("Jan 18th, 2021")
-                                        .foregroundStyle(.gray)
-                                        .font(.system(size: 14, design: .serif))
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                }
-                                
-                                Image("dream2")
-                                    .resizable()
-                                    .frame(width: 100, height: 60)
-                                    .clipShape(Circle())
-                            }
-                        }
-                        
-                        NavigationLink(destination: SingleDream()) {
-                            HStack {
-                                VStack {
-                                    Text("Swimming with mermaids")
-                                        .foregroundStyle(.black)
-                                        .font(.system(size: 14, design: .serif))
-                                        .multilineTextAlignment(.leading)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                    
-                                    Text("Oct 9th, 2023")
-                                        .foregroundStyle(.gray)
-                                        .font(.system(size: 14, design: .serif))
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                }
-                                
-                                Image("dream3")
-                                    .resizable()
-                                    .frame(width: 100, height: 60)
-                                    .clipShape(Circle())
-                            }
-                        }
+//                        NavigationLink(destination: SingleDream()) {
+//                            HStack {
+//                                VStack {
+//                                    Text("Swimming with mermaids")
+//                                        .foregroundStyle(.black)
+//                                        .font(.system(size: 14, design: .serif))
+//                                        .multilineTextAlignment(.leading)
+//                                        .frame(maxWidth: .infinity, alignment: .leading)
+//                                    
+//                                    Text("Oct 9th, 2023")
+//                                        .foregroundStyle(.gray)
+//                                        .font(.system(size: 14, design: .serif))
+//                                        .frame(maxWidth: .infinity, alignment: .leading)
+//                                }
+//                                
+//                                Image("dream3")
+//                                    .resizable()
+//                                    .frame(width: 100, height: 60)
+//                                    .clipShape(Circle())
+//                            }
+//                        }
                         
                     }
                     .padding(.leading, 20)
@@ -255,10 +238,48 @@ struct CommunityProfileView: View {
             }
             .frame(maxHeight: .infinity, alignment: .top)
         }
+        .onAppear {
+            
+        }
     }
 }
 
 #Preview {
     CommunityProfileView()
         .environmentObject(CommunityManager())
+}
+
+
+struct CommunityPinnedDream : View {
+    
+    @EnvironmentObject var communityManager: CommunityManager
+    
+    var dream: Dream
+    
+    var body : some View {
+        NavigationLink(destination: SingleCommunityDream()) {
+            HStack {
+                VStack {
+                    Text(dream.title!)
+                        .foregroundStyle(.black)
+                        .font(.system(size: 14, design: .serif))
+                        .multilineTextAlignment(.leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    Text(dream.date!)
+                            .foregroundStyle(.gray)
+                            .font(.system(size: 14, design: .serif))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                
+                Image(communityManager.randomImage())
+                    .resizable()
+                    .frame(width: 100, height: 60)
+                    .clipShape(Circle())
+            }
+        }
+        .simultaneousGesture(TapGesture().onEnded {
+            communityManager.displayDream(dream: self.dream)
+        })
+    }
 }

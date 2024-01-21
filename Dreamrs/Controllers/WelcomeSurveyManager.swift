@@ -19,6 +19,8 @@ class WelcomeSurveyManager : ObservableObject {
     
     @Published var errorString: String = ""
     
+    @Published var isLoadingWheelVisisble: Bool = false
+    
     @Published var hasUserCompletedSurvey = true
     
     // Firestore
@@ -31,6 +33,7 @@ class WelcomeSurveyManager : ObservableObject {
     }
     
     func completeWelcomeSurvey() {
+        self.errorString = ""
         // Blank error cases
         if self.firstName == "" {
             self.errorString = "Please enter a first name"
@@ -73,23 +76,39 @@ class WelcomeSurveyManager : ObservableObject {
             return
         }
         
-        // Get user Id from firebase Auth
-        let userId = Auth.auth().currentUser!.uid
-        
-        // All fields are valid, update database and set UserDefault
-        self.db.collection("users").document(userId).updateData([
-            "firstName": self.firstName,
-            "lastName": self.lastName,
-            "handle": self.handle,
-            "userColor": self.userColor,
-            "hasUserCompletedWelcomeSurvey": true
-        ]) { err in
-            if let err = err {
-                print("Error updating user fields from welcome sruvey: \(err)")
-            } else {
-                print("User updated successfully during welcome survey!")
+        db.collection("users").whereField("handle", isEqualTo: self.handle)
+            .getDocuments() { (querySnapshot, err) in
+                if let err = err {
+                    print("Error getting documents: ", err.localizedDescription)
+                } else {
+                    for _ in querySnapshot!.documents {
+                        self.errorString = "Handle is already in use"
+                        return
+                    }
+                    
+                    // Otherwise handle is not already in use, continue with the setup.
+                    self.isLoadingWheelVisisble = true
+                    // Get user Id from firebase Auth
+                    let userId = Auth.auth().currentUser!.uid
+                    
+                    // All fields are valid, update database and set UserDefault
+                    self.db.collection("users").document(userId).updateData([
+                        "firstName": self.firstName,
+                        "lastName": self.lastName,
+                        "handle": self.handle,
+                        "userColor": self.userColor,
+                        "hasUserCompletedWelcomeSurvey": true,
+                        "isUserDeleted": false
+                    ]) { err in
+                        if let err = err {
+                            print("Error updating user fields from welcome sruvey: \(err)")
+                        } else {
+                            print("User updated successfully during welcome survey!")
+                        }
+                    }
+                }
+                
             }
-        }
     }
     
     func convertColorStringToView() -> Color {

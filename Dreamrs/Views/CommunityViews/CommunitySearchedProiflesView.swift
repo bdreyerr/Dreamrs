@@ -59,6 +59,7 @@ struct CommunitySearchedProiflesView: View {
                         }
                         .simultaneousGesture(TapGesture().onEnded {
                             communityManager.focusedProfile = user
+                            communityManager.loadPinnedDreams()
                         })
                     }
                 }

@@ -31,6 +31,7 @@ struct HomeView: View {
                     }
                     .padding(.bottom, 20)
                     
+                    // Month Selector
                     HStack {
                         Menu {
                             Picker(selection: $homeManager.selectedMonth) {
@@ -56,6 +57,44 @@ struct HomeView: View {
                             HStack {
                                 Text(homeManager.selectedMonth)
                                     .font(.system(size: 16, design: .serif))
+                                    .accentColor(.black)
+                                    .bold()
+                                Image(systemName: "arrowtriangle.down.fill")
+                                    .resizable()
+                                    .frame(width: 12, height: 6)
+                                    .foregroundColor(.black)
+                            }
+                        }
+                        Spacer()
+                    }
+                    .padding(.leading, 20)
+//                    .padding(.bottom, 15)
+                    
+                    // Year Selector
+                    HStack {
+                        Menu {
+                            Picker(selection: $homeManager.selectedYear) {
+                                ForEach(homeManager.years, id: \.self) { value in
+                                    Text(value)
+                                        .tag(value)
+                                        .font(.system(size: 16, design: .serif))
+                                        .accentColor(.black)
+                                        .bold()
+                                        
+                                }
+                            } label: {}
+                            .accentColor(.black)
+                            .padding(.leading, -12)
+                            .font(.system(size: 16, design: .serif))
+                            .onChange(of: homeManager.selectedYear) { newValue in
+                                if let user = userManager.user {
+                                    homeManager.retrieveDreams(userId: user.id!)
+                                }
+                            }
+                        } label: {
+                            HStack {
+                                Text(homeManager.selectedYear)
+                                    .font(.system(size: 13, design: .serif))
                                     .accentColor(.black)
                                     .bold()
                                 Image(systemName: "arrowtriangle.down.fill")

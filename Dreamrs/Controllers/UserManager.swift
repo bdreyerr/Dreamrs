@@ -12,8 +12,12 @@ import SwiftUI
 
 class UserManager : ObservableObject {
     // ToDo
-    // Rate Limiting
     // Firebase Storage
+    
+    
+    // Rate Limiting
+    @Published var numActionsInLastMinute: Int = 0
+    @Published var firstActionDate: Date?
     
     // Firestore
     let db = Firestore.firestore()
@@ -183,6 +187,128 @@ class UserManager : ObservableObject {
                 }
             }
         }
+    }
+    
+    func updateUserFirstName(newFirstName: String) -> String? {
+        var errorText: String?
+        
+        if let user = self.user {
+            if newFirstName.count > 50 {
+                return "Name too long"
+            }
+            
+            let docRef = db.collection("users").document(user.id!)
+            
+            self.user?.firstName = newFirstName
+            do {
+                try docRef.setData(from: self.user)
+            } catch {
+                errorText = error.localizedDescription
+            }
+        }
+        
+        return errorText
+    }
+    
+    func updateUserLastName(newLastName: String) -> String? {
+        var errorText: String?
+        
+        if let user = self.user {
+            if newLastName.count > 50 {
+                return "Name too long"
+            }
+            
+            let docRef = db.collection("users").document(user.id!)
+            
+            self.user?.lastName = newLastName
+            do {
+                try docRef.setData(from: self.user)
+            } catch {
+                errorText = error.localizedDescription
+            }
+        }
+        
+        return errorText
+    }
+    
+    func updateUserHandle(newHandle: String) -> String? {
+        var errorText: String?
+        
+        if let user = self.user {
+            if newHandle.count > 50 {
+                return "Name too long"
+            }
+            
+            if newHandle.contains(where: { $0.isWhitespace }) {
+                return "Handle must not contain a whitespace"
+            }
+            
+            
+            // check if handle already exists
+            db.collection("users").whereField("handle", isEqualTo: newHandle)
+                .getDocuments() { (querySnapshot, err) in
+                    if let err = err {
+                        print("Error getting documents: ", err.localizedDescription)
+                    } else {
+                        for _ in querySnapshot!.documents {
+                            errorText = "Handle is already in use"
+                            return
+                        }
+                        
+                        // Otherwise handle is not already in use, continue with the setup.
+                        let docRef = self.db.collection("users").document(user.id!)
+                        
+                        self.user?.handle = newHandle
+                        do {
+                            try docRef.setData(from: self.user)
+                        } catch {
+                            errorText = error.localizedDescription
+                        }
+                    }
+                }
+        }
+        return errorText
+    }
+    
+    // Rate limiting - limits firestore writes and blocks spamming in a singular user session. app is still prone to attacks in multiple app sessions (closing and re-opening)
+    // Limits users to 5 writes in one minute
+    func processFirestoreWrite() -> String? {
+        var errorText: String?
+        
+        // Cases:
+            // 1. This is the first action - first action date doesn't exist
+                // Set first action to Date()
+                // set num actions = 1
+            // 2. First action exists - currentAction is less than one minute from first action
+                // Allow action if numActions < 5
+                    // set num actions += 1
+                // Block action if numActions >= 5
+            // 3. First action exists - current action is greater than one minute from first action
+                // allow action
+                // set first action date to Date()
+                // set num action = 1
+        
+        if let firstActionDate = self.firstActionDate {
+            
+            // Get firstActionDate + 60 seconds
+            let oneMinFromFirst = Calendar.current.date(byAdding: .second, value: 60, to: firstActionDate)
+            
+            if Date() < oneMinFromFirst! {
+                if self.numActionsInLastMinute < 5 {
+                    self.numActionsInLastMinute += 1
+                } else {
+                    return "Too many actions in one minute"
+                }
+            } else {
+                self.firstActionDate = Date()
+                self.numActionsInLastMinute = 1
+            }
+        } else {
+            self.firstActionDate = Date()
+            self.numActionsInLastMinute = 1
+        }
+        
+        return errorText
     }
     
     func convertColorStringToView() -> Color {
