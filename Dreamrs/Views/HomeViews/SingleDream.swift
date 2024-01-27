@@ -27,21 +27,52 @@ struct SingleDream: View {
                                 .padding(.leading, 20)
                             
                             
-                            
-                            // Display pin dream button if the dream is not already pinned
-                            if !homeManager.isFocusedDreamPinned {
+                            HStack {
+                                // Display pin dream button if the dream is not already pinned
+                                if !homeManager.isFocusedDreamPinned {
+                                    Button(action: {
+                                        homeManager.isConfirmPinnedDreamPopupShowing = true
+                                    }) {
+                                        Image(systemName: "plus.app")
+                                            .resizable()
+                                            .frame(width: 20, height: 20)
+                                            .foregroundStyle(Color.black)
+                                    }.popover(isPresented: $homeManager.isConfirmPinnedDreamPopupShowing) {
+                                        PinDreamView()
+                                    }
+                                    .padding(.trailing, 5)
+                                }
+                                
+                                // Delete Dream
                                 Button(action: {
-                                    homeManager.isConfirmPinnedDreamPopupShowing = true
+                                    homeManager.isConfirmDeleteDreamAlertShowing = true
                                 }) {
-                                    Image(systemName: "plus.app")
+                                    Image(systemName: "trash")
                                         .resizable()
                                         .frame(width: 20, height: 20)
                                         .foregroundStyle(Color.black)
-                                }.popover(isPresented: $homeManager.isConfirmPinnedDreamPopupShowing) {
-                                    PinDreamView()
+                                }
+                                .alert("Do you want to delete this dream?", isPresented: $homeManager.isConfirmDeleteDreamAlertShowing) {
+                                    Button("Confirm") {
+                                        if let _ = userManager.user {
+                                            homeManager.deleteDream()
+                                            // check if the dream being deleted is part of the user's pinned dream, if so remove it 
+                                            if let pinnedDreams = userManager.user?.pinnedDreams {
+                                                var i = 0
+                                                for pinnedDream in pinnedDreams {
+                                                    if pinnedDream["dreamId"] == homeManager.focusedDream!.id {
+                                                        userManager.removePinnedDream(indexOfRemovedDream: i)
+                                                    }
+                                                    i += 1
+                                                }
+                                            }
+                                        }
+                                    }
+                                    Button("Cancel", role: .cancel) { }
                                 }
                                 .padding(.trailing, 20)
                             }
+                            
                         }
                         .padding(.top, 10)
                         
@@ -62,6 +93,7 @@ struct SingleDream: View {
                                 Text(AttributedString(text))
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .padding(.leading, 20)
+                                    .padding(.trailing, 20)
                                     .padding(.bottom, 20)
                             } else {
                                 Image("sleep_face")

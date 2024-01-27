@@ -10,6 +10,7 @@ import SwiftUI
 struct CommunityFollowingView: View {
     
     @EnvironmentObject var communityManager: CommunityManager
+    @EnvironmentObject var userManager: UserManager
     
     var body: some View {
         VStack {
@@ -23,6 +24,19 @@ struct CommunityFollowingView: View {
                     ForEach(communityManager.retrievedDreamsThisMonth) { dream in
                         CommunityDream(dream: dream, title: dream.title!, handle: dream.authorHandle!, date: dream.date!, karma: dream.karma!)
                     }
+                    if communityManager.shouldLoadMoreDreamsButtonBeVisible {
+                        Button(action: {
+                            if let user = userManager.user {
+                                communityManager.retrieveDreams(userId: user.id!, following: user.following!, isInfiniteScrollRequest: true)
+                            }
+                            
+                        }) {
+                            Image(systemName: "arrow.down.circle.fill")
+                                .resizable()
+                                .frame(width: 25, height: 25)
+                                .foregroundStyle(Color.black)
+                        }
+                    }
                 }
                 
             }
@@ -34,4 +48,5 @@ struct CommunityFollowingView: View {
 #Preview {
     CommunityFollowingView()
         .environmentObject(CommunityManager())
+        .environmentObject(UserManager())
 }

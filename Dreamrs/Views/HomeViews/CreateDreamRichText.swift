@@ -246,14 +246,13 @@ struct CreateDreamRichText: View {
                                     if let rateLimit = userManager.processFirestoreWrite() {
                                         print(rateLimit)
                                     } else {
-                                        if let dream = createDreamManager.submitDream(userId: user.id!, userHandle: user.handle!) {
+                                        if let dream = createDreamManager.submitDream(userId: user.id!, userHandle: user.handle!, userColor: user.userColor!) {
                                             homeManager.displayDream(dream: dream)
                                             // dismiss the create popup
                                             homeManager.isCreateDreamPopupShowing = false
                                             
                                             // call the view published popup
                                             homeManager.isViewNewlyCreatedDreamPopupShowing = true
-                                            homeManager.isNewDreamLoading = true
                                             homeManager.processNewDream(dream: dream, shouldVisualizeDream: createDreamManager.shouldVisualizeDream, shouldAnalyzeDream: createDreamManager.shouldAnalyzeDream)
                                         } else {
                                             homeManager.isCreateDreamPopupShowing = false
@@ -292,7 +291,6 @@ struct CreateDreamRichText: View {
         }
         .environmentObject(createDreamManager)
         .onDisappear {
-            print("leaving")
             createDreamManager.context.isEditingText = false
         }
     }

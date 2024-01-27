@@ -8,17 +8,45 @@
 import SwiftUI
 
 struct CommunityForYouView: View {
+    
+    @EnvironmentObject var communityManager: CommunityManager
+    @EnvironmentObject var userManager: UserManager
+    
     var body: some View {
-        Text("The For You page is not available just yet, check back soon!")
-            .italic()
-            .font(.system(size: 15, design: .serif))
-            .accentColor(.black)
-            .padding(.top, 40)
-            .padding(.leading, 20)
-            .padding(.trailing, 20)
+        VStack {
+            ScrollView {
+                // Display dreams based on time frame selection
+                if communityManager.selectedTimeFilter == communityManager.timeFilters[0] {
+                    ForEach(communityManager.retrievedDreamsTodayForYou) { dream in
+                        CommunityDream(dream: dream, title: dream.title!, handle: dream.authorHandle!, date: dream.date!, karma: dream.karma!)
+                    }
+                } else if communityManager.selectedTimeFilter == communityManager.timeFilters[1] {
+                    ForEach(communityManager.retrievedDreamsThisMonthForYou) { dream in
+                        CommunityDream(dream: dream, title: dream.title!, handle: dream.authorHandle!, date: dream.date!, karma: dream.karma!)
+                    }
+                    if communityManager.shouldLoadMoreDreamsButtonBeVisible {
+                        Button(action: {
+                            if let user = userManager.user {
+                                communityManager.retrieveDreams(userId: user.id!, following: user.following!, isInfiniteScrollRequest: true)
+                            }
+                            
+                        }) {
+                            Image(systemName: "arrow.down.circle.fill")
+                                .resizable()
+                                .frame(width: 25, height: 25)
+                                .foregroundStyle(Color.black)
+                        }
+                    }
+                }
+                
+            }
+        }
+        .padding(.leading, 20)
     }
 }
 
 #Preview {
     CommunityForYouView()
+        .environmentObject(CommunityManager())
+        .environmentObject(UserManager())
 }

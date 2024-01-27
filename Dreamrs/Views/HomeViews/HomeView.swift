@@ -119,7 +119,6 @@ struct HomeView: View {
                                 .opacity(0.6)
                                 .padding(.top, 60)
                         }
-                        
                         ForEach(homeManager.retrievedDreams) { dream in
                             ListDream(dream: dream, title: dream.title!, date: dream.date!, dayOfWeek: dream.dayOfWeek!)
                         }
@@ -168,21 +167,7 @@ struct HomeView: View {
                 }
             }
             .sheet(isPresented: $homeManager.isViewNewlyCreatedDreamPopupShowing) {
-                
-                if homeManager.isNewDreamLoading {
-                    Image("sleep_face")
-                        .resizable()
-                        .frame(width: 100, height: 100)
-                        .opacity(0.6)
-                        .padding(.top, 60)
-                } else if homeManager.isErrorLoadingNewDream {
-                    Text("Error loading Dream")
-                } else {
-                    SingleDream()
-                }
-            }
-            .onDisappear {
-                homeManager.isViewNewlyCreatedDreamPopupShowing = false
+                LoadingDreamView()
             }
         }
         .environmentObject(homeManager)
@@ -288,5 +273,48 @@ struct TitleTextView: View {
             Text(dayOfWeek)
                 .foregroundStyle(.black)
         }
+    }
+}
+
+struct LoadingDreamView : View {
+    
+    @EnvironmentObject var homeManager: HomeManager
+    
+    // Animation values for new dream
+    @State var imageScale: CGFloat = 1.0
+    @State var imageOpacity: Double = 1.0
+    
+    var body: some View {
+        Group {
+            if !homeManager.isErrorLoadingNewDream {
+                Image("sleep_face")
+                    .resizable()
+                    .frame(width: 80, height: 80)
+                    .padding(.top, 60)
+                    .scaleEffect(imageScale)
+                    .opacity(imageOpacity)
+                    .padding(.bottom, 40)
+                    .onAppear {
+                        withAnimation(Animation.easeInOut(duration: 1.0).repeatForever(autoreverses: true)) {
+                            imageScale = 1.1
+                            imageOpacity = 0.6
+                        }
+                    }
+                
+                Text("Understanding your dream with artificial intelligence")
+                    .font(.system(size: 13, design: .serif))
+                    .italic()
+                
+            } else {
+                Text("Error loading your dream, please try again")
+            }
+        }
+        .padding(.bottom, 100)
+        .onAppear {
+            self.imageScale = 1.0
+            self.imageOpacity = 1.0
+        }
+        
+        
     }
 }

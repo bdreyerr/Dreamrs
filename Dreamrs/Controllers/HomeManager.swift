@@ -29,10 +29,11 @@ class HomeManager : ObservableObject {
     
     // Post Publish Vars (Viewing newly created dreams)
     @Published var isViewNewlyCreatedDreamPopupShowing: Bool = false
-    @Published var isNewDreamLoading: Bool = true
     @Published var isErrorLoadingNewDream: Bool = false
     
     @Published var isConfirmPinnedDreamPopupShowing: Bool = false
+    
+    @Published var isConfirmDeleteDreamAlertShowing: Bool = false
     
     // Firestore
     let db = Firestore.firestore()
@@ -68,7 +69,7 @@ class HomeManager : ObservableObject {
                         let plainText = document.data()["plainText"] as? String
                         let archivedData = document.data()["archivedData"] as? Data
                         let date = document.data()["date"] as? String
-                        let rawTimestamp = document.data()["rawTimestamp"] as? Date
+                        let rawTimestamp = document.data()["rawTimestamp"] as? Timestamp
                         let dayOfWeek = document.data()["dayOfWeek"] as? String
                         let karma = document.data()["karma"] as? Int
                         let sharedWithFriends = document.data()["sharedWithFriends"] as? Bool
@@ -77,6 +78,7 @@ class HomeManager : ObservableObject {
                         
                         let dream = Dream(id: id, authorId: userId, title: title, plainText: plainText, archivedData: archivedData, date: date, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity, tags: tags)
                         self.retrievedDreams.append(dream)
+                        print("appended a dream with timestamp: ", rawTimestamp ?? "None")
                     }
                 }
                 
@@ -101,21 +103,62 @@ class HomeManager : ObservableObject {
                 
                 // Store the analysis on the firestore object add it to the focused dream
                 
-                self.isNewDreamLoading = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 6.0) {
+                    self.isViewNewlyCreatedDreamPopupShowing = false
+                }
+                
             }
         } else if shouldAnalyzeDream {
-            // Same as above
-            
-            self.isNewDreamLoading = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
+                self.isViewNewlyCreatedDreamPopupShowing = false
+            }
         }
         
-        self.isNewDreamLoading = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 8.0) {
+            self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
+            self.isViewNewlyCreatedDreamPopupShowing = false
+        }
     }
     
     func displayDream(dream: Dream) {
         self.focusedDream = dream
         self.focusedTextFormatted = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(dream.archivedData!) as? NSAttributedString
-//        self.focusedTextFormatted = try! NSKeyedUnarchiver.unarchivedObject(ofClass: NSAttributedString.self, from: dream.archivedData!)
+        print("The displayed dream's raw timestamp is: ", self.focusedDream?.rawTimestamp ?? "None")
+    }
+    
+    func deleteDream() {
+        if let dream = self.focusedDream {
+            // Format the dream collection based on date and year
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "MMMMYYYY"
+            let formattedDate = dateFormatter.string(from: dream.rawTimestamp!.dateValue())
+            let collectionString = "dreams"+formattedDate
+            
+            
+            self.db.collection(collectionString).document(dream.id!).delete() { err in
+                if let err = err {
+                    print("Error deleting dream: ", err.localizedDescription)
+                } else {
+                    print("Dream deleted successefully in firestore")
+                    self.focusedDream = nil
+                    self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
+                    
+                    // in the view we also check the if the dream being deleted is pinned and remove it if it is
+                    
+                    // also need to -1 the numDreams for the user
+                    
+                    self.db.collection("users").document(Auth.auth().currentUser!.uid).updateData([
+                        "numDreams": FieldValue.increment(Int64(-1))
+                    ]) { err in
+                        if let err = err {
+                            print("error -1ing num dreams for user")
+                        } else {
+                            print("successfully -1 num dreams for user")
+                        }
+                    }
+                }
+            }
+        }
     }
     
     func randomImage() -> String {

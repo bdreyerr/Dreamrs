@@ -81,7 +81,7 @@ class CreateDreamManager : ObservableObject {
     
     
     // TODO: Decide how we grab the userId, either from view or check Auth or whatever
-    func submitDream(userId: String, userHandle: String) -> Dream? {
+    func submitDream(userId: String, userHandle: String, userColor: String) -> Dream? {
         // Check the userId passed from view matches the Auth.auth().currentuser
         if Auth.auth().currentUser?.uid != userId {
             print("user ids do not match")
@@ -103,7 +103,8 @@ class CreateDreamManager : ObservableObject {
         let calendar = Calendar.current
         let dayOfWeek = calendar.component(.weekday, from: Date())
         let dayOfWeekString = calendar.weekdaySymbols[dayOfWeek - 1]
-        let rawTimestamp = Date.now
+        let rawDate = Date.now
+        let rawTimestamp = Timestamp(date: date)
         
         
         // Create Tags Array
@@ -116,7 +117,7 @@ class CreateDreamManager : ObservableObject {
         print(tagArray)
         
         // Create a dream object
-        let dream = Dream(authorId: userId, authorHandle: userHandle, title: self.title, plainText: string, archivedData: archivedData, date: formattedDate, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeekString, karma: 1, sharedWithFriends: self.shareWithFriends, sharedWithCommunity: self.shareWithCommunity, tags: tagArray)
+        let dream = Dream(authorId: userId, authorHandle: userHandle, authorColor: userColor, title: self.title, plainText: string, archivedData: archivedData, date: formattedDate, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeekString, karma: 1, sharedWithFriends: self.shareWithFriends, sharedWithCommunity: self.shareWithCommunity, tags: tagArray)
         
         
         // Get the month and year

@@ -18,8 +18,15 @@ class CommunityManager : ObservableObject {
     @Published var selectedTimeFilter: String
     var timeFilters = ["Today", "This Month"]
     
+    // Following traffic
     @Published var retrievedDreamsToday: [Dream] = []
     @Published var retrievedDreamsThisMonth: [Dream] = []
+    // For you traffic
+    @Published var retrievedDreamsTodayForYou: [Dream] = []
+    @Published var retrievedDreamsThisMonthForYou: [Dream] = []
+    // Limit document queries
+    @Published var lastDoc: QueryDocumentSnapshot?
+    @Published var shouldLoadMoreDreamsButtonBeVisible: Bool = false
     
     @Published var focusedDream: Dream?
     @Published var focusedTextFormatted: NSAttributedString?
@@ -41,19 +48,30 @@ class CommunityManager : ObservableObject {
         selectedTrafficSlice = trafficSlices[0]
     }
     
-    func retrieveDreams(userId: String, following: [String]) {
+    func retrieveDreams(userId: String, following: [String], isInfiniteScrollRequest: Bool) {
         if userId != Auth.auth().currentUser?.uid { return }
         
+        
         // Cache the dreams already retrieved so that we do not make unnecessary calls to firestore.
-        if self.selectedTimeFilter == self.timeFilters[0] {
-            if !self.retrievedDreamsToday.isEmpty {
-                return
-            }
-        } else {
-            if !self.retrievedDreamsThisMonth.isEmpty {
-                return
+        if !isInfiniteScrollRequest {
+            if self.selectedTimeFilter == self.timeFilters[0] {
+                if !self.retrievedDreamsToday.isEmpty && self.selectedTrafficSlice == self.trafficSlices[0] {
+                    return
+                }
+                if !self.retrievedDreamsTodayForYou.isEmpty && self.selectedTrafficSlice == self.trafficSlices[1] {
+                    return
+                }
+            } else {
+                if !self.retrievedDreamsThisMonth.isEmpty && self.selectedTrafficSlice == self.trafficSlices[0] {
+                    return
+                }
+                if !self.retrievedDreamsThisMonthForYou.isEmpty && self.selectedTrafficSlice == self.trafficSlices[1]{
+                    return
+                }
             }
         }
+        
+        var numPostsInCurBatch: Int = 0
         
         
         // TODO: implement infnite scroll
@@ -82,41 +100,177 @@ class CommunityManager : ObservableObject {
             let formattedDate = dateFormatter.string(from: today) // Format the date
 
             print(formattedDate) // Output: Jan 5, 2024 (assuming today's date)
-            dreamRef = db.collection(collectionString).whereField("authorId", in: following).whereField("date", isEqualTo: formattedDate).order(by: "rawTimestamp", descending: false)
+            
+            // set Dream ref based on if we are looking at following or for you page, as well as Today vs. This Month
+            if self.selectedTrafficSlice == self.trafficSlices[0] {
+                if isInfiniteScrollRequest {
+                    // Today, Following, not first batch
+                    dreamRef = db.collection(collectionString).whereField("authorId", in: following).whereField("date", isEqualTo: formattedDate).whereField("sharedWithFriends", isEqualTo: true).order(by: "rawTimestamp", descending: false).start(afterDocument: self.lastDoc!).limit(to: 20)
+                } else {
+                    // Today, following, first batch
+                    dreamRef = db.collection(collectionString).whereField("authorId", in: following).whereField("date", isEqualTo: formattedDate).whereField("sharedWithFriends", isEqualTo: true).order(by: "rawTimestamp", descending: false).limit(to: 20)
+                }
+                
+            } else {
+                if isInfiniteScrollRequest {
+                    // Today, For You, Not first batch
+                    dreamRef = db.collection(collectionString).whereField("date", isEqualTo: formattedDate).whereField("sharedWithCommunity", isEqualTo: true).order(by: "rawTimestamp", descending: false).start(afterDocument: self.lastDoc!).limit(to: 20)
+                } else {
+                    // Today, For You, First Batch
+                    dreamRef = db.collection(collectionString).whereField("date", isEqualTo: formattedDate).whereField("sharedWithCommunity", isEqualTo: true).order(by: "rawTimestamp", descending: false).limit(to: 20)
+                }
+                
+            }
+            
         } else if self.selectedTimeFilter == self.timeFilters[1] {
-            // Retrieve all dreams this month
-            dreamRef = db.collection(collectionString).whereField("authorId", in: following).order(by: "rawTimestamp", descending: false)
+            // Retrieve all dreams this month, depending on traffic slice (following vs. for you)
+            if self.selectedTrafficSlice == self.trafficSlices[0] {
+                if isInfiniteScrollRequest {
+                    // This month, Following, Not first batch
+                    dreamRef = db.collection(collectionString).whereField("authorId", in: following).whereField("sharedWithFriends", isEqualTo: true).order(by: "rawTimestamp", descending: false).start(afterDocument: self.lastDoc!).limit(to: 20)
+                } else {
+                    // This month, Following, First Batch
+                    dreamRef = db.collection(collectionString).whereField("authorId", in: following).whereField("sharedWithFriends", isEqualTo: true).order(by: "rawTimestamp", descending: false).limit(to: 20)
+                }
+                
+            } else {
+                if isInfiniteScrollRequest {
+                    // This month, For You, Not First Batch
+                    dreamRef = db.collection(collectionString).whereField("sharedWithCommunity", isEqualTo: true).order(by: "rawTimestamp", descending: false).start(afterDocument: self.lastDoc!).limit(to: 20)
+                } else {
+                    // This Month, For You, first Batch
+                    dreamRef = db.collection(collectionString).whereField("sharedWithCommunity", isEqualTo: true).order(by: "rawTimestamp", descending: false).limit(to: 20)
+                }
+                
+            }
+            
         }
         
         // Get all dreams from all users in the following array
-        dreamRef.getDocuments() { (querySnapshot, error) in
-            if let err = error {
-                print("error getting dreams: ", err.localizedDescription)
-            } else {
-                for document in querySnapshot!.documents {
+        if isInfiniteScrollRequest {
+            dreamRef.addSnapshotListener { (snapshot, error) in
+                guard let snapshot = snapshot else {
+                    print("error retrieving next set of posts: \(error?.localizedDescription ?? "x")")
+                    return
+                }
+                
+                for document in snapshot.documents {
                     let id = document.documentID
                     let authorId = document.data()["authorId"] as? String
                     let authorHandle = document.data()["authorHandle"] as? String
+                    let authorColor = document.data()["authorColor"] as? String
                     let title = document.data()["title"] as? String
                     let plainText = document.data()["plainText"] as? String
                     let archivedData = document.data()["archivedData"] as? Data
                     let date = document.data()["date"] as? String
-                    let rawTimestamp = document.data()["rawTimestamp"] as? Date
+                    let rawTimestamp = document.data()["rawTimestamp"] as? Timestamp
                     let dayOfWeek = document.data()["dayOfWeek"] as? String
                     let karma = document.data()["karma"] as? Int
                     let sharedWithFriends = document.data()["sharedWithFriends"] as? Bool
                     let sharedWithCommunity = document.data()["sharedWithCommunity"] as? Bool
                     let tags = document.data()["tags"] as? [[String : String]]
                     
-                    let dream = Dream(id: id, authorId: authorId, authorHandle: authorHandle, title: title, plainText: plainText, archivedData: archivedData, date: date, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity, tags: tags)
+                    let dream = Dream(id: id, authorId: authorId, authorHandle: authorHandle, authorColor: authorColor, title: title, plainText: plainText, archivedData: archivedData, date: date, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity, tags: tags)
+                    print("appended a dream with timestamp: ", rawTimestamp ?? "None")
                     
-                    if dream.sharedWithFriends ?? false {
-                        if self.selectedTimeFilter == self.timeFilters[0] {
-                            self.retrievedDreamsToday.append(dream)
-                        } else if self.selectedTimeFilter == self.timeFilters[1] {
-                            self.retrievedDreamsThisMonth.append(dream)
+                    
+                    if self.selectedTrafficSlice == self.trafficSlices[0] {
+                        // Following
+                        if dream.sharedWithFriends ?? false {
+                            if self.selectedTimeFilter == self.timeFilters[0] {
+                                // Today's dreams
+                                self.retrievedDreamsToday.append(dream)
+                            } else if self.selectedTimeFilter == self.timeFilters[1] {
+                                // This month's dreams
+                                self.retrievedDreamsThisMonth.append(dream)
+                            }
+                        }
+                    } else if self.selectedTrafficSlice == self.trafficSlices[1] {
+                        // For you
+                        if dream.sharedWithCommunity ?? false {
+                            if self.selectedTimeFilter == self.timeFilters[0] {
+                                // Today's Dreams
+                                self.retrievedDreamsTodayForYou.append(dream)
+                            } else if self.selectedTimeFilter == self.timeFilters[1] {
+                                // This month's dreams
+                                self.retrievedDreamsThisMonthForYou.append(dream)
+                            }
                         }
                     }
+                    numPostsInCurBatch += 1
+                }
+                
+                if numPostsInCurBatch >= 20 {
+                    self.shouldLoadMoreDreamsButtonBeVisible = true
+                } else {
+                    self.shouldLoadMoreDreamsButtonBeVisible = false
+                }
+                
+                guard let lastDocument = snapshot.documents.last else {
+                    // The collection is empty
+                    return
+                }
+                
+                self.lastDoc = lastDocument
+            }
+        } else if !isInfiniteScrollRequest {
+            dreamRef.getDocuments() { (querySnapshot, error) in
+                if let err = error {
+                    print("error getting dreams: ", err.localizedDescription)
+                } else {
+                    for document in querySnapshot!.documents {
+                        let id = document.documentID
+                        let authorId = document.data()["authorId"] as? String
+                        let authorHandle = document.data()["authorHandle"] as? String
+                        let authorColor = document.data()["authorColor"] as? String
+                        let title = document.data()["title"] as? String
+                        let plainText = document.data()["plainText"] as? String
+                        let archivedData = document.data()["archivedData"] as? Data
+                        let date = document.data()["date"] as? String
+                        let rawTimestamp = document.data()["rawTimestamp"] as? Timestamp
+                        let dayOfWeek = document.data()["dayOfWeek"] as? String
+                        let karma = document.data()["karma"] as? Int
+                        let sharedWithFriends = document.data()["sharedWithFriends"] as? Bool
+                        let sharedWithCommunity = document.data()["sharedWithCommunity"] as? Bool
+                        let tags = document.data()["tags"] as? [[String : String]]
+                        
+                        let dream = Dream(id: id, authorId: authorId, authorHandle: authorHandle, authorColor: authorColor, title: title, plainText: plainText, archivedData: archivedData, date: date, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity, tags: tags)
+                        print("appended a dream with timestamp: ", rawTimestamp ?? "None")
+                        
+                        
+                        if self.selectedTrafficSlice == self.trafficSlices[0] {
+                            // Following
+                            if dream.sharedWithFriends ?? false {
+                                if self.selectedTimeFilter == self.timeFilters[0] {
+                                    // Today's dreams
+                                    self.retrievedDreamsToday.append(dream)
+                                } else if self.selectedTimeFilter == self.timeFilters[1] {
+                                    // This month's dreams
+                                    self.retrievedDreamsThisMonth.append(dream)
+                                }
+                            }
+                        } else if self.selectedTrafficSlice == self.trafficSlices[1] {
+                            // For you
+                            if dream.sharedWithCommunity ?? false {
+                                if self.selectedTimeFilter == self.timeFilters[0] {
+                                    // Today's Dreams
+                                    self.retrievedDreamsTodayForYou.append(dream)
+                                } else if self.selectedTimeFilter == self.timeFilters[1] {
+                                    // This month's dreams
+                                    self.retrievedDreamsThisMonthForYou.append(dream)
+                                }
+                            }
+                        }
+                        numPostsInCurBatch += 1
+                    }
+                    
+                    self.lastDoc = querySnapshot!.documents.last
+                    if numPostsInCurBatch >= 20 {
+                        self.shouldLoadMoreDreamsButtonBeVisible = true
+                    } else {
+                        self.shouldLoadMoreDreamsButtonBeVisible = false
+                    }
+                    
                 }
             }
         }
@@ -203,27 +357,27 @@ class CommunityManager : ObservableObject {
     
     
     // TODO: Give each user a color, which will be displayed on their profile page and in community forum so we don't need to generate a random color which changes everytime the view reloads.
-    func getColorForHandle() -> Color {
-        let randomColor = Int.random(in: 0...6)
-        switch randomColor {
-        case 0:
-            return .green
-        case 1:
-            return .orange
-        case 2:
-            return .red
-        case 3:
-            return .blue
-        case 4:
-            return .purple
-        case 5:
-            return .brown
-        case 6:
-            return .cyan
-        default:
-            return .gray
-        }
-    }
+//    func getColorForHandle() -> Color {
+//        let randomColor = Int.random(in: 0...6)
+//        switch randomColor {
+//        case 0:
+//            return .green
+//        case 1:
+//            return .orange
+//        case 2:
+//            return .red
+//        case 3:
+//            return .blue
+//        case 4:
+//            return .purple
+//        case 5:
+//            return .brown
+//        case 6:
+//            return .cyan
+//        default:
+//            return .gray
+//        }
+//    }
     
     func convertStringToColor(color: String) -> Color {
         switch color {

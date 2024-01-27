@@ -40,7 +40,7 @@ struct SingleCommunityDream: View {
                             Text("@" + dream.authorHandle!)
                                 .font(.system(size: 20, design: .serif))
                                 .fontWeight(.bold)
-                                .foregroundColor(.cyan)
+                                .foregroundColor(communityManager.convertStringToColor(color: dream.authorColor!))
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.leading, 20)
                                 .padding(.trailing, 10)
@@ -57,6 +57,7 @@ struct SingleCommunityDream: View {
                                 Text(AttributedString(text))
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .padding(.leading, 20)
+                                    .padding(.trailing, 20)
                                     .padding(.bottom, 20)
                             } else {
                                 Image("sleep_face")

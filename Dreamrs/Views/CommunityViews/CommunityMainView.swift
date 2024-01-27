@@ -33,10 +33,13 @@ struct CommunityMainView: View {
                     
                     // Following vs. For You
                     HStack {
-                        
                         if !communityManager.isSearchBarShowing {
                             Button(action: {
                                 communityManager.selectedTrafficSlice = communityManager.trafficSlices[0]
+                                if let user = userManager.user {
+                                    communityManager.retrieveDreams(userId: user.id!, following: user.following!, isInfiniteScrollRequest: false)
+                                }
+                                
                             }) {
                                 
                                 if communityManager.selectedTrafficSlice == communityManager.trafficSlices[0] {
@@ -57,6 +60,9 @@ struct CommunityMainView: View {
                             
                             Button(action: {
                                 communityManager.selectedTrafficSlice = communityManager.trafficSlices[1]
+                                if let user = userManager.user {
+                                    communityManager.retrieveDreams(userId: user.id!, following: user.following!, isInfiniteScrollRequest: false)
+                                }
                             }) {
                                 if communityManager.selectedTrafficSlice == communityManager.trafficSlices[1] {
                                     Text("For You")
@@ -156,7 +162,7 @@ struct CommunityMainView: View {
                                 .font(.system(size: 16, design: .serif))
                                 .onChange(of: communityManager.selectedTimeFilter) { newValue in
                                     if let user = userManager.user {
-                                        communityManager.retrieveDreams(userId: user.id!, following: user.following!)
+                                        communityManager.retrieveDreams(userId: user.id!, following: user.following!, isInfiniteScrollRequest: false)
                                     }
                                     
                                 }
@@ -193,7 +199,7 @@ struct CommunityMainView: View {
             if let user = userManager.user {
                 print("user available")
                 if let following = user.following {
-                    communityManager.retrieveDreams(userId: user.id!, following: following)
+                    communityManager.retrieveDreams(userId: user.id!, following: following, isInfiniteScrollRequest: false)
                 } else {
                     print("following not available")
                 }
@@ -235,7 +241,7 @@ struct CommunityDream : View {
                         
                         Text("@" + handle)
 //                            .foregroundStyle(.blue)
-                            .foregroundColor(communityManager.getColorForHandle())
+                            .foregroundColor(communityManager.convertStringToColor(color: dream.authorColor!))
                             .bold()
                             .font(.system(size: 16, design: .serif))
                             .frame(maxWidth: .infinity, alignment: .leading)
