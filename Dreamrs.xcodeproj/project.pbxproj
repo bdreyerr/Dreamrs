@@ -40,6 +40,7 @@
 		1A688D3E2B55DB9B004AFB64 /* WelcomeSurveyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A688D3D2B55DB9A004AFB64 /* WelcomeSurveyView.swift */; };
 		1A688D402B55DCFE004AFB64 /* WelcomeSurveyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A688D3F2B55DCFD004AFB64 /* WelcomeSurveyManager.swift */; };
 		1A688D422B5773C9004AFB64 /* CommunitySearchedProiflesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A688D412B5773C9004AFB64 /* CommunitySearchedProiflesView.swift */; };
+		1A688D442B659D76004AFB64 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A688D432B659D76004AFB64 /* Secrets.swift */; };
 		1A762C742B477F8E0047A436 /* CommunityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A762C732B477F8E0047A436 /* CommunityManager.swift */; };
 		1A762C762B478D340047A436 /* SingleCommunityDream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A762C752B478D340047A436 /* SingleCommunityDream.swift */; };
 		1A762C782B48BD840047A436 /* CommunityFollowingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A762C772B48BD840047A436 /* CommunityFollowingView.swift */; };
@@ -75,6 +76,7 @@
 		1A688D3D2B55DB9A004AFB64 /* WelcomeSurveyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeSurveyView.swift; sourceTree = "<group>"; };
 		1A688D3F2B55DCFD004AFB64 /* WelcomeSurveyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeSurveyManager.swift; sourceTree = "<group>"; };
 		1A688D412B5773C9004AFB64 /* CommunitySearchedProiflesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunitySearchedProiflesView.swift; sourceTree = "<group>"; };
+		1A688D432B659D76004AFB64 /* Secrets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Secrets.swift; sourceTree = "<group>"; };
 		1A762C732B477F8E0047A436 /* CommunityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityManager.swift; sourceTree = "<group>"; };
 		1A762C752B478D340047A436 /* SingleCommunityDream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleCommunityDream.swift; sourceTree = "<group>"; };
 		1A762C772B48BD840047A436 /* CommunityFollowingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityFollowingView.swift; sourceTree = "<group>"; };
@@ -182,6 +184,7 @@
 				1ACA216E2AEDAFC100CCEF66 /* Assets.xcassets */,
 				1ACA21702AEDAFC100CCEF66 /* Preview Content */,
 				1A4260F72B1BE4CB0011B7BF /* UserDefaults.swift */,
+				1A688D432B659D76004AFB64 /* Secrets.swift */,
 			);
 			path = Dreamrs;
 			sourceTree = "<group>";
@@ -353,6 +356,7 @@
 				1A330DEC2B1EA613009663C6 /* UserManager.swift in Sources */,
 				1ACA216D2AEDAFC000CCEF66 /* ContentView.swift in Sources */,
 				1A762C7A2B48BD9B0047A436 /* CommunityForYouView.swift in Sources */,
+				1A688D442B659D76004AFB64 /* Secrets.swift in Sources */,
 				1ACA216B2AEDAFC000CCEF66 /* DreamrsApp.swift in Sources */,
 				1ACA21832AEDC6CD00CCEF66 /* CommunityMainView.swift in Sources */,
 				1A330DEE2B21534F009663C6 /* CreateDreamManager.swift in Sources */,
