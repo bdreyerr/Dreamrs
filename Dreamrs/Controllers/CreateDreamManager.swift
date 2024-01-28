@@ -5,9 +5,9 @@
 //  Created by Ben Dreyer on 12/6/23.
 //
 
-import Foundation
 import FirebaseFirestore
 import FirebaseAuth
+import Foundation
 import RichTextKit
 import SwiftUI
 
@@ -29,6 +29,7 @@ class CreateDreamManager : ObservableObject {
     // AI
     @Published var shouldVisualizeDream: Bool = true
     @Published var shouldAnalyzeDream: Bool = true
+    
     // Community
     @Published var shareWithFriends: Bool = false
     @Published var shareWithCommunity: Bool = false
@@ -92,6 +93,11 @@ class CreateDreamManager : ObservableObject {
             print("content is empty")
         }
         
+        if self.text.string.count >= 2000 {
+            print("dream length is too long.")
+            return nil
+        }
+        
         // plain text and formatting data
         let string = self.text.string
         let archivedData: Data = try! NSKeyedArchiver.archivedData(withRootObject: self.text, requiringSecureCoding: false)
@@ -117,7 +123,7 @@ class CreateDreamManager : ObservableObject {
         print(tagArray)
         
         // Create a dream object
-        let dream = Dream(authorId: userId, authorHandle: userHandle, authorColor: userColor, title: self.title, plainText: string, archivedData: archivedData, date: formattedDate, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeekString, karma: 1, sharedWithFriends: self.shareWithFriends, sharedWithCommunity: self.shareWithCommunity, tags: tagArray)
+        var dream = Dream(authorId: userId, authorHandle: userHandle, authorColor: userColor, title: self.title, plainText: string, archivedData: archivedData, date: formattedDate, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeekString, karma: 1, sharedWithFriends: self.shareWithFriends, sharedWithCommunity: self.shareWithCommunity, tags: tagArray)
         
         
         // Get the month and year
@@ -132,6 +138,9 @@ class CreateDreamManager : ObservableObject {
         do {
             let newDreamRef = try dreamsRef.addDocument(from: dream)
             print("Dream stored with new doc reference: ", newDreamRef.documentID)
+            
+            // update the local dream id
+            dream.id = newDreamRef.documentID
             
             // Add 1 to users num derams
             // TODO add error handling

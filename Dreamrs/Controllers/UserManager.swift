@@ -8,6 +8,7 @@
 import Foundation
 import FirebaseFirestore
 import FirebaseAuth
+import FirebaseStorage
 import SwiftUI
 
 class UserManager : ObservableObject {
@@ -23,8 +24,12 @@ class UserManager : ObservableObject {
     let db = Firestore.firestore()
     @Published var user: User?
     
+    // Storage
+    let storage = Storage.storage()
+    
     // Parts of the user to display but not change in firestore.
     @Published var pinnedDreams: [Dream] = []
+    @Published var pinnedDreamImages: [String : UIImage] = [:]
     @Published var followers: [User] = []
     
     func retrieverUserFromFirestore(userId: String) {
@@ -179,11 +184,34 @@ class UserManager : ObservableObject {
                             // A user value was successfully initialized from the Documentsnapshot
                             self.pinnedDreams.append(dreamObject)
                             print("Added dream to pinned dreams")
+                            
+                            // append image to local map if necessary
+                            if let hasImage = dreamObject.hasImage {
+                                if hasImage {
+                                    // Download the image from firestore
+                                    let imageRef = self.storage.reference().child(dream["dreamCollection"]! + "/" + dreamObject.id! + ".jpg")
+                                    
+                                    // Download in memory with a maximum allowed size of 1MB (1 * 1024 * 1024 bytes)
+                                    imageRef.getData(maxSize: 1 * 1024 * 1024) { data, error in
+                                        if let error = error {
+                                            print("Error downloading image from storage: ", error.localizedDescription)
+                                        } else {
+                                            // Data for "images/island.jpg" is returned
+                                            let image = UIImage(data: data!)
+                                            self.pinnedDreamImages[dreamObject.id!] = image
+                                        }
+                                    }
+                                }
+                            }
+                            
                         case .failure(let error):
                             // A user value could not be initialized from the DocumentSnapshot
                             print("Failure retrieving dream from firestore: ", error.localizedDescription)
                         }
                     }
+                    
+                    
+                    
                 }
             }
         }

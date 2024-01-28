@@ -247,6 +247,7 @@ struct CreateDreamRichText: View {
                                         print(rateLimit)
                                     } else {
                                         if let dream = createDreamManager.submitDream(userId: user.id!, userHandle: user.handle!, userColor: user.userColor!) {
+                                            print("we successfully got a dream from submitDream function")
                                             homeManager.displayDream(dream: dream)
                                             // dismiss the create popup
                                             homeManager.isCreateDreamPopupShowing = false
@@ -256,6 +257,7 @@ struct CreateDreamRichText: View {
                                             homeManager.processNewDream(dream: dream, shouldVisualizeDream: createDreamManager.shouldVisualizeDream, shouldAnalyzeDream: createDreamManager.shouldAnalyzeDream)
                                         } else {
                                             homeManager.isCreateDreamPopupShowing = false
+                                            print("we didn't get the dream returned from SubmitDream")
                                             //
                                             //                                    // call the view published popup
                                             //                                    homeManager.isViewNewlyCreatedDreamPopupShowing = true

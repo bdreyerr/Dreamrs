@@ -129,10 +129,17 @@ struct AlreadyPinnedDream : View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     
-                    Image("dream3")
-                        .resizable()
-                        .frame(width: 100, height: 60)
-                        .clipShape(Circle())
+                    if let image = homeManager.retrievedImages[dream.id!] {
+                        Image(uiImage: image)
+                            .resizable()
+                            .frame(width: 100, height: 60)
+                            .clipShape(Circle())
+                    } else {
+    //                    Image(homeManager.randomImage())
+    //                        .resizable()
+    //                        .frame(width: 100, height: 60)
+    //                        .clipShape(Circle())
+                    }
                 }
                 
             }

@@ -25,4 +25,6 @@ struct Dream : Codable, Identifiable, Equatable {
     var sharedWithFriends: Bool?
     var sharedWithCommunity: Bool?
     var tags: [[String : String]]?
+    var AITextAnalysis: String?
+    var hasImage: Bool?
 }

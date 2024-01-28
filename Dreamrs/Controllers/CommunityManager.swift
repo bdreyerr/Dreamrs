@@ -8,6 +8,7 @@
 import Foundation
 import FirebaseAuth
 import FirebaseFirestore
+import FirebaseStorage
 import SwiftUI
 
 class CommunityManager : ObservableObject {
@@ -24,6 +25,8 @@ class CommunityManager : ObservableObject {
     // For you traffic
     @Published var retrievedDreamsTodayForYou: [Dream] = []
     @Published var retrievedDreamsThisMonthForYou: [Dream] = []
+    // Dream Images
+    @Published var retrievedImages: [String : UIImage] = [:]
     // Limit document queries
     @Published var lastDoc: QueryDocumentSnapshot?
     @Published var shouldLoadMoreDreamsButtonBeVisible: Bool = false
@@ -42,6 +45,9 @@ class CommunityManager : ObservableObject {
     
     // Firestore
     let db = Firestore.firestore()
+    
+    // Storage
+    let storage = Storage.storage()
     
     init() {
         selectedTimeFilter = timeFilters[1]
@@ -169,11 +175,13 @@ class CommunityManager : ObservableObject {
                     let sharedWithFriends = document.data()["sharedWithFriends"] as? Bool
                     let sharedWithCommunity = document.data()["sharedWithCommunity"] as? Bool
                     let tags = document.data()["tags"] as? [[String : String]]
+                    let AITextAnalysis = document.data()["AITextAnalysis"] as? String
+                    let hasImage = document.data()["hasImage"] as? Bool
                     
-                    let dream = Dream(id: id, authorId: authorId, authorHandle: authorHandle, authorColor: authorColor, title: title, plainText: plainText, archivedData: archivedData, date: date, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity, tags: tags)
+                    let dream = Dream(id: id, authorId: authorId, authorHandle: authorHandle, authorColor: authorColor, title: title, plainText: plainText, archivedData: archivedData, date: date, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity, tags: tags, AITextAnalysis: AITextAnalysis, hasImage: hasImage)
                     print("appended a dream with timestamp: ", rawTimestamp ?? "None")
                     
-                    
+                    // Append dream to correct dream list slice
                     if self.selectedTrafficSlice == self.trafficSlices[0] {
                         // Following
                         if dream.sharedWithFriends ?? false {
@@ -197,6 +205,26 @@ class CommunityManager : ObservableObject {
                             }
                         }
                     }
+                    
+                    // Append dream image to map
+                    if let hasImage = dream.hasImage {
+                        if hasImage {
+                            // Download the image from firestore
+                            let imageRef = self.storage.reference().child(collectionString + "/" + dream.id! + ".jpg")
+                            
+                            // Download in memory with a maximum allowed size of 1MB (1 * 1024 * 1024 bytes)
+                            imageRef.getData(maxSize: 1 * 1024 * 1024) { data, error in
+                                if let error = error {
+                                    print("Error downloading image from storage: ", error.localizedDescription)
+                                } else {
+                                    // Data for "images/island.jpg" is returned
+                                    let image = UIImage(data: data!)
+                                    self.retrievedImages[dream.id!] = image
+                                }
+                            }
+                        }
+                    }
+                    
                     numPostsInCurBatch += 1
                 }
                 
@@ -233,8 +261,10 @@ class CommunityManager : ObservableObject {
                         let sharedWithFriends = document.data()["sharedWithFriends"] as? Bool
                         let sharedWithCommunity = document.data()["sharedWithCommunity"] as? Bool
                         let tags = document.data()["tags"] as? [[String : String]]
+                        let AITextAnalysis = document.data()["AITextAnalysis"] as? String
+                        let hasImage = document.data()["hasImage"] as? Bool
                         
-                        let dream = Dream(id: id, authorId: authorId, authorHandle: authorHandle, authorColor: authorColor, title: title, plainText: plainText, archivedData: archivedData, date: date, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity, tags: tags)
+                        let dream = Dream(id: id, authorId: authorId, authorHandle: authorHandle, authorColor: authorColor, title: title, plainText: plainText, archivedData: archivedData, date: date, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity, tags: tags, AITextAnalysis: AITextAnalysis, hasImage: hasImage)
                         print("appended a dream with timestamp: ", rawTimestamp ?? "None")
                         
                         
@@ -261,6 +291,26 @@ class CommunityManager : ObservableObject {
                                 }
                             }
                         }
+                        
+                        // Append dream image to map
+                        if let hasImage = dream.hasImage {
+                            if hasImage {
+                                // Download the image from firestore
+                                let imageRef = self.storage.reference().child(collectionString + "/" + dream.id! + ".jpg")
+                                
+                                // Download in memory with a maximum allowed size of 1MB (1 * 1024 * 1024 bytes)
+                                imageRef.getData(maxSize: 1 * 1024 * 1024) { data, error in
+                                    if let error = error {
+                                        print("Error downloading image from storage: ", error.localizedDescription)
+                                    } else {
+                                        // Data for "images/island.jpg" is returned
+                                        let image = UIImage(data: data!)
+                                        self.retrievedImages[dream.id!] = image
+                                    }
+                                }
+                            }
+                        }
+                        
                         numPostsInCurBatch += 1
                     }
                     

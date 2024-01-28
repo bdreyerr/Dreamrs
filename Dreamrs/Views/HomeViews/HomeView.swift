@@ -119,6 +119,8 @@ struct HomeView: View {
                                 .opacity(0.6)
                                 .padding(.top, 60)
                         }
+//                        Image(uiImage: homeManager.imageView.image!)
+                        
                         ForEach(homeManager.retrievedDreams) { dream in
                             ListDream(dream: dream, title: dream.title!, date: dream.date!, dayOfWeek: dream.dayOfWeek!)
                         }
@@ -223,10 +225,17 @@ struct ListDream: View {
                 .padding(.leading, 20)
                 .padding(.bottom, 10)
                 
-                Image(homeManager.randomImage())
-                    .resizable()
-                    .frame(width: 100, height: 60)
-                    .clipShape(Circle())
+                if let image = homeManager.retrievedImages[dream.id!] {
+                    Image(uiImage: image)
+                        .resizable()
+                        .frame(width: 100, height: 60)
+                        .clipShape(Circle())
+                } else {
+//                    Image(homeManager.randomImage())
+//                        .resizable()
+//                        .frame(width: 100, height: 60)
+//                        .clipShape(Circle())
+                }
             }
             
         }
@@ -302,6 +311,11 @@ struct LoadingDreamView : View {
                     }
                 
                 Text("Understanding your dream with artificial intelligence")
+                    .font(.system(size: 15, design: .serif))
+                    .italic()
+                    .padding(.bottom, 20)
+                
+                Text("This may take a few moments")
                     .font(.system(size: 13, design: .serif))
                     .italic()
                 

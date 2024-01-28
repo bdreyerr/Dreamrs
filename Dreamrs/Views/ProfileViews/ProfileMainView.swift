@@ -11,8 +11,6 @@ struct ProfileMainView: View {
     @State var isProfileSettingsPopupShowing: Bool = false
     
     @EnvironmentObject var userManager: UserManager
-    
-    
     @StateObject var homeManager = HomeManager()
     
     var body: some View {
@@ -201,6 +199,7 @@ struct PinnedDream : View {
     var dream: Dream
     
     @EnvironmentObject var homeManager: HomeManager
+    @EnvironmentObject var userManager: UserManager
     
     var body : some View {
         NavigationLink(destination: SingleDream()) {
@@ -218,10 +217,18 @@ struct PinnedDream : View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 
-                Image(homeManager.randomImage())
-                    .resizable()
-                    .frame(width: 100, height: 60)
-                    .clipShape(Circle())
+                // dream image
+                if let image = userManager.pinnedDreamImages[dream.id!] {
+                    Image(uiImage: image)
+                        .resizable()
+                        .frame(width: 100, height: 60)
+                        .clipShape(Circle())
+                } else {
+//                    Image(homeManager.randomImage())
+//                        .resizable()
+//                        .frame(width: 100, height: 60)
+//                        .clipShape(Circle())
+                }
             }
         }
         .simultaneousGesture(TapGesture().onEnded {

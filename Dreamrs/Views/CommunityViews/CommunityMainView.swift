@@ -252,10 +252,23 @@ struct CommunityDream : View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     
-                    Image(communityManager.randomImage())
-                        .resizable()
-                        .frame(width: 100, height: 60)
-                        .clipShape(Circle())
+                    // Dream Image
+                    if let image = communityManager.retrievedImages[dream.id!] {
+                        Image(uiImage: image)
+                            .resizable()
+                            .frame(width: 100, height: 60)
+                            .clipShape(Circle())
+                    } else {
+    //                    Image(homeManager.randomImage())
+    //                        .resizable()
+    //                        .frame(width: 100, height: 60)
+    //                        .clipShape(Circle())
+                    }
+                    
+//                    Image(communityManager.randomImage())
+//                        .resizable()
+//                        .frame(width: 100, height: 60)
+//                        .clipShape(Circle())
                 }
                 
                 HStack {
