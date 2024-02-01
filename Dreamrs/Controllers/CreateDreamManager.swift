@@ -62,14 +62,14 @@ class CreateDreamManager : ObservableObject {
             if self.tagText.count < 35 {
                 let newTag = Tag(id: UUID().uuidString, index: self.tags.count, text: text, icon: self.iconOptions.randomElement()!, color: self.colorOptions.randomElement()!)
                 self.tags.append(newTag)
-                print("added new tag, index: ", newTag.index)
+//                print("added new tag, index: ", newTag.index)
             }
         }
     }
     
     func removeTagFromDream(index: Int) {
-        print(self.tags)
-        print("tag index to be deleted: ", index)
+//        print(self.tags)
+//        print("tag index to be deleted: ", index)
         self.tags.remove(at: index)
         
         if !self.tags.isEmpty {
@@ -119,8 +119,6 @@ class CreateDreamManager : ObservableObject {
             let tagDict: [String:String] = ["text":self.tags[i].text, "icon":self.tags[i].icon, "color":self.tags[i].color]
             tagArray.append(tagDict)
         }
-        print("Tag array looks like: ")
-        print(tagArray)
         
         // Create a dream object
         var dream = Dream(authorId: userId, authorHandle: userHandle, authorColor: userColor, title: self.title, plainText: string, archivedData: archivedData, date: formattedDate, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeekString, karma: 1, sharedWithFriends: self.shareWithFriends, sharedWithCommunity: self.shareWithCommunity, tags: tagArray)
@@ -129,9 +127,7 @@ class CreateDreamManager : ObservableObject {
         // Get the month and year
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MMMMYYYY" // Format for full month name and year
-        let currentMonthYearString = dateFormatter.string(from: Date())
-
-        print(currentMonthYearString) // Example output: "December 2023"
+        let currentMonthYearString = dateFormatter.string(from: Date()) // Example output: "December 2023"
         
         // Save the dream to firestore
         let dreamsRef = db.collection("dreams" + currentMonthYearString)

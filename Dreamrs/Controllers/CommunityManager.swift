@@ -90,7 +90,6 @@ class CommunityManager : ObservableObject {
         let year = String(dateComponents.year!)
         let currentDateString = "\(month)\(year)"
         let collectionString = "dreams\(currentDateString)"
-        print(collectionString)
         
         
         var dreamRef = db.collection("dreams").whereField("authorId", isEqualTo: userId)
@@ -103,9 +102,7 @@ class CommunityManager : ObservableObject {
             dateFormatter.dateFormat = "MMM d, yyyy" // Set the desired format
 
             let today = Date()               // Get the current date
-            let formattedDate = dateFormatter.string(from: today) // Format the date
-
-            print(formattedDate) // Output: Jan 5, 2024 (assuming today's date)
+            let formattedDate = dateFormatter.string(from: today) // Format the date // Output: Jan 5, 2024 (assuming today's date)
             
             // set Dream ref based on if we are looking at following or for you page, as well as Today vs. This Month
             if self.selectedTrafficSlice == self.trafficSlices[0] {
@@ -179,7 +176,7 @@ class CommunityManager : ObservableObject {
                     let hasImage = document.data()["hasImage"] as? Bool
                     
                     let dream = Dream(id: id, authorId: authorId, authorHandle: authorHandle, authorColor: authorColor, title: title, plainText: plainText, archivedData: archivedData, date: date, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity, tags: tags, AITextAnalysis: AITextAnalysis, hasImage: hasImage)
-                    print("appended a dream with timestamp: ", rawTimestamp ?? "None")
+//                    print("appended a dream with timestamp: ", rawTimestamp ?? "None")
                     
                     // Append dream to correct dream list slice
                     if self.selectedTrafficSlice == self.trafficSlices[0] {
@@ -265,7 +262,7 @@ class CommunityManager : ObservableObject {
                         let hasImage = document.data()["hasImage"] as? Bool
                         
                         let dream = Dream(id: id, authorId: authorId, authorHandle: authorHandle, authorColor: authorColor, title: title, plainText: plainText, archivedData: archivedData, date: date, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity, tags: tags, AITextAnalysis: AITextAnalysis, hasImage: hasImage)
-                        print("appended a dream with timestamp: ", rawTimestamp ?? "None")
+//                        print("appended a dream with timestamp: ", rawTimestamp ?? "None")
                         
                         
                         if self.selectedTrafficSlice == self.trafficSlices[0] {
@@ -342,7 +339,6 @@ class CommunityManager : ObservableObject {
         let year = String(dateComponents.year!)
         let currentDateString = "\(month)\(year)"
         let collectionString = "dreams\(currentDateString)"
-        print(collectionString)
         
         // Update the posts Karma based on what the user has already voted already (update a local map and firestore simultaneously so the user can observe the local change while the db updates - we don't re-read the document in firestore).
         // Options:
@@ -382,7 +378,7 @@ class CommunityManager : ObservableObject {
             if let err = err {
                 print("Error updating dream karma: \(err)")
             } else {
-                print("Dream Karma successfully updated")
+//                print("Dream Karma successfully updated")
             }
         }
         
@@ -396,7 +392,7 @@ class CommunityManager : ObservableObject {
             if let err = err {
                 print("Error updating user's karma: ", err.localizedDescription)
             } else {
-                print("Successfully updated user's karma")
+//                print("Successfully updated user's karma")
                 
                 
             }
@@ -458,7 +454,7 @@ class CommunityManager : ObservableObject {
             case .success(let userObject):
                 // A user value was successfully initialized from the Documentsnapshot
                 self.focusedProfile = userObject
-                print("The community user was successfully retrieved from firestore, access them with communityManager.focusedProfile")
+//                print("The community user was successfully retrieved from firestore, access them with communityManager.focusedProfile")
                 self.loadPinnedDreams()
             case .failure(let error):
                 // A user value could not be initialized from the DocumentSnapshot
@@ -490,11 +486,11 @@ class CommunityManager : ObservableObject {
                     }
                 }
             } else {
-                print("no pinned dreams")
+//                print("no pinned dreams")
             }
             
         } else {
-            print("no user")
+//            print("no user")
         }
         
     }

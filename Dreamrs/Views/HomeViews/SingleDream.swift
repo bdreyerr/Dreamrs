@@ -128,8 +128,9 @@ struct SingleDream: View {
                             if let image = homeManager.retrievedImages[dream.id!] {
                                 Image(uiImage: image)
                                     .resizable()
-                                    .frame(width: 300, height: 240)
-                                    .cornerRadius(25)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 400)
+                                    .cornerRadius(0)
                             } else {
             //                    Image(homeManager.randomImage())
             //                        .resizable()
@@ -140,8 +141,9 @@ struct SingleDream: View {
                                 if let pinnedDreamImage = userManager.pinnedDreamImages[dream.id!] {
                                     Image(uiImage: pinnedDreamImage)
                                         .resizable()
-                                        .frame(width: 300, height: 240)
-                                        .cornerRadius(25)
+                                        .frame(maxWidth: .infinity)
+                                        .frame(height: 400)
+                                        .cornerRadius(0)
                                 }
                             }
                         }

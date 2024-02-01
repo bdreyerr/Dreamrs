@@ -104,7 +104,7 @@ class WelcomeSurveyManager : ObservableObject {
                         if let err = err {
                             print("Error updating user fields from welcome sruvey: \(err)")
                         } else {
-                            print("User updated successfully during welcome survey!")
+//                            print("User updated successfully during welcome survey!")
                         }
                     }
                 }

@@ -40,7 +40,7 @@ class UserManager : ObservableObject {
             case .success(let userObject):
                 // A user value was successfully initialized from the Documentsnapshot
                 self.user = userObject
-                print("The user was successfully retrieved from firestore, access it with userManager.user")
+//                print("The user was successfully retrieved from firestore, access it with userManager.user")
             case .failure(let error):
                 // A user value could not be initialized from the DocumentSnapshot
                 print("Failure retrieving user from firestore: ", error.localizedDescription)
@@ -56,7 +56,7 @@ class UserManager : ObservableObject {
                 if let err = err {
                     print("Error following user: ", err)
                 } else {
-                    print("User followed successfully")
+//                    print("User followed successfully")
                 }
             }
         }
@@ -70,7 +70,7 @@ class UserManager : ObservableObject {
                 if let err = err {
                     print("Error unfollowing user: ", err)
                 } else {
-                    print("User unfollowed successfully")
+//                    print("User unfollowed successfully")
                 }
             }
         }
@@ -87,7 +87,7 @@ class UserManager : ObservableObject {
                         case .success(let userObject):
                             // A user value was successfully initialized from the Documentsnapshot
                             self.followers.append(userObject)
-                            print("Follower retrieved")
+//                            print("Follower retrieved")
                         case .failure(let error):
                             // A user value could not be initialized from the DocumentSnapshot
                             print("Error retrieving follower: ", error.localizedDescription)
@@ -107,14 +107,14 @@ class UserManager : ObservableObject {
                 dateFormatter.dateFormat = "MMM dd, yyyy"
                 guard let date = dateFormatter.date(from: date) else {
                     // Handle the error if the string cannot be parsed
-                    print("date could not be parsed")
+//                    print("date could not be parsed")
                     return
                 }
                 
                 let outputFormatter = DateFormatter()
                 outputFormatter.dateFormat = "MMMMyyyy" // Capitalized month name and year
                 let formattedString = outputFormatter.string(from: date)
-                print("dreams" + formattedString) // Output: January2024
+//                print("dreams" + formattedString) // Output: January2024
                 
                 // Create a map for the pinned dream
                 let pinnedDream : [String : String] = [
@@ -129,7 +129,7 @@ class UserManager : ObservableObject {
                     if let err = err {
                         print("Error updating pinned dreams: \(err)")
                     } else {
-                        print("Pinned Dreams successfully updated")
+//                        print("Pinned Dreams successfully updated")
                         // update array locallay (need to do this because we dont refresh userManager.user) when loading the pinned dreams
                         self.user?.pinnedDreams!.append(pinnedDream)
                         self.loadPinnedDreams(isRefresh: true)
@@ -141,10 +141,8 @@ class UserManager : ObservableObject {
     }
     
     func removePinnedDream(indexOfRemovedDream: Int) {
-        
-        
-        print("index of dream to be deleted: ", indexOfRemovedDream)
-        print("The actual dream which we are deleting from the local map ", self.user!.pinnedDreams![indexOfRemovedDream])
+//        print("index of dream to be deleted: ", indexOfRemovedDream)
+//        print("The actual dream which we are deleting from the local map ", self.user!.pinnedDreams![indexOfRemovedDream])
         
         self.user?.pinnedDreams!.reverse()
         
@@ -155,9 +153,9 @@ class UserManager : ObservableObject {
                     "pinnedDreams": FieldValue.arrayRemove([self.user?.pinnedDreams![indexOfRemovedDream]])
                 ]) { err in
                     if let err = err {
-                        print("Error removing pinned Dream")
+                        print("Error removing pinned Dream: ", err)
                     } else {
-                        print("Pinned dream successfully removed")
+//                        print("Pinned dream successfully removed")
                         self.user?.pinnedDreams!.remove(at: indexOfRemovedDream)
                         self.loadPinnedDreams(isRefresh: true)
                     }
@@ -191,7 +189,7 @@ class UserManager : ObservableObject {
                         case .success(let dreamObject):
                             // A user value was successfully initialized from the Documentsnapshot
                             self.pinnedDreams.append(dreamObject)
-                            print("dream added: ", dreamObject.id!)
+//                            print("dream added: ", dreamObject.id!)
                             
                             
                             // append image to local map if necessary
@@ -215,7 +213,7 @@ class UserManager : ObservableObject {
                             
                         case .failure(let error):
                             // A user value could not be initialized from the DocumentSnapshot
-                            print("Failure retrieving dream from firestore: ", error.localizedDescription)
+                            print("Failure retrieving pinned dream from firestore: ", error.localizedDescription)
                         }
                     }
                 }

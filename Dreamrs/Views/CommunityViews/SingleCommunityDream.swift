@@ -198,13 +198,8 @@ struct SingleCommunityDream: View {
                             if let image = communityManager.retrievedImages[dream.id!] {
                                 Image(uiImage: image)
                                     .resizable()
-                                    .frame(width: 300, height: 240)
-                                    .cornerRadius(25)
-                            } else {
-                                //                    Image(homeManager.randomImage())
-                                //                        .resizable()
-                                //                        .frame(width: 100, height: 60)
-                                //                        .clipShape(Circle())
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 400)
                             }
                             
                         }

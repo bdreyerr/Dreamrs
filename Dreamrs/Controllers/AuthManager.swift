@@ -61,8 +61,8 @@ class AuthManager: ObservableObject {
                         self.email = email
                     }
                     
-                    print("signed in with apple")
-                    print("\(String(describing: user.uid))")
+//                    print("signed in with apple")
+//                    print("\(String(describing: user.uid))")
                     
                     
                     // Figure out if the user already has an account or is signing up for the first time (email is either blank or filled, can't be null)
@@ -80,7 +80,7 @@ class AuthManager: ObservableObject {
                                 let collectionRef = self.db.collection("users")
                                 do {
                                     try collectionRef.document(user.uid).setData(from: userObject)
-                                    print("Apple sign in user stored in firestore with new user reference: ", user.uid)
+//                                    print("Apple sign in user stored in firestore with new user reference: ", user.uid)
                                     
                                     self.isLoggedIn = true
                                     // Set user defaults
@@ -90,13 +90,13 @@ class AuthManager: ObservableObject {
                                 }
                             } else {
                                 // An existing user is signing in
-                                print("A current user with that same email already exists: ")
-                                print(querySnapshot!.documents[0].documentID)
+//                                print("A current user with that same email already exists: ")
+//                                print(querySnapshot!.documents[0].documentID)
                                 
 //                                let dataDescription = querySnapshot!.documents[0].data().map(String.init(describing:))
                                 
                                 
-                                print("The auth user id is: ")
+//                                print("The auth user id is: ")
                                 if let user = Auth.auth().currentUser {
                                     print(user.uid)
                                 }
@@ -127,7 +127,7 @@ class AuthManager: ObservableObject {
         self.isLoggedIn = false
         UserDefaults.standard.set(isLoggedIn, forKey: loginStatusKey)
         UserDefaults.standard.set(false, forKey: hasUserCompletedWelcomeSurveyKey)
-        print("The user logged out")
+//        print("The user logged out")
     }
     
     
@@ -179,15 +179,14 @@ class AuthManager: ObservableObject {
     }
     
     func deleteUser(userId: String) {
-        print("starting user delete")
         // First update the user in firestore marking their account as deleted
         self.db.collection("users").document(userId).updateData([
             "isUserDeleted": true
         ]) { err in
             if let err = err {
-                print("error updating user in firestore as deleted")
+                print("error updating user in firestore as deleted: ", err.localizedDescription)
             } else {
-                print("successfully updated user as deleted")
+//                print("successfully updated user as deleted")
                 // Delete the auth user
                 let user = Auth.auth().currentUser
                 user?.delete() { error in
@@ -196,7 +195,7 @@ class AuthManager: ObservableObject {
                         self.errorString = "Your credentials are out of date, please log out and log in again to delete your account."
                         self.isErrorStringShowing = true
                     } else {
-                        print("Auth user got deleted successfully")
+//                        print("Auth user got deleted successfully")
                         self.logOut()
                     }
                 }

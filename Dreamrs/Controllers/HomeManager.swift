@@ -162,7 +162,7 @@ class HomeManager : ObservableObject {
                             "AITextAnalysis": response
                         ])
                         
-                        print("AI text analysis successfully saved to firestore")
+//                        print("AI text analysis successfully saved to firestore")
                         
                         // AI is finished, call retrieve dreams to load the new dream and dismiss the loading view, or do it in image if needed
                         if isImageGenerationNeeded {
@@ -175,10 +175,10 @@ class HomeManager : ObservableObject {
                         }
                         
                     } catch {
-                        print("Error saving AI text analysis to firestore")
+//                        print("Error saving AI text analysis to firestore")
                     }
                 } else {
-                    print("Text response from OpenAI is empty")
+//                    print("Text response from OpenAI is empty")
                 }
             case .failure(let error):
                 print("Failure generating AI Dream Analysis: ", error.localizedDescription)
@@ -231,22 +231,22 @@ class HomeManager : ObservableObject {
                                 self.isViewNewlyCreatedDreamPopupShowing = false
                             } else {
                                 if let metadata = metadata {
-                                    print("Metadata: ", metadata)
+//                                    print("Metadata: ", metadata)
                                 }
                                 self.setHasImageBitOnDream(dreamId: dream.id!, dreamCollection: dreamCollection)
                             }
                             
                         }
                     } else {
-                        print("failure compressing image")
+//                        print("failure compressing image")
                         self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
                         self.isViewNewlyCreatedDreamPopupShowing = false
                     }
                 } else {
-                    print("failure getting UIimage from response")
+//                    print("failure getting UIimage from response")
                 }
             } else {
-                print("failing getting response from results[0].data")
+//                print("failing getting response from results[0].data")
                 self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
                 self.isViewNewlyCreatedDreamPopupShowing = false
             }
@@ -371,7 +371,7 @@ class HomeManager : ObservableObject {
                 self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
                 self.isViewNewlyCreatedDreamPopupShowing = false
             } else {
-                print("successfully completed image flow, closing popup")
+//                print("successfully completed image flow, closing popup")
                 self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
                 self.isViewNewlyCreatedDreamPopupShowing = false
             }
@@ -381,7 +381,7 @@ class HomeManager : ObservableObject {
     func displayDream(dream: Dream) {
         self.focusedDream = dream
         self.focusedTextFormatted = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(dream.archivedData!) as? NSAttributedString
-        print("The displayed dream's raw timestamp is: ", self.focusedDream?.rawTimestamp ?? "None")
+//        print("The displayed dream's raw timestamp is: ", self.focusedDream?.rawTimestamp ?? "None")
     }
     
     func deleteDream() {
@@ -397,7 +397,7 @@ class HomeManager : ObservableObject {
                 if let err = err {
                     print("Error deleting dream: ", err.localizedDescription)
                 } else {
-                    print("Dream deleted successefully in firestore")
+//                    print("Dream deleted successefully in firestore")
                     self.focusedDream = nil
                     self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
                     
@@ -409,9 +409,9 @@ class HomeManager : ObservableObject {
                         "numDreams": FieldValue.increment(Int64(-1))
                     ]) { err in
                         if let err = err {
-                            print("error -1ing num dreams for user")
+//                            print("error -1ing num dreams for user")
                         } else {
-                            print("successfully -1 num dreams for user")
+//                            print("successfully -1 num dreams for user")
                         }
                     }
                 }
