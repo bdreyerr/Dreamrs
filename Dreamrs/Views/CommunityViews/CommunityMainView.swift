@@ -12,6 +12,8 @@ struct CommunityMainView: View {
     @StateObject var communityManager = CommunityManager()
     @EnvironmentObject var userManager: UserManager
     
+    @StateObject var adminManager = AdminManager()
+    
     var body: some View {
         NavigationView {
             ZStack {
@@ -22,7 +24,7 @@ struct CommunityMainView: View {
                             .resizable()
                             .frame(width: 100, height: 100)
                         
-                        Text("D R E A M B O A R D")
+                        Text("D R E A M R S")
                             .font(.system(size: 14))
                             .padding(.trailing, 20)
                         //                            .padding(.bottom, 15)
@@ -33,6 +35,23 @@ struct CommunityMainView: View {
                     
                     // Following vs. For You
                     HStack {
+                        
+                        // Admin add posts
+                        if let user = userManager.user {
+                            if let isAdmin = user.isAdmin {
+                                if isAdmin {
+                                    Button(action: {
+                                        adminManager.generateRandomDreamsForForYouPage()
+                                    }) {
+                                        Image(systemName: "plus")
+                                            .resizable()
+                                            .frame(width: 20, height: 20)
+                                            .foregroundStyle(Color.green)
+                                    }
+                                }
+                            }
+                        }
+                        
                         if !communityManager.isSearchBarShowing {
                             Button(action: {
                                 communityManager.selectedTrafficSlice = communityManager.trafficSlices[0]
@@ -195,6 +214,7 @@ struct CommunityMainView: View {
             }
         }
         .environmentObject(communityManager)
+        .environmentObject(adminManager)
         .onAppear {
             if let user = userManager.user {
                 print("user available")
@@ -214,6 +234,7 @@ struct CommunityMainView: View {
     CommunityMainView()
     //        .environmentObject(CommunityManager())
         .environmentObject(UserManager())
+        .environmentObject(AdminManager())
 }
 
 
@@ -258,100 +279,107 @@ struct CommunityDream : View {
                             .resizable()
                             .frame(width: 100, height: 60)
                             .clipShape(Circle())
-                    } else {
-    //                    Image(homeManager.randomImage())
-    //                        .resizable()
-    //                        .frame(width: 100, height: 60)
-    //                        .clipShape(Circle())
                     }
-                    
-//                    Image(communityManager.randomImage())
-//                        .resizable()
-//                        .frame(width: 100, height: 60)
-//                        .clipShape(Circle())
                 }
                 
-                HStack {
-                    RoundedRectangle(cornerRadius: 25.0)
-                        .stroke(Color.gray, lineWidth: 1)
-                        .frame(minWidth: 10, maxWidth: 80, minHeight: 25)
-                        .overlay {
-                            HStack {
-                                Button(action: {
-                                    if let user = userManager.user {
-                                        // Rate limiting check
-                                        if let rateLimit = userManager.processFirestoreWrite() {
-                                            print(rateLimit)
-                                        } else {
-                                            communityManager.processKarmaVote(userId: user.id!, dream: self.dream, isUpvote: true)
-                                        }
-                                    }
-                                }) {
-                                    if !communityManager.localKarmaVotes.keys.contains(dream.id!) {
-                                        Image(systemName: "arrowshape.up")
-                                            .resizable()
-                                            .frame(width: 14, height: 14)
-                                            .foregroundColor(.black)
-                                    } else if communityManager.localKarmaVotes[dream.id!] == true {
-                                        Image(systemName: "arrowshape.up")
-                                            .resizable()
-                                            .frame(width: 14, height: 14)
-                                            .foregroundColor(.orange)
-                                    } else {
-                                        Image(systemName: "arrowshape.up")
-                                            .resizable()
-                                            .frame(width: 14, height: 14)
-                                            .foregroundColor(.black)
-                                    }
-                                }
-                                
-                                // different colors based on local votes
-                                if !communityManager.localKarmaVotes.keys.contains(dream.id!) {
+                // Karma Vote button (only show if post is not yours)
+                if let user = userManager.user {
+                    if dream.authorId! == user.id {
+                        HStack {
+                            RoundedRectangle(cornerRadius: 25.0)
+                                .stroke(Color.gray, lineWidth: 1)
+                                .frame(minWidth: 10, maxWidth: 40, minHeight: 25)
+                                .overlay {
                                     Text("\(karma)")
-                                        .foregroundStyle(.black)
-                                } else if communityManager.localKarmaVotes[dream.id!] == true {
-                                    Text("\(karma + 1)")
                                         .foregroundStyle(.orange)
-                                } else {
-                                    Text("\(karma - 1)")
-                                        .foregroundStyle(.blue)
                                 }
-                                
-                                
-                                Divider()
-                                    .foregroundColor(.black)
-                                
-                                Button(action: {
-                                    if let user = userManager.user {
-                                        // Rate limiting check
-                                        if let rateLimit = userManager.processFirestoreWrite() {
-                                            print(rateLimit)
+                            Spacer()
+                        }
+                    } else {
+                        HStack {
+                            RoundedRectangle(cornerRadius: 25.0)
+                                .stroke(Color.gray, lineWidth: 1)
+                                .frame(minWidth: 10, maxWidth: 80, minHeight: 25)
+                                .overlay {
+                                    HStack {
+                                        Button(action: {
+                                            if let user = userManager.user {
+                                                // Rate limiting check
+                                                if let rateLimit = userManager.processFirestoreWrite() {
+                                                    print(rateLimit)
+                                                } else {
+                                                    communityManager.processKarmaVote(userId: user.id!, dream: self.dream, isUpvote: true)
+                                                }
+                                            }
+                                        }) {
+                                            if !communityManager.localKarmaVotes.keys.contains(dream.id!) {
+                                                Image(systemName: "arrowshape.up")
+                                                    .resizable()
+                                                    .frame(width: 14, height: 14)
+                                                    .foregroundColor(.black)
+                                            } else if communityManager.localKarmaVotes[dream.id!] == true {
+                                                Image(systemName: "arrowshape.up")
+                                                    .resizable()
+                                                    .frame(width: 14, height: 14)
+                                                    .foregroundColor(.orange)
+                                            } else {
+                                                Image(systemName: "arrowshape.up")
+                                                    .resizable()
+                                                    .frame(width: 14, height: 14)
+                                                    .foregroundColor(.black)
+                                            }
+                                        }
+                                        
+                                        // different colors based on local votes
+                                        if !communityManager.localKarmaVotes.keys.contains(dream.id!) {
+                                            Text("\(karma)")
+                                                .foregroundStyle(.black)
+                                        } else if communityManager.localKarmaVotes[dream.id!] == true {
+                                            Text("\(karma + 1)")
+                                                .foregroundStyle(.orange)
                                         } else {
-                                            communityManager.processKarmaVote(userId: user.id!, dream: self.dream, isUpvote: false)
+                                            Text("\(karma - 1)")
+                                                .foregroundStyle(.blue)
+                                        }
+                                        
+                                        
+                                        Divider()
+                                            .foregroundColor(.black)
+                                        
+                                        Button(action: {
+                                            if let user = userManager.user {
+                                                // Rate limiting check
+                                                if let rateLimit = userManager.processFirestoreWrite() {
+                                                    print(rateLimit)
+                                                } else {
+                                                    communityManager.processKarmaVote(userId: user.id!, dream: self.dream, isUpvote: false)
+                                                }
+                                            }
+                                        }) {
+                                            if !communityManager.localKarmaVotes.keys.contains(dream.id!) {
+                                                Image(systemName: "arrowshape.down")
+                                                    .resizable()
+                                                    .frame(width: 14, height: 14)
+                                                    .foregroundColor(.black)
+                                            } else if communityManager.localKarmaVotes[dream.id!] == true {
+                                                Image(systemName: "arrowshape.down")
+                                                    .resizable()
+                                                    .frame(width: 14, height: 14)
+                                                    .foregroundColor(.black)
+                                            } else {
+                                                Image(systemName: "arrowshape.down")
+                                                    .resizable()
+                                                    .frame(width: 14, height: 14)
+                                                    .foregroundColor(.blue)
+                                            }
                                         }
                                     }
-                                }) {
-                                    if !communityManager.localKarmaVotes.keys.contains(dream.id!) {
-                                        Image(systemName: "arrowshape.down")
-                                            .resizable()
-                                            .frame(width: 14, height: 14)
-                                            .foregroundColor(.black)
-                                    } else if communityManager.localKarmaVotes[dream.id!] == true {
-                                        Image(systemName: "arrowshape.down")
-                                            .resizable()
-                                            .frame(width: 14, height: 14)
-                                            .foregroundColor(.black)
-                                    } else {
-                                        Image(systemName: "arrowshape.down")
-                                            .resizable()
-                                            .frame(width: 14, height: 14)
-                                            .foregroundColor(.blue)
-                                    }
                                 }
-                            }
+                            Spacer()
                         }
-                    Spacer()
+                    }
                 }
+                
 //                Rectangle()
 //                    .frame(height: 0.5) // Adjust height as needed
 //                    .foregroundColor(.gray)

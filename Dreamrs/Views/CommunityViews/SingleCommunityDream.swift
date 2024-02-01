@@ -87,92 +87,110 @@ struct SingleCommunityDream: View {
                         .padding(.leading, 20)
                         
                         
-                        
-                        HStack {
-                            RoundedRectangle(cornerRadius: 25.0)
-                                .stroke(Color.black, lineWidth: 1)
-                                .frame(minWidth: 10, maxWidth: 110, minHeight: 35)
-                                .overlay {
-                                    HStack {
-                                        Button(action: {
-                                            if let user = userManager.user {
-                                                // Rate limiting check
-                                                if let rateLimit = userManager.processFirestoreWrite() {
-                                                    print(rateLimit)
-                                                } else {
-                                                    communityManager.processKarmaVote(userId: user.id!, dream: communityManager.focusedDream!, isUpvote: true)
-                                                }
-                                            }
-                                        }) {
-                                            if !communityManager.localKarmaVotes.keys.contains(dream.id!) {
-                                                Image(systemName: "arrowshape.up")
-                                                    .resizable()
-                                                    .frame(width: 18, height: 18)
-                                                    .foregroundColor(.black)
-                                            } else if communityManager.localKarmaVotes[dream.id!] == true {
-                                                Image(systemName: "arrowshape.up")
-                                                    .resizable()
-                                                    .frame(width: 18, height: 18)
-                                                    .foregroundColor(.orange)
-                                            } else {
-                                                Image(systemName: "arrowshape.up")
-                                                    .resizable()
-                                                    .frame(width: 18, height: 18)
-                                                    .foregroundColor(.black)
-                                            }
-                                        }
-                                        
-                                        
-                                        // Define different colors for the text based on the local votes
-                                        if !communityManager.localKarmaVotes.keys.contains(dream.id!) {
-                                            Text("\(dream.karma!)")
-                                                .foregroundStyle(.black)
-                                        } else if communityManager.localKarmaVotes[dream.id!] == true {
-                                            Text("\(dream.karma! + 1)")
+                        // Karma Voting (Can only vote if the dream isn't yours)
+                        if let user = userManager.user {
+                            if dream.authorId == user.id {
+                                HStack {
+                                    RoundedRectangle(cornerRadius: 25.0)
+                                        .stroke(Color.gray, lineWidth: 1)
+                                        .frame(minWidth: 10, maxWidth: 40, minHeight: 25)
+                                        .overlay {
+                                            Text("\(dream.karma ?? 1)")
                                                 .foregroundStyle(.orange)
-                                        } else {
-                                            Text("\(dream.karma! - 1)")
-                                                .foregroundStyle(.blue)
                                         }
-                                        
-                                        
-                                        Divider()
-                                            .foregroundColor(.black)
-                                        
-                                        Button(action: {
-                                            if let user = userManager.user {
-                                                // Rate limiting checl
-                                                if let rateLimit = userManager.processFirestoreWrite() {
-                                                    print(rateLimit)
+                                    Spacer()
+                                }
+                                .padding(.bottom, 20)
+                                .padding(.leading, 20)
+                            } else {
+                                HStack {
+                                    RoundedRectangle(cornerRadius: 25.0)
+                                        .stroke(Color.black, lineWidth: 1)
+                                        .frame(minWidth: 10, maxWidth: 110, minHeight: 35)
+                                        .overlay {
+                                            HStack {
+                                                Button(action: {
+                                                    if let user = userManager.user {
+                                                        // Rate limiting check
+                                                        if let rateLimit = userManager.processFirestoreWrite() {
+                                                            print(rateLimit)
+                                                        } else {
+                                                            communityManager.processKarmaVote(userId: user.id!, dream: communityManager.focusedDream!, isUpvote: true)
+                                                        }
+                                                    }
+                                                }) {
+                                                    if !communityManager.localKarmaVotes.keys.contains(dream.id!) {
+                                                        Image(systemName: "arrowshape.up")
+                                                            .resizable()
+                                                            .frame(width: 18, height: 18)
+                                                            .foregroundColor(.black)
+                                                    } else if communityManager.localKarmaVotes[dream.id!] == true {
+                                                        Image(systemName: "arrowshape.up")
+                                                            .resizable()
+                                                            .frame(width: 18, height: 18)
+                                                            .foregroundColor(.orange)
+                                                    } else {
+                                                        Image(systemName: "arrowshape.up")
+                                                            .resizable()
+                                                            .frame(width: 18, height: 18)
+                                                            .foregroundColor(.black)
+                                                    }
+                                                }
+                                                
+                                                
+                                                // Define different colors for the text based on the local votes
+                                                if !communityManager.localKarmaVotes.keys.contains(dream.id!) {
+                                                    Text("\(dream.karma!)")
+                                                        .foregroundStyle(.black)
+                                                } else if communityManager.localKarmaVotes[dream.id!] == true {
+                                                    Text("\(dream.karma! + 1)")
+                                                        .foregroundStyle(.orange)
                                                 } else {
-                                                    communityManager.processKarmaVote(userId: user.id!, dream: communityManager.focusedDream!, isUpvote: false)
+                                                    Text("\(dream.karma! - 1)")
+                                                        .foregroundStyle(.blue)
+                                                }
+                                                
+                                                
+                                                Divider()
+                                                    .foregroundColor(.black)
+                                                
+                                                Button(action: {
+                                                    if let user = userManager.user {
+                                                        // Rate limiting checl
+                                                        if let rateLimit = userManager.processFirestoreWrite() {
+                                                            print(rateLimit)
+                                                        } else {
+                                                            communityManager.processKarmaVote(userId: user.id!, dream: communityManager.focusedDream!, isUpvote: false)
+                                                        }
+                                                    }
+                                                }) {
+                                                    
+                                                    if !communityManager.localKarmaVotes.keys.contains(dream.id!) {
+                                                        Image(systemName: "arrowshape.down")
+                                                            .resizable()
+                                                            .frame(width: 18, height: 18)
+                                                            .foregroundColor(.black)
+                                                    } else if communityManager.localKarmaVotes[dream.id!] == true {
+                                                        Image(systemName: "arrowshape.down")
+                                                            .resizable()
+                                                            .frame(width: 18, height: 18)
+                                                            .foregroundColor(.black)
+                                                    } else {
+                                                        Image(systemName: "arrowshape.down")
+                                                            .resizable()
+                                                            .frame(width: 18, height: 18)
+                                                            .foregroundColor(.blue)
+                                                    }
                                                 }
                                             }
-                                        }) {
-                                            
-                                            if !communityManager.localKarmaVotes.keys.contains(dream.id!) {
-                                                Image(systemName: "arrowshape.down")
-                                                    .resizable()
-                                                    .frame(width: 18, height: 18)
-                                                    .foregroundColor(.black)
-                                            } else if communityManager.localKarmaVotes[dream.id!] == true {
-                                                Image(systemName: "arrowshape.down")
-                                                    .resizable()
-                                                    .frame(width: 18, height: 18)
-                                                    .foregroundColor(.black)
-                                            } else {
-                                                Image(systemName: "arrowshape.down")
-                                                    .resizable()
-                                                    .frame(width: 18, height: 18)
-                                                    .foregroundColor(.blue)
-                                            }
                                         }
-                                    }
+                                    Spacer()
                                 }
-                            Spacer()
+                                .padding(.bottom, 20)
+                                .padding(.leading, 20)
+                            }
                         }
-                        .padding(.bottom, 20)
-                        .padding(.leading, 20)
+                        
                         
                         
                         // Dream Image

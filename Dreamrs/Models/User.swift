@@ -24,4 +24,5 @@ struct User: Codable, Identifiable {
     var pinnedDreams: [[String : String]]?
     var hasUserCompletedWelcomeSurvey: Bool?
     var isUserDeleted: Bool?
+    var isAdmin: Bool?
 }

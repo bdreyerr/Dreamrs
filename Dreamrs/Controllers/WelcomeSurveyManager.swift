@@ -98,7 +98,8 @@ class WelcomeSurveyManager : ObservableObject {
                         "handle": self.handle,
                         "userColor": self.userColor,
                         "hasUserCompletedWelcomeSurvey": true,
-                        "isUserDeleted": false
+                        "isUserDeleted": false,
+                        "isAdmin": false
                     ]) { err in
                         if let err = err {
                             print("Error updating user fields from welcome sruvey: \(err)")

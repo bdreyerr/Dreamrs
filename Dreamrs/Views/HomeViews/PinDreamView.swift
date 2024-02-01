@@ -18,8 +18,6 @@ struct PinDreamView: View {
         NavigationStack {
             ZStack {
                 VStack {
-                    
-                    
                     // Pinned Dreams
                     VStack {
                         Text("Currently Pinned Dreams")
@@ -91,6 +89,8 @@ struct PinDreamView: View {
             if let _ = userManager.user {
                 userManager.loadPinnedDreams(isRefresh: false)
             }
+            
+                
         }
     }
 }
@@ -155,6 +155,5 @@ struct AlreadyPinnedDream : View {
             }
             Button("Cancel", role: .cancel) { }
         }
-        
     }
 }

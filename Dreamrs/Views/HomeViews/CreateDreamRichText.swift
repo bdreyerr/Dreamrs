@@ -17,7 +17,7 @@ struct CreateDreamRichText: View {
     var body: some View {
         ZStack {
             VStack {
-                Text("D R E A M B O A R D")
+                Text("D R E A M R S")
                     .font(.system(size: 14))
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.bottom, 15)
@@ -254,7 +254,11 @@ struct CreateDreamRichText: View {
                                             
                                             // call the view published popup
                                             homeManager.isViewNewlyCreatedDreamPopupShowing = true
-                                            homeManager.processNewDream(dream: dream, shouldVisualizeDream: createDreamManager.shouldVisualizeDream, shouldAnalyzeDream: createDreamManager.shouldAnalyzeDream)
+                                            
+                                            Task {
+                                                await homeManager.processNewDream(dream: dream, shouldVisualizeDream: createDreamManager.shouldVisualizeDream, shouldAnalyzeDream: createDreamManager.shouldAnalyzeDream)
+                                            }
+                                            
                                         } else {
                                             homeManager.isCreateDreamPopupShowing = false
                                             print("we didn't get the dream returned from SubmitDream")

@@ -10,6 +10,7 @@ import FirebaseAuth
 import FirebaseFirestore
 import FirebaseStorage
 import SwiftUI
+import StabilityAIKit
 import OpenAI
 
 
@@ -33,6 +34,7 @@ class HomeManager : ObservableObject {
     // AI
     // TODO: Understand what timeout interval does. If I Open the app, and wait for 60 minutes, then try to submit a dream will the openAI access but cutoff?
     let openAI = OpenAI(configuration: OpenAI.Configuration(token: Secrets().openAiToken, timeoutInterval: 60.0))
+    let stabilityAiConfiguration = Configuration(apiKey: Secrets().stabilityAiToken)
     
     // Post Publish Vars (Viewing newly created dreams)
     @Published var isViewNewlyCreatedDreamPopupShowing: Bool = false
@@ -116,7 +118,7 @@ class HomeManager : ObservableObject {
     }
     
     // Called after a dream is created in CreateDreamManager, processes the AI aspects of the dream
-    func processNewDream(dream: Dream, shouldVisualizeDream: Bool, shouldAnalyzeDream: Bool) {
+    func processNewDream(dream: Dream, shouldVisualizeDream: Bool, shouldAnalyzeDream: Bool) async {
         
         // Process the text analysis first, then the image ( called in seperate functions )
         
@@ -127,16 +129,17 @@ class HomeManager : ObservableObject {
         
         if shouldAnalyzeDream && shouldVisualizeDream {
             // process Text Analysis will can processImageGeneration if the image is needed
-            processTextAnalysis(dream: dream, isImageGenerationNeeded: true)
+            await processTextAnalysis(dream: dream, isImageGenerationNeeded: true)
         } else if shouldAnalyzeDream {
-            processTextAnalysis(dream: dream, isImageGenerationNeeded: false)
+            await processTextAnalysis(dream: dream, isImageGenerationNeeded: false)
         } else if shouldVisualizeDream {
-            processImageGeneration(dream: dream)
+//            processImageGeneration(dream: dream)
+            await processImageGeneration(dream: dream)
         }
         
     }
     
-    func processTextAnalysis(dream: Dream, isImageGenerationNeeded: Bool) {
+    func processTextAnalysis(dream: Dream, isImageGenerationNeeded: Bool) async {
         let dreamPrompt = "Analyze the following dream: " + dream.plainText!
         
         let query = ChatQuery(model: .gpt3_5Turbo, messages: [.init(role: .user, content: dreamPrompt)])
@@ -163,7 +166,9 @@ class HomeManager : ObservableObject {
                         
                         // AI is finished, call retrieve dreams to load the new dream and dismiss the loading view, or do it in image if needed
                         if isImageGenerationNeeded {
-                            self.processImageGeneration(dream: dream)
+                            Task {
+                                await self.processImageGeneration(dream: dream)
+                            }
                         } else {
                             self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
                             self.isViewNewlyCreatedDreamPopupShowing = false
@@ -182,108 +187,180 @@ class HomeManager : ObservableObject {
         }
     }
     
-    func processImageGeneration(dream: Dream) {
-        // TODO: Determine if we want to pass in the entire dream plainText (this could be very long)
-        //       OR simply generate a summary of the dream with OpenAI chat query and pass that.
-        let imagePrompt = "Visualize the following dream: " + dream.plainText!
+    func processImageGeneration(dream: Dream) async {
+        let imagePrompt = "Visualize this dream:" + dream.plainText!
         
-        let query = ImagesQuery(prompt: imagePrompt, n: 1, size: "1024x1024")
-        openAI.images(query: query) { result in
-            switch result {
-            case .success(let result):
-
-                print("trying to grab the url: ", result.data[0].url ?? "no url")
-                // Download the image from the url
-                self.downloadImageFromURL(result.data[0].url ?? "no url") { image, urlString in
-                    if let imageObject = image {
-                        // We now have access to the imageObject, we can store it how we like in firebase storage
-                        self.uploadImgToStorage(image: imageObject, dreamId: dream.id!, rawTimestamp: dream.rawTimestamp!)
+        
+        let client = Client(configuration: stabilityAiConfiguration)
+        let request = TextToImageRequest(textPrompts: [.init(text: imagePrompt)])
+        
+        do {
+            let results = try await client.getImageFromText(request, engine: "stable-diffusion-xl-1024-v1-0")
+            // Make a UI Image with the response
+            
+            // Convert the response payload to UIImage
+            if let response = results[0].data {
+                let image = UIImage(data: response)
+                
+                // Convert the image into JPEG and compress the quality to reduce its size
+                if let image = image {
+                    let data = image.jpegData(compressionQuality: 0.8)
+                    
+                    let metadata = StorageMetadata()
+                    metadata.contentType = "image/jpg"
+                    
+                    
+                    // Save the compressed jpeg to firestore under the dreamId
+                    
+                    // Get dream collection
+                    let timestamp = dream.rawTimestamp!
+                    let date = timestamp.dateValue()
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "MMMMYYYY"  // Set the desired format
+                    let formattedString = dateFormatter.string(from: date)
+                    let dreamCollection = "dreams" + formattedString
+                    
+                    // Create a storage reference
+                    let storageRef = storage.reference().child(dreamCollection + "/" + dream.id! + ".jpg")
+                    
+                    if let data = data {
+                        storageRef.putData(data, metadata: metadata) { (metadata, error) in
+                            if let error = error {
+                                print("Error while uploading file to storage: ", error)
+                                self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
+                                self.isViewNewlyCreatedDreamPopupShowing = false
+                            } else {
+                                if let metadata = metadata {
+                                    print("Metadata: ", metadata)
+                                }
+                                self.setHasImageBitOnDream(dreamId: dream.id!, dreamCollection: dreamCollection)
+                            }
+                            
+                        }
                     } else {
-                        print("return false from completion on downloadImage URL")
+                        print("failure compressing image")
                         self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
                         self.isViewNewlyCreatedDreamPopupShowing = false
                     }
+                } else {
+                    print("failure getting UIimage from response")
                 }
-                
-//                self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
-//                self.isViewNewlyCreatedDreamPopupShowing = false
-            case .failure(let error):
-                print("Error generating image with DALLE: ", error.localizedDescription)
-                
+            } else {
+                print("failing getting response from results[0].data")
                 self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
                 self.isViewNewlyCreatedDreamPopupShowing = false
             }
-        }
-        
-//        self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
-//        self.isViewNewlyCreatedDreamPopupShowing = false
-        return
-    }
-    
-    func downloadImageFromURL(_ urlString: String, completion: ((_ uiImage: UIImage?, _ urlString: String?) -> ())?) {
-        guard let url = URL(string: urlString) else {
-            completion?(nil, urlString)
-            return
-        }
-        URLSession.shared.dataTask(with: url) { (data, response, error) in
-            if let error = error {
-                print("error in downloading image from url: \(error)")
-                completion?(nil, urlString)
-                return
-            }
-            
-            guard let httpResponse = response as? HTTPURLResponse,(200...299).contains(httpResponse.statusCode) else {
-                completion?(nil, urlString)
-                return
-            }
-            
-            if let data = data, let image = UIImage(data: data) {
-                completion?(image, urlString)
-                return
-            }
-            completion?(nil, urlString)
-        }.resume()
-    }
-    
-    func uploadImgToStorage(image: UIImage, dreamId: String, rawTimestamp: Timestamp) {
-        
-        // Get dream collection
-        let timestamp = rawTimestamp
-        let date = timestamp.dateValue()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MMMMYYYY"  // Set the desired format
-        let formattedString = dateFormatter.string(from: date)
-        let dreamCollection = "dreams" + formattedString
-        
-        // Create a storage reference
-        let storageRef = storage.reference().child(dreamCollection + "/" + dreamId + ".jpg")
-
-        // Convert the image into JPEG and compress the quality to reduce its size
-        let data = image.jpegData(compressionQuality: 0.5)
-        
-        let metadata = StorageMetadata()
-        metadata.contentType = "image/jpg"
-        
-        if let data = data {
-            storageRef.putData(data, metadata: metadata) { (metadata, error) in
-                if let error = error {
-                    print("Error while uploading file to storage: ", error)
-                    self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
-                    self.isViewNewlyCreatedDreamPopupShowing = false
-                } else {
-                    if let metadata = metadata {
-                        print("Metadata: ", metadata)
-                    }
-                    self.setHasImageBitOnDream(dreamId: dreamId, dreamCollection: dreamCollection)
-                }
-                
-            }
-        } else {
-            print("failure compressing image")
+        } catch {
+            print("error generating image with stable diffusion: ", error)
             self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
             self.isViewNewlyCreatedDreamPopupShowing = false
+            
         }
     }
+    
+    // This old method uses OpenAI's DALLE. The new method above uses stability.ai's stable diffusion. It's cheaper and higher quality.
+//    func processImageGeneration(dream: Dream) {
+//        // TODO: Determine if we want to pass in the entire dream plainText (this could be very long)
+//        //       OR simply generate a summary of the dream with OpenAI chat query and pass that.
+//        let imagePrompt = dream.plainText!
+//        
+//        let query = ImagesQuery(prompt: imagePrompt, n: 1, size: "1024x1024")
+//        openAI.images(query: query) { result in
+//            switch result {
+//            case .success(let result):
+//
+//                print("trying to grab the url: ", result.data[0].url ?? "no url")
+//                // Download the image from the url
+//                self.downloadImageFromURL(result.data[0].url ?? "no url") { image, urlString in
+//                    if let imageObject = image {
+//                        // We now have access to the imageObject, we can store it how we like in firebase storage
+//                        self.uploadImgToStorage(image: imageObject, dreamId: dream.id!, rawTimestamp: dream.rawTimestamp!)
+//                    } else {
+//                        print("return false from completion on downloadImage URL")
+//                        self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
+//                        self.isViewNewlyCreatedDreamPopupShowing = false
+//                    }
+//                }
+//                
+////                self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
+////                self.isViewNewlyCreatedDreamPopupShowing = false
+//            case .failure(let error):
+//                print("Error generating image with DALLE: ", error.localizedDescription)
+//                
+//                self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
+//                self.isViewNewlyCreatedDreamPopupShowing = false
+//            }
+//        }
+//        
+////        self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
+////        self.isViewNewlyCreatedDreamPopupShowing = false
+//        return
+//    }
+    
+//    func downloadImageFromURL(_ urlString: String, completion: ((_ uiImage: UIImage?, _ urlString: String?) -> ())?) {
+//        guard let url = URL(string: urlString) else {
+//            completion?(nil, urlString)
+//            return
+//        }
+//        URLSession.shared.dataTask(with: url) { (data, response, error) in
+//            if let error = error {
+//                print("error in downloading image from url: \(error)")
+//                completion?(nil, urlString)
+//                return
+//            }
+//            
+//            guard let httpResponse = response as? HTTPURLResponse,(200...299).contains(httpResponse.statusCode) else {
+//                completion?(nil, urlString)
+//                return
+//            }
+//            
+//            if let data = data, let image = UIImage(data: data) {
+//                completion?(image, urlString)
+//                return
+//            }
+//            completion?(nil, urlString)
+//        }.resume()
+//    }
+    
+//    func uploadImgToStorage(image: UIImage, dreamId: String, rawTimestamp: Timestamp) {
+//        
+//        // Get dream collection
+//        let timestamp = rawTimestamp
+//        let date = timestamp.dateValue()
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.dateFormat = "MMMMYYYY"  // Set the desired format
+//        let formattedString = dateFormatter.string(from: date)
+//        let dreamCollection = "dreams" + formattedString
+//        
+//        // Create a storage reference
+//        let storageRef = storage.reference().child(dreamCollection + "/" + dreamId + ".jpg")
+//
+//        // Convert the image into JPEG and compress the quality to reduce its size
+//        let data = image.jpegData(compressionQuality: 0.5)
+//        
+//        let metadata = StorageMetadata()
+//        metadata.contentType = "image/jpg"
+//        
+//        if let data = data {
+//            storageRef.putData(data, metadata: metadata) { (metadata, error) in
+//                if let error = error {
+//                    print("Error while uploading file to storage: ", error)
+//                    self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
+//                    self.isViewNewlyCreatedDreamPopupShowing = false
+//                } else {
+//                    if let metadata = metadata {
+//                        print("Metadata: ", metadata)
+//                    }
+//                    self.setHasImageBitOnDream(dreamId: dreamId, dreamCollection: dreamCollection)
+//                }
+//                
+//            }
+//        } else {
+//            print("failure compressing image")
+//            self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
+//            self.isViewNewlyCreatedDreamPopupShowing = false
+//        }
+//    }
     
     func setHasImageBitOnDream(dreamId: String, dreamCollection: String) {
         self.db.collection(dreamCollection).document(dreamId).updateData([

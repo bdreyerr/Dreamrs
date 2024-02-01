@@ -23,7 +23,7 @@ struct HomeView: View {
                             .resizable()
                             .frame(width: 100, height: 100)
                         
-                        Text("D R E A M B O A R D")
+                        Text("D R E A M R S")
                             .font(.system(size: 14))
                             .padding(.trailing, 20)
                             .font(.subheadline)

@@ -127,6 +127,15 @@
       }
     },
     {
+      "identity" : "stabilityai-kit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ftp27/stabilityai-kit",
+      "state" : {
+        "branch" : "main",
+        "revision" : "ecad6edd0c21ce954341ce4986a8050156c18bda"
+      }
+    },
+    {
       "identity" : "swift-protobuf",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-protobuf.git",

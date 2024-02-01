@@ -141,6 +141,13 @@ class UserManager : ObservableObject {
     }
     
     func removePinnedDream(indexOfRemovedDream: Int) {
+        
+        
+        print("index of dream to be deleted: ", indexOfRemovedDream)
+        print("The actual dream which we are deleting from the local map ", self.user!.pinnedDreams![indexOfRemovedDream])
+        
+        self.user?.pinnedDreams!.reverse()
+        
         if let user = self.user {
             if user.id == Auth.auth().currentUser?.uid {
                 // Remove the already pinned dream at given index from firestore, then reload the pinned dreams array via the loadPinnedDreams function
@@ -161,8 +168,7 @@ class UserManager : ObservableObject {
     
     func loadPinnedDreams(isRefresh: Bool) {
         if let user = self.user {
-            if let pinnedDreams = user.pinnedDreams {
-                
+            if let userPinnedDreams = user.pinnedDreams {
                 
                 // If the call isn't for a refresh, and the array is already populated, do nothing
                 // In this case refresh means a new dream has been pinned, and we want to reload the array from firebase.
@@ -172,10 +178,12 @@ class UserManager : ObservableObject {
                     }
                 }
                 
+                
                 self.pinnedDreams = []
+                var curIndex = userPinnedDreams.count - 1
                 
                 // Retrieve each dream from firebase
-                for dream in pinnedDreams {
+                for dream in userPinnedDreams {
                     // Grab Document
                     let docRef = db.collection(dream["dreamCollection"]!).document(dream["dreamId"]!)
                     docRef.getDocument(as: Dream.self) { result in
@@ -183,7 +191,8 @@ class UserManager : ObservableObject {
                         case .success(let dreamObject):
                             // A user value was successfully initialized from the Documentsnapshot
                             self.pinnedDreams.append(dreamObject)
-                            print("Added dream to pinned dreams")
+                            print("dream added: ", dreamObject.id!)
+                            
                             
                             // append image to local map if necessary
                             if let hasImage = dreamObject.hasImage {
@@ -209,9 +218,6 @@ class UserManager : ObservableObject {
                             print("Failure retrieving dream from firestore: ", error.localizedDescription)
                         }
                     }
-                    
-                    
-                    
                 }
             }
         }
