@@ -12,8 +12,6 @@ import FirebaseFirestore
 
 class WelcomeSurveyManager : ObservableObject {
     
-    @Published var firstName: String = ""
-    @Published var lastName: String = ""
     @Published var handle: String = ""
     @Published var userColor: String = ""
     
@@ -35,42 +33,18 @@ class WelcomeSurveyManager : ObservableObject {
     func completeWelcomeSurvey() {
         self.errorString = ""
         // Blank error cases
-        if self.firstName == "" {
-            self.errorString = "Please enter a first name"
-            return
-        }
-        if self.lastName == "" {
-            self.errorString = "Please enter a last name"
-            return
-        }
         if self.handle == "" {
             self.errorString = "Please enter a handle"
             return
         }
         
         // Whitespace error cases
-        if self.firstName.contains(where: { $0.isWhitespace }) {
-            self.errorString = "First Name must not contain a whitespace"
-            return
-        }
-        if self.lastName.contains(where: { $0.isWhitespace }) {
-            self.errorString = "Last Name must not contain a whitespace"
-            return
-        }
         if self.handle.contains(where: { $0.isWhitespace }) {
             self.errorString = "Handle must not contain a whitespace"
             return
         }
         
         // Character count error cases
-        if self.firstName.count > 30 {
-            self.errorString = "First name is too long"
-            return
-        }
-        if self.lastName.count > 30 {
-            self.errorString = "Last name is too long"
-            return
-        }
         if self.handle.count > 30 {
             self.errorString = "Handle is too long"
             return
@@ -93,8 +67,6 @@ class WelcomeSurveyManager : ObservableObject {
                     
                     // All fields are valid, update database and set UserDefault
                     self.db.collection("users").document(userId).updateData([
-                        "firstName": self.firstName,
-                        "lastName": self.lastName,
                         "handle": self.handle,
                         "userColor": self.userColor,
                         "hasUserCompletedWelcomeSurvey": true,

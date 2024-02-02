@@ -43,6 +43,20 @@ struct RegisterView: View {
                         .offset(y: 35)
                     
                     
+//                    SignInWithAppleButton(onRequest: { _ in
+//                        authManager.signInWithAppleRequest()
+//                    },
+//                    onCompletion: { _ in
+//                        authManager.signInWithAppleOnCompletion()
+//                    })
+//                    .frame(width: 350, height: 60)
+//                    .cornerRadius(50)
+//                    .background(Color.clear)
+//                    .overlay(
+//                        RoundedRectangle(cornerRadius: 50)
+//                            .stroke(Color.white, lineWidth: 1))
+//                    .padding(.top, 350)
+                    
                     SignInWithAppleButton(
                         onRequest: { request in
                             let nonce = authManager.randomNonceString()

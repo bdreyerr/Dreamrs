@@ -47,7 +47,7 @@ class AdminManager : ObservableObject {
         // 4. Go through the AI process for text analysis, save it to the dream object
         // 5. Go through the AI process for image generation, save it to storage and set bit on the dream in firestore
         
-        let dreamPrompt = "Generate the title of a dream you might have had, five words or less, don't include quotes. Avoid dreams about flying or floating."
+        let dreamPrompt = "Generate a random dream you had (no flying, make the dream unique), don't include quotes. Six words or less."
         let query = ChatQuery(model: .gpt3_5Turbo, messages: [.init(role: .user, content: dreamPrompt)])
         openAI.chats(query: query) { result in
             switch result {

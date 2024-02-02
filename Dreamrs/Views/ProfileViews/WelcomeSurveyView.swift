@@ -43,24 +43,6 @@ struct WelcomeSurveyView: View {
                     .padding(.bottom, 20)
                 
                 HStack {
-                    TextField("First Name", text: $welcomeSurveyManager.firstName)
-                        .textFieldStyle(.roundedBorder)
-                        .font(.system(size: 16))
-                        .frame(maxWidth: 150, alignment: .leading)
-                        .fontDesign(.serif)
-                        .foregroundStyle(Color.black)
-                        .padding(.leading, 20)
-                    
-                    TextField("Last Name", text: $welcomeSurveyManager.lastName)
-                        .textFieldStyle(.roundedBorder)
-                        .font(.system(size: 16))
-                        .frame(maxWidth: 150, alignment: .leading)
-                        .fontDesign(.serif)
-                        .foregroundStyle(Color.black)
-                        .padding(.trailing, 20)
-                }
-                
-                HStack {
                     TextField("Handle", text: $welcomeSurveyManager.handle)
                         .textFieldStyle(.roundedBorder)
                         .font(.system(size: 16))

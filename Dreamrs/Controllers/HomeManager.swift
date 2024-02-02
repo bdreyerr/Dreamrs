@@ -17,7 +17,7 @@ import OpenAI
 class HomeManager : ObservableObject {
     
     @Published var selectedMonth: String
-    var months = ["January", "Febuary", "March", "April", "May", "June", "July", "August", "September", "October", "Novemeber", "December"]
+    var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "Novemeber", "December"]
     @Published var selectedYear: String
     var years = ["2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026", "2027", "2028", "2029", "2030"]
     

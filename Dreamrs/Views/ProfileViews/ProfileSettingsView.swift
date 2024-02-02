@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AuthenticationServices
 
 struct ProfileSettingsView: View {
     @EnvironmentObject var authManager: AuthManager
@@ -189,23 +190,21 @@ struct ProfileSettingsView: View {
                     }) {
                         Text("Sign Out")
                     }
+                    
+                    
                     Button(action: {
-                        // Delete Account
                         self.confirmDelete = true
                     }) {
                         Text("Delete Account")
                             .foregroundColor(.red)
-                    }.alert("Confirm you want to delete your account permanently?", isPresented: self.$confirmDelete) {
+                    }
+                    .alert("Confirm you want to delete your account permanently?", isPresented: self.$confirmDelete) {
                         Button("Confirm") {
                             if let user = userManager.user {
-                                authManager.deleteUser(userId: user.id!)
+                                authManager.deleteUser()
                             }
                         }
                         Button("Cancel", role: .cancel) { }
-                    }
-                    // Error string
-                    .alert(authManager.errorString, isPresented: $authManager.isErrorStringShowing) {
-                        Button("Ok", role: .cancel) { }
                     }
                 }
             }

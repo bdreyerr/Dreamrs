@@ -39,9 +39,8 @@ struct ContentView: View {
                         }
                     }
                 }
-                
             } else {
-                Text("No User default set")
+                RegisterView()
             }
         }
         .environmentObject(authManager)
