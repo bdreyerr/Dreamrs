@@ -357,6 +357,48 @@ class CommunityManager : ObservableObject {
         }
     }
     
+    func retrieveDreamImage(dream: Dream) {
+        
+        // If dream image is already in map, do nothing
+        if let exists = self.retrievedImages[dream.id ?? ""] {
+            return
+        }
+        
+        if let hasImage = dream.hasImage {
+            if hasImage {
+                // Build collection string from dream timestamp
+                if let rawTimestamp = dream.rawTimestamp {
+                    let calendar = Calendar.current
+                    let dateComponents = calendar.dateComponents([.month, .year], from: dream.rawTimestamp!.dateValue())
+                    let month = DateFormatter().monthSymbols[dateComponents.month! - 1]
+                    let year = String(dateComponents.year!)
+                    let currentDateString = "\(month)\(year)"
+                    let collectionString = "dreams\(currentDateString)"
+                    
+                    // Download the image from firestore
+                    let imageRef = self.storage.reference().child(collectionString + "/" + dream.id! + ".jpg")
+                    
+                    // Download in memory with a maximum allowed size of 1MB (1 * 1024 * 1024 bytes)
+                    imageRef.getData(maxSize: 1 * 1024 * 1024) { data, error in
+                        if let error = error {
+                            print("Error downloading image from storage: ", error.localizedDescription)
+                        } else {
+                            // Data for "images/island.jpg" is returned
+                            let image = UIImage(data: data!)
+                            self.retrievedImages[dream.id!] = image
+                        }
+                    }
+                } else {
+                    print("dream has no timestamp")
+                }
+            } else {
+                print("dream has no image")
+            }
+        } else {
+            print("dream has no hasimage field")
+        }
+    }
+    
     func displayDream(dream: Dream) {
         self.focusedDream = dream
         self.focusedTextFormatted = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(dream.archivedData!) as? NSAttributedString

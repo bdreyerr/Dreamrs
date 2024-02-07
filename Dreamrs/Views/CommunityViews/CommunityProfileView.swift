@@ -110,11 +110,12 @@ struct CommunityProfileView: View {
                             .fontDesign(.serif)
                             .bold()
                         
-                        // Report Dream
+                        // Block User
                         if let user = userManager.user {
                             if let blockedUsers = user.blockedUsers {
                                 if let _ = blockedUsers[profile.id!] {
                                 } else {
+                                    // Blocked user map exists, but the current user isn't being blocked
                                     Button(action: {
                                         communityManager.isBlockUserMenuShowing = true
                                     }) {
@@ -152,14 +153,48 @@ struct CommunityProfileView: View {
                                         Button("Cancel", role: .cancel) { }
                                     }
                                 }
+                            } else {
+                                // Or the blocked user list doesn't exist yet (the user hasn't yet blocked anyone
+                                Button(action: {
+                                    communityManager.isBlockUserMenuShowing = true
+                                }) {
+                                    Image(systemName: "exclamationmark.circle")
+                                        .resizable()
+                                        .frame(width: 15, height: 15)
+                                        .foregroundStyle(Color.black)
+                                }
+                                .alert("Would you like to block this user?", isPresented: $communityManager.isBlockUserMenuShowing) {
+                                    Button("Confirm") {
+                                        if let user = userManager.user {
+                                            // rate limit
+                                            if let rateLimit = userManager.processFirestoreWrite() {
+                                                print(rateLimit)
+                                            } else {
+                                                if let profile = communityManager.focusedProfile {
+                                                    
+                                                    Task {
+                                                        let newBlockedUsers = await userManager.blockUser(blockedUserId: profile.id!)
+                                                        
+                                                        // Refresh pulled dreams to get rid of the blocked user's posts
+                                                        communityManager.clearDreams()
+                                                        communityManager.retrieveDreams(userId: user.id!, following: user.following!, isInfiniteScrollRequest: false, blockedUsers: newBlockedUsers)
+                                                    }
+                                                    
+                                                    
+                                                    
+                                                    
+                                                }
+                                            }
+                                            
+                                        }
+                                    }
+                                    
+                                    Button("Cancel", role: .cancel) { }
+                                }
                             }
                         }
-                        
                     }
-                    
-                    
-                    
-                    
+
                     // Handle
                     Text("@" + profile.handle!)
                         .font(.system(size: 16))
@@ -380,6 +415,14 @@ struct CommunityPinnedDream : View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 
+                
+                if let image = communityManager.retrievedImages[dream.id!] {
+                    Image(uiImage: image)
+                        .resizable()
+                        .frame(width: 100, height: 60)
+                        .clipShape(Circle())
+                }
+                
 //                Image(communityManager.randomImage())
 //                    .resizable()
 //                    .frame(width: 100, height: 60)
@@ -389,5 +432,8 @@ struct CommunityPinnedDream : View {
         .simultaneousGesture(TapGesture().onEnded {
             communityManager.displayDream(dream: self.dream)
         })
+        .onAppear {
+            communityManager.retrieveDreamImage(dream: self.dream)
+        }
     }
 }
