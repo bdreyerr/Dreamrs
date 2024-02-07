@@ -185,6 +185,32 @@ struct CreateDreamRichText: View {
                             .padding(.leading, 20)
                             .padding(.bottom, 10)
                             
+                            // 18 +
+                            HStack {
+                                Text("Does dream contain adult content?")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .font(.system(size: 16, design: .serif))
+                                
+                                Button(action: {
+                                    createDreamManager.hasAdultContent.toggle()
+                                }) {
+                                    if !createDreamManager.hasAdultContent {
+                                        Image(systemName: "square")
+                                            .resizable()
+                                            .frame(width: 20, height: 20)
+                                            .foregroundColor(.black)
+                                    } else {
+                                        Image(systemName: "checkmark.square")
+                                            .resizable()
+                                            .frame(width: 20, height: 20)
+                                            .foregroundColor(.green)
+                                    }
+                                }
+                                .padding(.trailing, 20)
+                            }
+                            .padding(.leading, 20)
+                            .padding(.bottom, 10)
+                            
                             // Community Sharing
                             HStack {
                                 Text("Share this dream with your followers?")

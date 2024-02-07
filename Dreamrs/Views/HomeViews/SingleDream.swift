@@ -83,7 +83,20 @@ struct SingleDream: View {
                                 .fontWeight(.bold)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.leading, 20)
-                                .padding(.bottom, 20)
+                        }
+                        
+                        // 18+ indicated
+                        HStack {
+                            if let hasAdultContent = dream.hasAdultContent {
+                                if hasAdultContent {
+                                    Text("18+")
+                                        .foregroundStyle(Color.red)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .padding(.leading, 20)
+                                        .bold()
+                                        .padding(.bottom, 20)
+                                }
+                            }
                         }
                         
                         // Dream details text
@@ -117,6 +130,9 @@ struct SingleDream: View {
                                     }
                                 }
                             }
+                            
+                            
+                            
                             Spacer()
                         }
                         .padding(.bottom, 20)

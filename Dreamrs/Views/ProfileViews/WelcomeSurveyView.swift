@@ -65,6 +65,58 @@ struct WelcomeSurveyView: View {
                 }
                 .padding(.bottom, 100)
                 
+                // EULA
+                Button(action: {
+                    welcomeSurveyManager.isEULAShowing = true
+                }) {
+                    RoundedRectangle(cornerRadius: 25)
+                        .frame(width: 340, height: 50)
+                        .foregroundStyle(Color.cyan)
+                        .overlay {
+                            Text("End User Licensce Agreement (EULA)")
+                                .foregroundStyle(Color.white)
+                                .font(.system(size: 16))
+                                .fontDesign(.serif)
+                                .padding()
+                        }
+                    
+                }
+                .padding(.bottom, 20)
+                .sheet(isPresented: $welcomeSurveyManager.isEULAShowing) {
+                    ScrollView {
+                        Text(welcomeSurveyManager.eulaText)
+                            .padding()
+                    }
+                }
+                
+                // EULA Agreement
+                HStack {
+                    Text("I have read and agree to the EULA")
+                        .font(.system(size: 16))
+                        .fontDesign(.serif)
+                        .foregroundStyle(Color.black)
+                        .padding(.leading, 20)
+                        .padding(.trailing, 20)
+                    
+                    Button(action: {
+                        welcomeSurveyManager.hasUserAcceptedEULA.toggle()
+                    }) {
+                        if !welcomeSurveyManager.hasUserAcceptedEULA {
+                            Image(systemName: "square")
+                                .resizable()
+                                .frame(width: 20, height: 20)
+                                .foregroundColor(.black)
+                        } else {
+                            Image(systemName: "checkmark.square")
+                                .resizable()
+                                .frame(width: 20, height: 20)
+                                .foregroundColor(.green)
+                        }
+                    }
+                    .padding(.trailing, 20)
+                }
+                .padding(.bottom, 20)
+                
                 
                 if welcomeSurveyManager.isLoadingWheelVisisble {
                     ProgressView()
@@ -88,22 +140,23 @@ struct WelcomeSurveyView: View {
                 
                 
                 Button(action: {
-                    welcomeSurveyManager.completeWelcomeSurvey()
-                    // Re-load the user manager to get rid of the welcome survey view - but wait 2 seconds (spagehtti code rip)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(4)) {
-                        userManager.retrieverUserFromFirestore(userId: userManager.user!.id!)
+                    if welcomeSurveyManager.hasUserAcceptedEULA {
+                        welcomeSurveyManager.completeWelcomeSurvey()
+                        // Re-load the user manager to get rid of the welcome survey view - but wait 2 seconds (spagehtti code rip)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(4)) {
+                            userManager.retrieverUserFromFirestore(userId: userManager.user!.id!)
+                        }
                     }
-                    
                 }) {
                     Text("Continue")
                         .font(.headline)
                         .foregroundColor(.white)
                         .padding()
-                        .background(Color.black)
+                        .background(welcomeSurveyManager.hasUserAcceptedEULA ? Color.black : Color.gray)
                         .cornerRadius(10)
                         .overlay(
                             RoundedRectangle(cornerRadius: 25)
-                                .stroke(Color(.black).opacity(0.5), lineWidth: 1)
+                                .stroke(welcomeSurveyManager.hasUserAcceptedEULA ? Color(.black).opacity(0.5) : Color(.gray).opacity(0.5), lineWidth: 1)
                         )
                 }
                 

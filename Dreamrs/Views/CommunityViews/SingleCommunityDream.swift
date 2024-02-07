@@ -23,6 +23,67 @@ struct SingleCommunityDream: View {
                                 .opacity(0.7)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.leading, 20)
+                            
+                            Spacer()
+                            
+                            // Report Dream
+                            Button(action: {
+                                communityManager.isReportMenuShowing = true
+                            }) {
+                                Image(systemName: "exclamationmark.circle")
+                                    .resizable()
+                                    .frame(width: 20, height: 20)
+                                    .foregroundStyle(Color.black)
+                                    .padding(.trailing, 20)
+                            }
+                            .alert("Would you like to report this dream?", isPresented: $communityManager.isReportMenuShowing) {
+                                Button("Offensive") {
+                                    if let user = userManager.user {
+                                        // rate limit
+                                        if let rateLimit = userManager.processFirestoreWrite() {
+                                            print(rateLimit)
+                                        } else {
+                                            communityManager.reportDream(userId: user.id!, reportReason: ReportReason.offensive)
+                                        }
+                                        
+                                    }
+                                }
+                                
+                                Button("Harmful or Abusive") {
+                                    if let user = userManager.user {
+                                        // rate limit
+                                        if let rateLimit = userManager.processFirestoreWrite() {
+                                            print(rateLimit)
+                                        } else {
+                                            communityManager.reportDream(userId: user.id!, reportReason: ReportReason.harmfulOrAbusive)
+                                        }
+                                    }
+                                }
+                                
+                                Button("Graphic content") {
+                                    if let user = userManager.user {
+                                        // rate limit
+                                        if let rateLimit = userManager.processFirestoreWrite() {
+                                            print(rateLimit)
+                                        } else {
+                                            communityManager.reportDream(userId: user.id!, reportReason: ReportReason.graphicContent)
+                                        }
+                                    }
+                                }
+                                
+                                Button("Spam or Advertisment") {
+                                    if let user = userManager.user {
+                                        // rate limit
+                                        if let rateLimit = userManager.processFirestoreWrite() {
+                                            print(rateLimit)
+                                        } else {
+                                            communityManager.reportDream(userId: user.id!, reportReason: ReportReason.spamOrAdvertisement)
+                                        }
+                                    }
+                                }
+                                
+                                Button("Cancel", role: .cancel) { }
+                            }
                         }
                         .padding(.top, 10)
                         
@@ -44,10 +105,23 @@ struct SingleCommunityDream: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.leading, 20)
                                 .padding(.trailing, 10)
-                                .padding(.bottom, 20)
                         }.simultaneousGesture(TapGesture().onEnded {
                             communityManager.retrieverUserFromFirestore(userId: dream.authorId!)
                         })
+                        
+                        // 18+ indicated
+                        HStack {
+                            if let hasAdultContent = dream.hasAdultContent {
+                                if hasAdultContent {
+                                    Text("18+")
+                                        .foregroundStyle(Color.red)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .padding(.leading, 20)
+                                        .bold()
+                                }
+                            }
+                        }
+                        .padding(.bottom, 20)
                         
                         
                         // Dream details text

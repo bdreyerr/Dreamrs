@@ -302,6 +302,60 @@ class UserManager : ObservableObject {
         return errorText
     }
     
+    func blockUser(blockedUserId: String) async -> [String : Bool] {
+        if let _ = self.user {
+            // update locally
+            if let _ = user!.blockedUsers {
+                self.user!.blockedUsers![blockedUserId] = true
+            } else {
+                self.user!.blockedUsers = [blockedUserId : true]
+            }
+            
+            // update firestore
+            let ref = self.db.collection("users").document(self.user!.id!)
+            
+            do {
+                try await ref.setData([
+                    "blockedUsers" : [
+                        blockedUserId: true
+                    ]
+                ], merge: true)
+                return self.user!.blockedUsers!
+                
+            } catch {
+                print(error)
+            }   
+        }
+        return [:]
+    }
+    
+    func unblockUser(blockedUserId: String) async -> [String: Bool] {
+        if let _ = self.user {
+            if let _ = user!.blockedUsers {
+                // update locally
+                user!.blockedUsers!.removeValue(forKey: blockedUserId)
+            }
+            
+            let ref = self.db.collection("users").document(self.user!.id!)
+            
+            do {
+                try await ref.updateData(["blockedUsers.\(blockedUserId)": FieldValue.delete()])
+                
+//                ref.updateData([
+//                    "blockedUsers" : [
+//                        blockedUserId: FieldValue.delete()
+//                    ]
+//                ])
+                return self.user!.blockedUsers!
+                
+            } catch {
+                print(error)
+            }
+        }
+        
+        return [:]
+    }
+    
     // Rate limiting - limits firestore writes and blocks spamming in a singular user session. app is still prone to attacks in multiple app sessions (closing and re-opening)
     // Limits users to 5 writes in one minute
     func processFirestoreWrite() -> String? {

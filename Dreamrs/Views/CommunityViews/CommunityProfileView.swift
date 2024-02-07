@@ -46,11 +46,119 @@ struct CommunityProfileView: View {
                         }
                     }
                     
-                    // Full Name
-                    Text(profile.firstName! + " " + profile.lastName!)
-                        .font(.system(size: 20))
-                        .fontDesign(.serif)
-                        .bold()
+                    // Blocking user
+                    
+                    if let user = userManager.user {
+                        if let blockedUsers = user.blockedUsers {
+                            if let _ = blockedUsers[profile.id!] {
+                                // User is being blocked
+                                Button(action: {
+                                    communityManager.isUnblockUserMenuShowing = true
+                                }) {
+                                    RoundedRectangle(cornerRadius: 25.0)
+                                        .stroke(Color.red, lineWidth: 1) // red border
+                                        .background(Color.clear) // Clear background
+                                        .frame(width: 250, height: 40)
+                                        .overlay {
+                                            HStack {
+                                                Text("This user is being blocked")
+                                                    .foregroundStyle(Color.red)
+                                                    .font(.system(size: 18))
+                                                    .fontDesign(.serif)
+                                                
+                                                Image(systemName: "arrowtriangle.down.fill")
+                                                    .resizable()
+                                                    .frame(width: 12, height: 6)
+                                                    .foregroundColor(.red)
+                                            }
+                                        }
+                                    
+                                }
+                                .alert("Would you like to unblock this user?", isPresented: $communityManager.isUnblockUserMenuShowing) {
+                                    Button("Confirm") {
+                                        if let user = userManager.user {
+                                            // rate limit
+                                            if let rateLimit = userManager.processFirestoreWrite() {
+                                                print(rateLimit)
+                                            } else {
+                                                if let profile = communityManager.focusedProfile {
+                                                    
+                                                    Task {
+                                                        let newBlockedUsers = await userManager.unblockUser(blockedUserId: profile.id!)
+                                                        
+                                                        // Refresh pulled dreams to get add the unblocked user's posts back
+                                                        communityManager.clearDreams()
+                                                        communityManager.retrieveDreams(userId: user.id!, following: user.following!, isInfiniteScrollRequest: false, blockedUsers: newBlockedUsers)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    
+                                    Button("Cancel", role: .cancel) { }
+                                }
+                                .padding(.bottom, 10)
+                            }
+                        }
+                    }
+                    
+                    
+                    HStack {
+                        // Full Name
+                        Text(profile.firstName! + " " + profile.lastName!)
+                            .font(.system(size: 20))
+                            .fontDesign(.serif)
+                            .bold()
+                        
+                        // Report Dream
+                        if let user = userManager.user {
+                            if let blockedUsers = user.blockedUsers {
+                                if let _ = blockedUsers[profile.id!] {
+                                } else {
+                                    Button(action: {
+                                        communityManager.isBlockUserMenuShowing = true
+                                    }) {
+                                        Image(systemName: "exclamationmark.circle")
+                                            .resizable()
+                                            .frame(width: 15, height: 15)
+                                            .foregroundStyle(Color.black)
+                                    }
+                                    .alert("Would you like to block this user?", isPresented: $communityManager.isBlockUserMenuShowing) {
+                                        Button("Confirm") {
+                                            if let user = userManager.user {
+                                                // rate limit
+                                                if let rateLimit = userManager.processFirestoreWrite() {
+                                                    print(rateLimit)
+                                                } else {
+                                                    if let profile = communityManager.focusedProfile {
+                                                        
+                                                        Task {
+                                                            let newBlockedUsers = await userManager.blockUser(blockedUserId: profile.id!)
+                                                            
+                                                            // Refresh pulled dreams to get rid of the blocked user's posts
+                                                            communityManager.clearDreams()
+                                                            communityManager.retrieveDreams(userId: user.id!, following: user.following!, isInfiniteScrollRequest: false, blockedUsers: newBlockedUsers)
+                                                        }
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    }
+                                                }
+                                                
+                                            }
+                                        }
+                                        
+                                        Button("Cancel", role: .cancel) { }
+                                    }
+                                }
+                            }
+                        }
+                        
+                    }
+                    
+                    
+                    
                     
                     // Handle
                     Text("@" + profile.handle!)
@@ -272,10 +380,10 @@ struct CommunityPinnedDream : View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 
-                Image(communityManager.randomImage())
-                    .resizable()
-                    .frame(width: 100, height: 60)
-                    .clipShape(Circle())
+//                Image(communityManager.randomImage())
+//                    .resizable()
+//                    .frame(width: 100, height: 60)
+//                    .clipShape(Circle())
             }
         }
         .simultaneousGesture(TapGesture().onEnded {

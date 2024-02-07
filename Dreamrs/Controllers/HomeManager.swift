@@ -89,8 +89,9 @@ class HomeManager : ObservableObject {
                         let tags = document.data()["tags"] as? [[String : String]]
                         let AITextAnalysis = document.data()["AITextAnalysis"] as? String
                         let hasImage = document.data()["hasImage"] as? Bool
+                        let hasAdultContent = document.data()["hasAdultContent"] as? Bool
                         
-                        let dream = Dream(id: id, authorId: userId, title: title, plainText: plainText, archivedData: archivedData, date: date, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity, tags: tags, AITextAnalysis: AITextAnalysis, hasImage: hasImage)
+                        let dream = Dream(id: id, authorId: userId, title: title, plainText: plainText, archivedData: archivedData, date: date, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity, tags: tags, AITextAnalysis: AITextAnalysis, hasImage: hasImage, hasAdultContent: hasAdultContent)
                         self.retrievedDreams.append(dream)
                         
                         // append image to local map if necessary

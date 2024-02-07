@@ -25,4 +25,5 @@ struct User: Codable, Identifiable {
     var hasUserCompletedWelcomeSurvey: Bool?
     var isUserDeleted: Bool?
     var isAdmin: Bool?
+    var blockedUsers: [String: Bool]?
 }

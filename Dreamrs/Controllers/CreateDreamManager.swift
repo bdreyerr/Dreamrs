@@ -30,6 +30,9 @@ class CreateDreamManager : ObservableObject {
     @Published var shouldVisualizeDream: Bool = true
     @Published var shouldAnalyzeDream: Bool = true
     
+    // 18+
+    @Published var hasAdultContent: Bool = false
+    
     // Community
     @Published var shareWithFriends: Bool = false
     @Published var shareWithCommunity: Bool = false
@@ -121,7 +124,7 @@ class CreateDreamManager : ObservableObject {
         }
         
         // Create a dream object
-        var dream = Dream(authorId: userId, authorHandle: userHandle, authorColor: userColor, title: self.title, plainText: string, archivedData: archivedData, date: formattedDate, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeekString, karma: 1, sharedWithFriends: self.shareWithFriends, sharedWithCommunity: self.shareWithCommunity, tags: tagArray)
+        var dream = Dream(authorId: userId, authorHandle: userHandle, authorColor: userColor, title: self.title, plainText: string, archivedData: archivedData, date: formattedDate, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeekString, karma: 1,  sharedWithFriends: self.shareWithFriends, sharedWithCommunity: self.shareWithCommunity, tags: tagArray, hasAdultContent: self.hasAdultContent)
         
         
         // Get the month and year

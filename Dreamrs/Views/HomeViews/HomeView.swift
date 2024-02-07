@@ -214,7 +214,24 @@ struct ListDream: View {
                             .multilineTextAlignment(.leading)
                         Spacer()
                     }
-                    .padding(.bottom, 1)
+                    .padding(.bottom, 2)
+                    
+                    
+                    // 18+ indicated
+                    HStack {
+                        if let hasAdultContent = dream.hasAdultContent {
+                            if hasAdultContent {
+                                Text("18+")
+                                    .foregroundStyle(Color.red)
+                                    .bold()
+                                    .font(.system(size: 13, design: .serif))
+                                    .padding(.bottom, 2)
+                                
+                                Spacer()
+                            }
+                        }
+                    }
+                    
                     
                     Text(date)
                         .foregroundStyle(.gray)

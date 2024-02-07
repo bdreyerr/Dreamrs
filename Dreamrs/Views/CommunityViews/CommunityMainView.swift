@@ -56,7 +56,7 @@ struct CommunityMainView: View {
                             Button(action: {
                                 communityManager.selectedTrafficSlice = communityManager.trafficSlices[0]
                                 if let user = userManager.user {
-                                    communityManager.retrieveDreams(userId: user.id!, following: user.following!, isInfiniteScrollRequest: false)
+                                    communityManager.retrieveDreams(userId: user.id!, following: user.following!, isInfiniteScrollRequest: false, blockedUsers: user.blockedUsers ?? [:])
                                 }
                                 
                             }) {
@@ -80,7 +80,7 @@ struct CommunityMainView: View {
                             Button(action: {
                                 communityManager.selectedTrafficSlice = communityManager.trafficSlices[1]
                                 if let user = userManager.user {
-                                    communityManager.retrieveDreams(userId: user.id!, following: user.following!, isInfiniteScrollRequest: false)
+                                    communityManager.retrieveDreams(userId: user.id!, following: user.following!, isInfiniteScrollRequest: false, blockedUsers: user.blockedUsers ?? [:])
                                 }
                             }) {
                                 if communityManager.selectedTrafficSlice == communityManager.trafficSlices[1] {
@@ -181,7 +181,7 @@ struct CommunityMainView: View {
                                 .font(.system(size: 16, design: .serif))
                                 .onChange(of: communityManager.selectedTimeFilter) { newValue in
                                     if let user = userManager.user {
-                                        communityManager.retrieveDreams(userId: user.id!, following: user.following!, isInfiniteScrollRequest: false)
+                                        communityManager.retrieveDreams(userId: user.id!, following: user.following!, isInfiniteScrollRequest: false, blockedUsers: user.blockedUsers ?? [:])
                                     }
                                     
                                 }
@@ -219,7 +219,7 @@ struct CommunityMainView: View {
             if let user = userManager.user {
                 print("user available")
                 if let following = user.following {
-                    communityManager.retrieveDreams(userId: user.id!, following: following, isInfiniteScrollRequest: false)
+                    communityManager.retrieveDreams(userId: user.id!, following: following, isInfiniteScrollRequest: false, blockedUsers: user.blockedUsers ?? [:])
                 } else {
                     print("following not available")
                 }
@@ -266,6 +266,18 @@ struct CommunityDream : View {
                             .bold()
                             .font(.system(size: 16, design: .serif))
                             .frame(maxWidth: .infinity, alignment: .leading)
+//                            .padding(/*@START_MENU_TOKEN@*/EdgeInsets()/*@END_MENU_TOKEN@*/)
+                        
+                        // 18+ indicated
+                        if let hasAdultContent = dream.hasAdultContent {
+                            if hasAdultContent {
+                                Text("18+")
+                                    .foregroundStyle(Color.red)
+                                    .bold()
+                                    .font(.system(size: 13, design: .serif))
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                        }
                         
                         Text(date)
                             .foregroundStyle(.gray)

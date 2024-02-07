@@ -27,7 +27,7 @@ struct CommunityForYouView: View {
                     if communityManager.shouldLoadMoreDreamsButtonBeVisible {
                         Button(action: {
                             if let user = userManager.user {
-                                communityManager.retrieveDreams(userId: user.id!, following: user.following!, isInfiniteScrollRequest: true)
+                                communityManager.retrieveDreams(userId: user.id!, following: user.following!, isInfiniteScrollRequest: true, blockedUsers: user.blockedUsers ?? [:])
                             }
                             
                         }) {

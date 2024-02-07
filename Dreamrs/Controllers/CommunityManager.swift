@@ -43,6 +43,11 @@ class CommunityManager : ObservableObject {
     @Published var searchText: String = ""
     @Published var searchedProfiles: [User] = []
     
+    // Reporting
+    @Published var isReportMenuShowing: Bool = false
+    @Published var isBlockUserMenuShowing: Bool = false
+    @Published var isUnblockUserMenuShowing: Bool = false
+    
     // Firestore
     let db = Firestore.firestore()
     
@@ -54,9 +59,20 @@ class CommunityManager : ObservableObject {
         selectedTrafficSlice = trafficSlices[0]
     }
     
-    func retrieveDreams(userId: String, following: [String], isInfiniteScrollRequest: Bool) {
+    func clearDreams() {
+        self.retrievedDreamsToday = []
+        self.retrievedDreamsTodayForYou = []
+        self.retrievedDreamsThisMonth = []
+        self.retrievedDreamsThisMonthForYou = []
+        
+//        selectedTimeFilter = timeFilters[1]
+//        selectedTrafficSlice = trafficSlices[0]
+    }
+    
+    func retrieveDreams(userId: String, following: [String], isInfiniteScrollRequest: Bool, blockedUsers: [String: Bool]) {
         if userId != Auth.auth().currentUser?.uid { return }
         
+        print(blockedUsers)
         
         // Cache the dreams already retrieved so that we do not make unnecessary calls to firestore.
         if !isInfiniteScrollRequest {
@@ -158,8 +174,17 @@ class CommunityManager : ObservableObject {
                 }
                 
                 for document in snapshot.documents {
-                    let id = document.documentID
+                    
+                    // if the author id is in the users blocked user list, skip this dream
                     let authorId = document.data()["authorId"] as? String
+                    if let userIsBlocked = blockedUsers[authorId ?? ""] {
+                        print("exists in blocked list")
+                        continue
+                    }
+                    
+                    
+                    let id = document.documentID
+//                    let authorId = document.data()["authorId"] as? String
                     let authorHandle = document.data()["authorHandle"] as? String
                     let authorColor = document.data()["authorColor"] as? String
                     let title = document.data()["title"] as? String
@@ -174,8 +199,9 @@ class CommunityManager : ObservableObject {
                     let tags = document.data()["tags"] as? [[String : String]]
                     let AITextAnalysis = document.data()["AITextAnalysis"] as? String
                     let hasImage = document.data()["hasImage"] as? Bool
+                    let hasAdultContent = document.data()["hasAdultContent"] as? Bool
                     
-                    let dream = Dream(id: id, authorId: authorId, authorHandle: authorHandle, authorColor: authorColor, title: title, plainText: plainText, archivedData: archivedData, date: date, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity, tags: tags, AITextAnalysis: AITextAnalysis, hasImage: hasImage)
+                    let dream = Dream(id: id, authorId: authorId, authorHandle: authorHandle, authorColor: authorColor, title: title, plainText: plainText, archivedData: archivedData, date: date, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity, tags: tags, AITextAnalysis: AITextAnalysis, hasImage: hasImage, hasAdultContent: hasAdultContent)
 //                    print("appended a dream with timestamp: ", rawTimestamp ?? "None")
                     
                     // Append dream to correct dream list slice
@@ -244,8 +270,15 @@ class CommunityManager : ObservableObject {
                     print("error getting dreams: ", err.localizedDescription)
                 } else {
                     for document in querySnapshot!.documents {
-                        let id = document.documentID
+                        // if the author id is in the users blocked user list, skip this dream
                         let authorId = document.data()["authorId"] as? String
+                        if let userIsBlocked = blockedUsers[authorId ?? ""] {
+                            print("exists in blocked list")
+                            continue
+                        }
+                        
+                        let id = document.documentID
+//                        let authorId = document.data()["authorId"] as? String
                         let authorHandle = document.data()["authorHandle"] as? String
                         let authorColor = document.data()["authorColor"] as? String
                         let title = document.data()["title"] as? String
@@ -260,8 +293,9 @@ class CommunityManager : ObservableObject {
                         let tags = document.data()["tags"] as? [[String : String]]
                         let AITextAnalysis = document.data()["AITextAnalysis"] as? String
                         let hasImage = document.data()["hasImage"] as? Bool
+                        let hasAdultContent = document.data()["hasAdultContent"] as? Bool
                         
-                        let dream = Dream(id: id, authorId: authorId, authorHandle: authorHandle, authorColor: authorColor, title: title, plainText: plainText, archivedData: archivedData, date: date, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity, tags: tags, AITextAnalysis: AITextAnalysis, hasImage: hasImage)
+                        let dream = Dream(id: id, authorId: authorId, authorHandle: authorHandle, authorColor: authorColor, title: title, plainText: plainText, archivedData: archivedData, date: date, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity, tags: tags, AITextAnalysis: AITextAnalysis, hasImage: hasImage, hasAdultContent: hasAdultContent)
 //                        print("appended a dream with timestamp: ", rawTimestamp ?? "None")
                         
                         
@@ -533,8 +567,47 @@ class CommunityManager : ObservableObject {
         }
     }
     
-    func randomImage() -> String {
-        let randomNumber = Int.random(in: 2...6)
-        return "dream\(randomNumber)"
+    // The currently focused dream is being reported
+    func reportDream(userId: String, reportReason: ReportReason) {
+        if let dream = self.focusedDream {
+            // write to the report firestore collection with the following info
+            // 1. DreamId
+            // 2. AuthorId
+            // 3. dream collection
+            // 3. reportReason
+            // 4. reportingUserId
+            
+            // get the dream collection from the dream raw timestamp
+            let date = dream.rawTimestamp!.dateValue()
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "MMMMyyyy"
+            let dateString = "dreams" + dateFormatter.string(from: date)
+            
+            print(dateString)
+            
+            let report = DreamReport(dreamId: dream.id, authorId: dream.authorId, dreamCollection: dateString, resonForReport: reportReason.rawValue, reportingUserId: userId)
+            
+            let newReportRef = db.collection("reports").document()
+            
+            do {
+                try newReportRef.setData(from: report)
+            } catch let error {
+                print("error adding report to firestore: ", error)
+            }
+        } else {
+            print("no dream focused")
+        }
     }
+    
+//    func randomImage() -> String {
+//        let randomNumber = Int.random(in: 2...6)
+//        return "dream\(randomNumber)"
+//    }
+}
+
+enum ReportReason: String {
+    case offensive = "Offensive"
+    case harmfulOrAbusive = "Harmful or Abusive"
+    case graphicContent = "Graphic content"
+    case spamOrAdvertisement = "Spam or Advertisement"
 }

@@ -27,4 +27,14 @@ struct Dream : Codable, Identifiable, Equatable {
     var tags: [[String : String]]?
     var AITextAnalysis: String?
     var hasImage: Bool?
+    var hasAdultContent: Bool?
+}
+
+struct DreamReport : Codable, Identifiable {
+    @DocumentID var id: String?
+    var dreamId: String?
+    var authorId: String?
+    var dreamCollection: String?
+    var resonForReport: String?
+    var reportingUserId: String?
 }
