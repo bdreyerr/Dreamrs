@@ -30,7 +30,7 @@ struct SingleCommunityDream: View {
                             Button(action: {
                                 communityManager.isReportMenuShowing = true
                             }) {
-                                Image(systemName: "exclamationmark.circle")
+                                Image(systemName: "info.circle")
                                     .resizable()
                                     .frame(width: 20, height: 20)
                                     .foregroundStyle(Color.black)

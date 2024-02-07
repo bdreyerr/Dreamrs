@@ -119,7 +119,7 @@ struct CommunityProfileView: View {
                                     Button(action: {
                                         communityManager.isBlockUserMenuShowing = true
                                     }) {
-                                        Image(systemName: "exclamationmark.circle")
+                                        Image(systemName: "info.circle")
                                             .resizable()
                                             .frame(width: 15, height: 15)
                                             .foregroundStyle(Color.black)
@@ -158,7 +158,7 @@ struct CommunityProfileView: View {
                                 Button(action: {
                                     communityManager.isBlockUserMenuShowing = true
                                 }) {
-                                    Image(systemName: "exclamationmark.circle")
+                                    Image(systemName: "info.circle")
                                         .resizable()
                                         .frame(width: 15, height: 15)
                                         .foregroundStyle(Color.black)
