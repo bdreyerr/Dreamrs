@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1A01803A2DA6155200E8D155 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1A0180392DA6155200E8D155 /* GoogleService-Info.plist */; };
+		1A01803C2DA8564800E8D155 /* ListDream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A01803B2DA8564800E8D155 /* ListDream.swift */; };
 		1A330DEC2B1EA613009663C6 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A330DEB2B1EA613009663C6 /* UserManager.swift */; };
 		1A330DEE2B21534F009663C6 /* CreateDreamManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A330DED2B21534F009663C6 /* CreateDreamManager.swift */; };
 		1A4055932B0AC4440025CBEF /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A4055922B0AC4430025CBEF /* HomeView.swift */; };
@@ -16,7 +18,6 @@
 		1A4395192B117D1800BA5C27 /* ProfileSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A4395182B117D1800BA5C27 /* ProfileSettingsView.swift */; };
 		1A4676392B1508310007F3E6 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A4676382B1508310007F3E6 /* User.swift */; };
 		1A46763B2B1508B20007F3E6 /* Dream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A46763A2B1508B20007F3E6 /* Dream.swift */; };
-		1A46763F2B150DB50007F3E6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1A46763E2B150DB50007F3E6 /* GoogleService-Info.plist */; };
 		1A4676422B150E1C0007F3E6 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1A4676412B150E1C0007F3E6 /* FirebaseAnalytics */; };
 		1A4676442B150E1C0007F3E6 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */ = {isa = PBXBuildFile; productRef = 1A4676432B150E1C0007F3E6 /* FirebaseAnalyticsOnDeviceConversion */; };
 		1A4676462B150E1C0007F3E6 /* FirebaseAnalyticsSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 1A4676452B150E1C0007F3E6 /* FirebaseAnalyticsSwift */; };
@@ -62,6 +63,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1A0180392DA6155200E8D155 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		1A01803B2DA8564800E8D155 /* ListDream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListDream.swift; sourceTree = "<group>"; };
 		1A330DEB2B1EA613009663C6 /* UserManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
 		1A330DED2B21534F009663C6 /* CreateDreamManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateDreamManager.swift; sourceTree = "<group>"; };
 		1A4055922B0AC4430025CBEF /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -72,7 +75,6 @@
 		1A4395182B117D1800BA5C27 /* ProfileSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSettingsView.swift; sourceTree = "<group>"; };
 		1A4676382B1508310007F3E6 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		1A46763A2B1508B20007F3E6 /* Dream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dream.swift; sourceTree = "<group>"; };
-		1A46763E2B150DB50007F3E6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Desktop/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1A5767812B4B4CB5002030ED /* CommunityProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityProfileView.swift; sourceTree = "<group>"; };
 		1A5767832B4B6DEA002030ED /* ProfileFollowerListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFollowerListView.swift; sourceTree = "<group>"; };
 		1A5767852B4F3B6B002030ED /* PinDreamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinDreamView.swift; sourceTree = "<group>"; };
@@ -182,7 +184,6 @@
 			children = (
 				1A4260FA2B1BEE550011B7BF /* Controllers */,
 				1A4260F92B1BEA020011B7BF /* Dreamrs.entitlements */,
-				1A46763E2B150DB50007F3E6 /* GoogleService-Info.plist */,
 				1A4676372B1508220007F3E6 /* Models */,
 				1ACA218A2AEDDD3000CCEF66 /* Info.plist */,
 				1ACA21782AEDB17A00CCEF66 /* Views */,
@@ -192,6 +193,7 @@
 				1ACA21702AEDAFC100CCEF66 /* Preview Content */,
 				1A4260F72B1BE4CB0011B7BF /* UserDefaults.swift */,
 				1A688D432B659D76004AFB64 /* Secrets.swift */,
+				1A0180392DA6155200E8D155 /* GoogleService-Info.plist */,
 			);
 			path = Dreamrs;
 			sourceTree = "<group>";
@@ -223,6 +225,7 @@
 				1A4055922B0AC4430025CBEF /* HomeView.swift */,
 				1A986FD72B227B07001D9CD0 /* CreateDreamRichText.swift */,
 				1A5767852B4F3B6B002030ED /* PinDreamView.swift */,
+				1A01803B2DA8564800E8D155 /* ListDream.swift */,
 			);
 			path = HomeViews;
 			sourceTree = "<group>";
@@ -347,7 +350,7 @@
 			files = (
 				1ACA21722AEDAFC100CCEF66 /* Preview Assets.xcassets in Resources */,
 				1ACA216F2AEDAFC100CCEF66 /* Assets.xcassets in Resources */,
-				1A46763F2B150DB50007F3E6 /* GoogleService-Info.plist in Resources */,
+				1A01803A2DA6155200E8D155 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -373,6 +376,7 @@
 				1ACA21832AEDC6CD00CCEF66 /* CommunityMainView.swift in Sources */,
 				1A330DEE2B21534F009663C6 /* CreateDreamManager.swift in Sources */,
 				1ACA21872AEDC71A00CCEF66 /* ProfileMainView.swift in Sources */,
+				1A01803C2DA8564800E8D155 /* ListDream.swift in Sources */,
 				1A688D3E2B55DB9B004AFB64 /* WelcomeSurveyView.swift in Sources */,
 				1A5767822B4B4CB5002030ED /* CommunityProfileView.swift in Sources */,
 				1A986FD82B227B07001D9CD0 /* CreateDreamRichText.swift in Sources */,

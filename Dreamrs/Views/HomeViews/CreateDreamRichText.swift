@@ -36,7 +36,7 @@ struct CreateDreamRichText: View {
                 TextField("Dream title", text: $createDreamManager.title, axis: .horizontal)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .font(.system(size: 20, design: .serif))
-                    .padding(.bottom, 15)
+//                    .padding(.bottom, 5)
                     .padding(.leading, 25)
                     .font(.subheadline)
                 
@@ -46,13 +46,11 @@ struct CreateDreamRichText: View {
                         $0.textContentInset = CGSize(width: 10, height: 20)
                     }
                     .background(.white)
-                    .focusedValue(\.richTextContext, createDreamManager.context)
+//                    .focusedValue(\.richTextContext, createDreamManager.context)
                     .cornerRadius(20)
                     .padding(.leading, 10)
                     .padding(.trailing, 10)
-                    .overlay {
-                        
-                    }
+                    
                 }
                 
                 // Tags
@@ -212,57 +210,57 @@ struct CreateDreamRichText: View {
                             .padding(.bottom, 10)
                             
                             // Community Sharing
-                            HStack {
-                                Text("Share this dream with your followers?")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .font(.system(size: 16, design: .serif))
-                                
-                                
-                                Button(action: {
-                                    createDreamManager.shareWithFriends.toggle()
-                                }) {
-                                    if !createDreamManager.shareWithFriends {
-                                        Image(systemName: "square")
-                                            .resizable()
-                                            .frame(width: 20, height: 20)
-                                            .foregroundColor(.black)
-                                    } else {
-                                        Image(systemName: "checkmark.square")
-                                            .resizable()
-                                            .frame(width: 20, height: 20)
-                                            .foregroundColor(.green)
-                                    }
-                                }
-                                .padding(.trailing, 20)
-                                
-                            }
-                            .padding(.leading, 20)
-                            .padding(.bottom, 10)
+//                            HStack {
+//                                Text("Share this dream with your followers?")
+//                                    .frame(maxWidth: .infinity, alignment: .leading)
+//                                    .font(.system(size: 16, design: .serif))
+//                                
+//                                
+//                                Button(action: {
+//                                    createDreamManager.shareWithFriends.toggle()
+//                                }) {
+//                                    if !createDreamManager.shareWithFriends {
+//                                        Image(systemName: "square")
+//                                            .resizable()
+//                                            .frame(width: 20, height: 20)
+//                                            .foregroundColor(.black)
+//                                    } else {
+//                                        Image(systemName: "checkmark.square")
+//                                            .resizable()
+//                                            .frame(width: 20, height: 20)
+//                                            .foregroundColor(.green)
+//                                    }
+//                                }
+//                                .padding(.trailing, 20)
+//                                
+//                            }
+//                            .padding(.leading, 20)
+//                            .padding(.bottom, 10)
                             
-                            HStack {
-                                Text("Share this dream with the community?")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .font(.system(size: 16, design: .serif))
-                                
-                                Button(action: {
-                                    createDreamManager.shareWithCommunity.toggle()
-                                }) {
-                                    if !createDreamManager.shareWithCommunity {
-                                        Image(systemName: "square")
-                                            .resizable()
-                                            .frame(width: 20, height: 20)
-                                            .foregroundColor(.black)
-                                    } else {
-                                        Image(systemName: "checkmark.square")
-                                            .resizable()
-                                            .frame(width: 20, height: 20)
-                                            .foregroundColor(.green)
-                                    }
-                                }
-                                .padding(.trailing, 20)
-                            }
-                            .padding(.leading, 20)
-                            .padding(.bottom, 20)
+//                            HStack {
+//                                Text("Share this dream with the community?")
+//                                    .frame(maxWidth: .infinity, alignment: .leading)
+//                                    .font(.system(size: 16, design: .serif))
+//                                
+//                                Button(action: {
+//                                    createDreamManager.shareWithCommunity.toggle()
+//                                }) {
+//                                    if !createDreamManager.shareWithCommunity {
+//                                        Image(systemName: "square")
+//                                            .resizable()
+//                                            .frame(width: 20, height: 20)
+//                                            .foregroundColor(.black)
+//                                    } else {
+//                                        Image(systemName: "checkmark.square")
+//                                            .resizable()
+//                                            .frame(width: 20, height: 20)
+//                                            .foregroundColor(.green)
+//                                    }
+//                                }
+//                                .padding(.trailing, 20)
+//                            }
+//                            .padding(.leading, 20)
+//                            .padding(.bottom, 20)
                             
                             
                             Button(action: {
@@ -339,6 +337,7 @@ struct TagView: View {
     var icon: String
     var color: Color
     var isEditable: Bool
+    var customSize: CGFloat?
     
     @State var isEditPopupShowing: Bool = false
     
@@ -354,9 +353,9 @@ struct TagView: View {
             }
             
             Label(text, systemImage: icon)
-                .font(.system(size: 11, design: .serif))
+                .font(.system(size: customSize ?? 11, design: .serif))
                 .foregroundColor(.white)
-                .padding(13)
+                .padding(customSize ?? 13)
                 .background(color.opacity(0.75), in: Capsule())
                 .onTapGesture {
                     if isEditable {

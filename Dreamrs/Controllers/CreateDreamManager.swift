@@ -14,7 +14,7 @@ import SwiftUI
 class CreateDreamManager : ObservableObject {
     // Dream Content
     @Published var title: String = ""
-    @Published var text = NSAttributedString(string: "")
+    @Published var text = NSAttributedString(string: "I dreamt of...")
     @Published var context = RichTextContext()
     
     // Tags
@@ -48,7 +48,7 @@ class CreateDreamManager : ObservableObject {
     init() {
         context.fontName = "Hoefler Text"
         context.fontSize = 15
-        context.isEditingText = true
+//        context.isEditingText = true
         
         dateFormatter.dateFormat = "MMMM dd'th', yyyy"
         date = dateFormatter.string(from: Date.now)
@@ -96,7 +96,7 @@ class CreateDreamManager : ObservableObject {
             print("content is empty")
         }
         
-        if self.text.string.count >= 2000 {
+        if self.text.string.count >= 5000 {
             print("dream length is too long.")
             return nil
         }
@@ -133,15 +133,15 @@ class CreateDreamManager : ObservableObject {
         let currentMonthYearString = dateFormatter.string(from: Date()) // Example output: "December 2023"
         
         // Save the dream to firestore
-        let dreamsRef = db.collection("dreams" + currentMonthYearString)
+        let dreamsRef = db.collection("dreams")
         do {
             let newDreamRef = try dreamsRef.addDocument(from: dream)
             print("Dream stored with new doc reference: ", newDreamRef.documentID)
             
             // update the local dream id
-            dream.id = newDreamRef.documentID
+//            dream.id = newDreamRef.documentID
             
-            // Add 1 to users num derams
+            // Add 1 to users num dreams
             // TODO add error handling
             let userRef = db.collection("users").document(userId)
             userRef.updateData([
@@ -154,22 +154,6 @@ class CreateDreamManager : ObservableObject {
             return nil
         }
     }
-    
-//    func retrieveDream() {
-//        let docRef = db.collection("dreams").document("hfMdmDmZpnrmtn9wIObg")
-//        
-//        docRef.getDocument { (document, error) in
-//            if let document = document, document.exists {
-//                let dataDescription = document.data().map(String.init(describing:)) ?? "nil"
-//                print("Document data: \(dataDescription)")
-//                // Set the archived Data
-//                let archivedData = document.data()!["archivedData"] as! Data
-//                self.retrievedText = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(archivedData) as? NSAttributedString
-//            } else {
-//                print("Document does not exist")
-//            }
-//        }
-//    }
     
     func convertSingleTagToDict(tag: Tag) -> [String : String] {
         var innerDict = [String : String]()

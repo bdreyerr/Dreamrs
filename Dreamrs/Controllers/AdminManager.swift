@@ -48,7 +48,7 @@ class AdminManager : ObservableObject {
         // 5. Go through the AI process for image generation, save it to storage and set bit on the dream in firestore
         
         let dreamPrompt = "Generate a random dream you had (no flying, make the dream unique), don't include quotes. Six words or less."
-        let query = ChatQuery(model: .gpt3_5Turbo, messages: [.init(role: .user, content: dreamPrompt)])
+        let query = ChatQuery(messages: [.init(role: .user, content: dreamPrompt)!], model: .gpt3_5Turbo)
         openAI.chats(query: query) { result in
             switch result {
             case .success(let result):
@@ -58,7 +58,7 @@ class AdminManager : ObservableObject {
                         // Now generate a dream description based on the dream title
                         let dreamDescriptionPrompt = "Generate a dream based on the following title, one hundred words or less: " + response
                         
-                        let queryDescription = ChatQuery(model: .gpt3_5Turbo, messages: [.init(role: .user, content: dreamDescriptionPrompt)])
+                        let queryDescription = ChatQuery(messages: [.init(role: .user, content: dreamDescriptionPrompt)!], model: .gpt3_5Turbo)
                         self.openAI.chats(query: queryDescription) { result in
                             switch result {
                             case .success(let result):
@@ -127,7 +127,7 @@ class AdminManager : ObservableObject {
     func analyzeDreamText(dreamId: String, dreamContent: String) {
         let dreamPrompt = "Analyze the following dream: " + dreamContent
         
-        let query = ChatQuery(model: .gpt3_5Turbo, messages: [.init(role: .user, content: dreamPrompt)])
+        let query = ChatQuery(messages: [.init(role: .user, content: dreamPrompt)!], model: .gpt3_5Turbo)
         openAI.chats(query: query) { result in
             // Handle OpenAI response
             switch result {

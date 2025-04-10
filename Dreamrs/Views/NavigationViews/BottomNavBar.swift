@@ -17,10 +17,10 @@ struct BottomNavBar: View {
                             Label("", systemImage: "house")
                         }
                     
-                    CommunityMainView()
-                        .tabItem {
-                            Label("", systemImage: "person.3.fill")
-                        }
+//                    CommunityMainView()
+//                        .tabItem {
+//                            Label("", systemImage: "person.3.fill")
+//                        }
                     
 //                    TestSingleDream()
                     ProfileMainView()

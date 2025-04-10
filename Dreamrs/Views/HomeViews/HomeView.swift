@@ -7,11 +7,30 @@
 
 import SwiftUI
 import FirebaseAuth
+import UIKit
 
 struct HomeView: View {
     
     @StateObject var homeManager = HomeManager()
     @EnvironmentObject var userManager: UserManager
+    @State private var showFilterView = false
+    @State private var showSearchBar = false
+    @State private var searchText = ""
+    @State private var isNewestSelected = true
+    @State private var isOldestSelected = false
+    
+    var filteredDreams: [Dream] {
+        if searchText.isEmpty {
+            return homeManager.retrievedDreams
+        } else {
+            return homeManager.retrievedDreams.filter { dream in
+                if let title = dream.title {
+                    return title.lowercased().contains(searchText.lowercased())
+                }
+                return false
+            }
+        }
+    }
     
     var body: some View {
         NavigationView {
@@ -28,129 +47,173 @@ struct HomeView: View {
                             .padding(.trailing, 20)
                             .font(.subheadline)
                             .bold()
+                        
+//                        Spacer()
                     }
-                    .padding(.bottom, 20)
+                    .padding(.bottom, 10)
                     
-                    // Month Selector
-                    HStack {
-                        Menu {
-                            Picker(selection: $homeManager.selectedMonth) {
-                                ForEach(homeManager.months, id: \.self) { value in
-                                    Text(value)
-                                        .tag(value)
-                                        .font(.system(size: 16, design: .serif))
-                                        .accentColor(.black)
-                                        .bold()
-                                        
-                                }
-                            } label: {}
-                            .accentColor(.black)
-                            .padding(.leading, -12)
-                            .font(.system(size: 16, design: .serif))
-                            .onChange(of: homeManager.selectedMonth) { newValue in
-                                if let user = userManager.user {
-                                    homeManager.retrieveDreams(userId: user.id!)
-                                }
+                    
+                    // Filters and search
+                    HStack(spacing: 16) {
+                        Spacer()
+                        // Filters button
+                        Button(action: {
+                            withAnimation {
+                                showFilterView.toggle()
+                                if showSearchBar { showSearchBar = false }
+                            }
+                        }) {
+                            Image(systemName: "slider.horizontal.3")
+                                .font(.system(size: 18))
+                                .foregroundColor(showFilterView ? .blue : .primary)
+                        }
+                        
+                        // Search button
+                        Button(action: {
+                            withAnimation {
+                                showSearchBar.toggle()
+                                if showFilterView { showFilterView = false }
+                            }
+                        }) {
+                            Image(systemName: "magnifyingglass")
+                                .font(.system(size: 18))
+                                .foregroundColor(showSearchBar ? .blue : .primary)
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom, 5)
+                    
+                    // Search bar
+                    if showSearchBar {
+                        SearchBar(text: $searchText, placeholder: "Search dreams...")
+                            .padding(.horizontal)
+                            .padding(.bottom, 10)
+                            .transition(.move(edge: .top).combined(with: .opacity))
+                    }
+                    
+                    // Filter view
+                    if showFilterView {
+                        HStack {
+                            Spacer()
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text("Filters")
+                                    .font(.headline)
+                                    .padding(.bottom, 5)
                                 
-                            }
-                        } label: {
-                            HStack {
-                                Text(homeManager.selectedMonth)
-                                    .font(.system(size: 16, design: .serif))
-                                    .accentColor(.black)
-                                    .bold()
-                                Image(systemName: "arrowtriangle.down.fill")
-                                    .resizable()
-                                    .frame(width: 12, height: 6)
-                                    .foregroundColor(.black)
-                            }
-                        }
-                        Spacer()
-                    }
-                    .padding(.leading, 20)
-//                    .padding(.bottom, 15)
-                    
-                    // Year Selector
-                    HStack {
-                        Menu {
-                            Picker(selection: $homeManager.selectedYear) {
-                                ForEach(homeManager.years, id: \.self) { value in
-                                    Text(value)
-                                        .tag(value)
-                                        .font(.system(size: 16, design: .serif))
-                                        .accentColor(.black)
-                                        .bold()
-                                        
-                                }
-                            } label: {}
-                            .accentColor(.black)
-                            .padding(.leading, -12)
-                            .font(.system(size: 16, design: .serif))
-                            .onChange(of: homeManager.selectedYear) { newValue in
-                                if let user = userManager.user {
-                                    homeManager.retrieveDreams(userId: user.id!)
+                                HStack {
+                                    FilterChip(title: "Newest", isSelected: $isNewestSelected, action: {
+                                        isNewestSelected = true
+                                        isOldestSelected = false
+                                        homeManager.toggleSortOrder(isNewest: true)
+                                    })
+                                    FilterChip(title: "Oldest", isSelected: $isOldestSelected, action: {
+                                        isNewestSelected = false
+                                        isOldestSelected = true
+                                        homeManager.toggleSortOrder(isNewest: false)
+                                    })
                                 }
                             }
-                        } label: {
-                            HStack {
-                                Text(homeManager.selectedYear)
-                                    .font(.system(size: 13, design: .serif))
-                                    .accentColor(.black)
-                                    .bold()
-                                Image(systemName: "arrowtriangle.down.fill")
-                                    .resizable()
-                                    .frame(width: 12, height: 6)
-                                    .foregroundColor(.black)
-                            }
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .cornerRadius(10)
+                            .padding(.horizontal)
+                            .padding(.bottom, 10)
+                            .transition(.move(edge: .top).combined(with: .opacity))
                         }
-                        Spacer()
                     }
-                    .padding(.leading, 20)
-                    .padding(.bottom, 15)
-                    
-                    
                     
                     ScrollView(showsIndicators: false) {
-//                        ListDream()
                         if homeManager.retrievedDreams.isEmpty {
                             Image("sleep_face")
                                 .resizable()
                                 .frame(width: 100, height: 100)
                                 .opacity(0.6)
                                 .padding(.top, 60)
+                        } else if !searchText.isEmpty && filteredDreams.isEmpty {
+                            VStack {
+                                Image("sleep_face")
+                                    .resizable()
+                                    .frame(width: 80, height: 80)
+                                    .opacity(0.4)
+                                    .padding(.top, 60)
+                                
+                                Text("No dreams match your search")
+                                    .font(.system(size: 16))
+                                    .foregroundColor(.gray)
+                                    .padding(.top, 20)
+                            }
+                        } else {
+                            LazyVGrid(columns: [
+                                GridItem(.flexible(), spacing: 12),
+                                GridItem(.flexible(), spacing: 12)
+                            ], spacing: 12) {
+                                ForEach(filteredDreams) { dream in
+                                    ListDream(dream: dream, title: dream.title!, date: dream.date!, dayOfWeek: dream.dayOfWeek!)
+                                }
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.bottom, 8)
+                            .frame(maxWidth: .infinity)
                         }
-//                        Image(uiImage: homeManager.imageView.image!)
                         
-                        ForEach(homeManager.retrievedDreams) { dream in
-                            ListDream(dream: dream, title: dream.title!, date: dream.date!, dayOfWeek: dream.dayOfWeek!)
+                        
+                        if !homeManager.retrievedDreams.isEmpty && homeManager.noMoreDreamsAvailable == false && self.searchText.isEmpty {
+                            // More Dreams Button
+                            Button(action: {
+                                homeManager.loadMoreDreams()
+                            }) {
+                                if homeManager.isLoadingMoreDreams {
+                                    ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 12)
+                                        .background(
+                                            LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.5), Color.purple.opacity(0.5)]),
+                                                          startPoint: .leading,
+                                                          endPoint: .trailing)
+                                        )
+                                        .cornerRadius(20)
+                                } else {
+                                    Text(homeManager.noMoreDreamsAvailable ? "No More Dreams" : "More Dreams")
+                                        .font(.system(size: 14, weight: .medium))
+                                        .foregroundColor(.white)
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 12)
+                                        .background(
+                                            LinearGradient(gradient: Gradient(colors: [
+                                                homeManager.noMoreDreamsAvailable ? Color.gray.opacity(0.7) : Color.blue.opacity(0.7),
+                                                homeManager.noMoreDreamsAvailable ? Color.gray.opacity(0.7) : Color.purple.opacity(0.7)
+                                            ]),
+                                                          startPoint: .leading,
+                                                          endPoint: .trailing)
+                                        )
+                                        .cornerRadius(20)
+                                        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+                                }
+                            }
+                            .disabled(homeManager.isLoadingMoreDreams || homeManager.noMoreDreamsAvailable)
+                            .padding(.horizontal, 150)
+                            .padding(.top, 10)
+                            .padding(.bottom, 20)
                         }
+                        
                     }
+                    .padding(.top, 5)
+                    
+                    
+                    
                 }
+                .scrollDismissesKeyboard(.interactively)
                 .padding(.top, 10)
                 .padding(.bottom, 25)
+                .onTapGesture {
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                }
                 
                 VStack {
                     Spacer()
                     HStack {
                         Spacer()
-//                        NavigationLink(destination: CreateDreamRichText()) {
-////                            Image(systemName: "plus.square")
-////                                .resizable()
-////                                .frame(width: 25, height: 25)
-////                                .font(.title)
-////                                .foregroundColor(.white)
-////                                .padding(20)
-////                                .background(Color.red)
-////                                .clipShape(Circle())
-////                                .shadow(color: Color.black.opacity(0.3), radius: 10, x: 10, y: 10)
-//                            
-//                            Image("pencil")
-//                                .resizable()
-//                                .frame(width: 60, height: 60)
-//                                .clipShape(Circle())
-//                                .shadow(color: Color.black.opacity(0.3), radius: 10, x: 10, y: 10)
-//                            
-//                        }
                         Button(action: {
                             homeManager.isCreateDreamPopupShowing = true
                         }) {
@@ -174,6 +237,9 @@ struct HomeView: View {
         }
         .environmentObject(homeManager)
         .onAppear {
+            // Initialize sort order based on UI selection
+            homeManager.sortByDateDescending = isNewestSelected
+            
             if let user = Auth.auth().currentUser {
                 homeManager.retrieveDreams(userId: user.uid)
             } else {
@@ -186,120 +252,6 @@ struct HomeView: View {
 
 #Preview {
     HomeView()
-}
-
-struct ListDream: View {
-    
-    @EnvironmentObject var homeManager: HomeManager
-
-    var dream: Dream
-    var title: String
-    var date: String
-    var dayOfWeek: String
-    
-    var body: some View {
-        NavigationLink(destination: SingleDream()) {
-            HStack {
-                VStack {
-                    TitleTextView(dayOfWeek: dayOfWeek)
-                        .bold()
-                        .font(.system(size: 16, design: .serif))
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.bottom, 1)
-                    
-                    HStack {
-                        Text(title)
-                            .foregroundStyle(.black)
-                            .font(.system(size: 18, design: .serif))
-                            .multilineTextAlignment(.leading)
-                        Spacer()
-                    }
-                    .padding(.bottom, 2)
-                    
-                    
-                    // 18+ indicated
-                    HStack {
-                        if let hasAdultContent = dream.hasAdultContent {
-                            if hasAdultContent {
-                                Text("18+")
-                                    .foregroundStyle(Color.red)
-                                    .bold()
-                                    .font(.system(size: 13, design: .serif))
-                                    .padding(.bottom, 2)
-                                
-                                Spacer()
-                            }
-                        }
-                    }
-                    
-                    
-                    Text(date)
-                        .foregroundStyle(.gray)
-                        .font(.system(size: 14, design: .serif))
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                }
-                .padding(.leading, 20)
-                .padding(.bottom, 10)
-                
-                if let image = homeManager.retrievedImages[dream.id!] {
-                    Image(uiImage: image)
-                        .resizable()
-                        .frame(width: 100, height: 60)
-                        .clipShape(Circle())
-                } else {
-//                    Image(homeManager.randomImage())
-//                        .resizable()
-//                        .frame(width: 100, height: 60)
-//                        .clipShape(Circle())
-                }
-            }
-            
-        }
-        .simultaneousGesture(TapGesture().onEnded {
-            homeManager.displayDream(dream: self.dream)
-        })
-    }
-}
-
-struct TitleTextView: View {
-    let dayOfWeek: String
-    
-    var body: some View {
-        switch(dayOfWeek) {
-        case "Monday":
-            Text(dayOfWeek)
-                .foregroundStyle(.purple)
-                
-        case "Tuesday":
-            Text(dayOfWeek)
-                .foregroundStyle(.blue)
-                
-        case "Wednesday":
-            Text(dayOfWeek)
-                .foregroundStyle(.green)
-                
-        case "Thursday":
-            Text(dayOfWeek)
-                .foregroundStyle(.red)
-
-        case "Friday":
-            Text(dayOfWeek)
-                .foregroundStyle(.mint)
-                
-        case "Saturday":
-            Text(dayOfWeek)
-                .foregroundStyle(.orange)
-                
-        case "Sunday":
-            Text(dayOfWeek)
-                .foregroundStyle(.indigo)
-                
-        default:
-            Text(dayOfWeek)
-                .foregroundStyle(.black)
-        }
-    }
 }
 
 struct LoadingDreamView : View {
@@ -347,5 +299,52 @@ struct LoadingDreamView : View {
         }
         
         
+    }
+}
+
+struct FilterChip: View {
+    var title: String
+    @Binding var isSelected: Bool
+    var action: () -> Void
+    
+    var body: some View {
+        Button(action: {
+            action()
+        }) {
+            Text(title)
+                .font(.footnote)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(isSelected ? Color.blue.opacity(0.2) : Color(.systemGray5))
+                .foregroundColor(isSelected ? .blue : .primary)
+                .cornerRadius(16)
+        }
+    }
+}
+
+struct SearchBar: View {
+    @Binding var text: String
+    var placeholder: String
+    
+    var body: some View {
+        HStack {
+            Image(systemName: "magnifyingglass")
+                .foregroundColor(.gray)
+            
+            TextField(placeholder, text: $text)
+                .disableAutocorrection(true)
+            
+            if !text.isEmpty {
+                Button(action: {
+                    text = ""
+                }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.gray)
+                }
+            }
+        }
+        .padding(8)
+        .background(Color(.systemGray6))
+        .cornerRadius(8)
     }
 }

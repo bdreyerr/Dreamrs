@@ -16,14 +16,14 @@ import OpenAI
 
 class HomeManager : ObservableObject {
     
-    @Published var selectedMonth: String
-    var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "Novemeber", "December"]
-    @Published var selectedYear: String
-    var years = ["2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026", "2027", "2028", "2029", "2030"]
-    
-    
     @Published var retrievedDreams : [Dream] = []
     @Published var retrievedImages : [String : UIImage] = [:]
+    @Published var lastDocumentSnapshot: DocumentSnapshot? = nil
+    @Published var isLoadingMoreDreams: Bool = false
+    @Published var noMoreDreamsAvailable: Bool = false
+    
+    // Sort by ascending or descending date (false = oldest first)
+    @Published var sortByDateDescending: Bool = false
     
     @Published var isCreateDreamPopupShowing: Bool = false
     
@@ -47,6 +47,8 @@ class HomeManager : ObservableObject {
     // Firestore
     let db = Firestore.firestore()
     
+    let defaultNumberDreamsToRetrieve: Int = 10 
+    
     // Storage
     let storage = Storage.storage()
     
@@ -54,68 +56,112 @@ class HomeManager : ObservableObject {
         // Find the current month, set the selector
         let calendar = Calendar.current
         let currentMonth = calendar.component(.month, from: Date())
-        selectedMonth = months[currentMonth - 1]
-        // Hardcoded to 2024, eventually set to current year based on calendar
-        selectedYear = years[5]
     }
     
-    func retrieveDreams(userId: String) {
+    func retrieveDreams(userId: String, loadMore: Bool = false) {
         // validate user id
         if userId != Auth.auth().currentUser?.uid { return }
         
-        self.retrievedDreams = []
+        if !loadMore {
+            DispatchQueue.main.async {
+                self.retrievedDreams = []
+                self.lastDocumentSnapshot = nil
+                self.noMoreDreamsAvailable = false
+            }
+        }
         
-        // read from only the selected month of the current year
-        // TODO(bendreyer): add multi year functionality later
-        let dreamSubcollection = selectedMonth+selectedYear
+        // Set loading state
+        DispatchQueue.main.async {
+            self.isLoadingMoreDreams = true
+        }
         
         // start with getting all documents from a current user (build dream individualy)
-        db.collection("dreams" + dreamSubcollection).whereField("authorId", isEqualTo: userId).order(by: "rawTimestamp", descending: false)
-            .getDocuments() { (querySnapshot, err) in
-                if let err = err {
-                    print("Error getting documents: ", err.localizedDescription)
-                } else {
-                    for document in querySnapshot!.documents {
-                        let id = document.documentID
-                        let title = document.data()["title"] as? String
-                        let plainText = document.data()["plainText"] as? String
-                        let archivedData = document.data()["archivedData"] as? Data
-                        let date = document.data()["date"] as? String
-                        let rawTimestamp = document.data()["rawTimestamp"] as? Timestamp
-                        let dayOfWeek = document.data()["dayOfWeek"] as? String
-                        let karma = document.data()["karma"] as? Int
-                        let sharedWithFriends = document.data()["sharedWithFriends"] as? Bool
-                        let sharedWithCommunity = document.data()["sharedWithCommunity"] as? Bool
-                        let tags = document.data()["tags"] as? [[String : String]]
-                        let AITextAnalysis = document.data()["AITextAnalysis"] as? String
-                        let hasImage = document.data()["hasImage"] as? Bool
-                        let hasAdultContent = document.data()["hasAdultContent"] as? Bool
-                        
-                        let dream = Dream(id: id, authorId: userId, title: title, plainText: plainText, archivedData: archivedData, date: date, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity, tags: tags, AITextAnalysis: AITextAnalysis, hasImage: hasImage, hasAdultContent: hasAdultContent)
-                        self.retrievedDreams.append(dream)
-                        
-                        // append image to local map if necessary
-                        if let hasImage = dream.hasImage {
-                            if hasImage {
-                                // Download the image from firestore
-                                let imageRef = self.storage.reference().child("dreams" + dreamSubcollection + "/" + dream.id! + ".jpg")
-                                
-                                // Download in memory with a maximum allowed size of 1MB (1 * 1024 * 1024 bytes)
-                                imageRef.getData(maxSize: 1 * 1024 * 1024) { data, error in
-                                    if let error = error {
-                                        print("Error downloading image from storage: ", error.localizedDescription)
-                                    } else {
-                                        // Data for "images/island.jpg" is returned
-                                        let image = UIImage(data: data!)
-                                        self.retrievedImages[dream.id!] = image
-                                    }
+        var query = db.collection("dreams")
+            .whereField("authorId", isEqualTo: userId)
+            .order(by: "rawTimestamp", descending: sortByDateDescending)
+            .limit(to: defaultNumberDreamsToRetrieve)
+        
+        // If loading more, start after the last document
+        if loadMore, let lastSnapshot = lastDocumentSnapshot {
+            query = query.start(afterDocument: lastSnapshot)
+        }
+        
+        query.getDocuments() { (querySnapshot, err) in
+            if let err = err {
+                print("Error getting documents: ", err.localizedDescription)
+                DispatchQueue.main.async {
+                    self.isLoadingMoreDreams = false
+                }
+            } else {
+                // Check if there are any more dreams available
+                if querySnapshot!.documents.isEmpty {
+                    DispatchQueue.main.async {
+                        self.noMoreDreamsAvailable = true
+                        self.isLoadingMoreDreams = false
+                    }
+                    return
+                }
+                
+                // Save the last document for pagination
+                self.lastDocumentSnapshot = querySnapshot!.documents.last
+                
+                for document in querySnapshot!.documents {
+                    let id = document.documentID
+                    let title = document.data()["title"] as? String
+                    let plainText = document.data()["plainText"] as? String
+                    let archivedData = document.data()["archivedData"] as? Data
+                    let date = document.data()["date"] as? String
+                    let rawTimestamp = document.data()["rawTimestamp"] as? Timestamp
+                    let dayOfWeek = document.data()["dayOfWeek"] as? String
+                    let karma = document.data()["karma"] as? Int
+                    let sharedWithFriends = document.data()["sharedWithFriends"] as? Bool
+                    let sharedWithCommunity = document.data()["sharedWithCommunity"] as? Bool
+                    let tags = document.data()["tags"] as? [[String : String]]
+                    let AITextAnalysis = document.data()["AITextAnalysis"] as? String
+                    let hasImage = document.data()["hasImage"] as? Bool
+                    let hasAdultContent = document.data()["hasAdultContent"] as? Bool
+                    
+                    let dream = Dream(id: id, authorId: userId, title: title, plainText: plainText, archivedData: archivedData, date: date, rawTimestamp: rawTimestamp, dayOfWeek: dayOfWeek, karma: karma, sharedWithFriends: sharedWithFriends, sharedWithCommunity: sharedWithCommunity, tags: tags, AITextAnalysis: AITextAnalysis, hasImage: hasImage, hasAdultContent: hasAdultContent)
+                    self.retrievedDreams.append(dream)
+                    
+                    // append image to local map if necessary
+                    if let hasImage = dream.hasImage {
+                        if hasImage {
+                            // Download the image from firestore
+                            let imageRef = self.storage.reference().child("dreams" + "/" + dream.id! + ".jpg")
+                            
+                            // Download in memory with a maximum allowed size of 1MB (1 * 1024 * 1024 bytes)
+                            imageRef.getData(maxSize: 1 * 1024 * 1024) { data, error in
+                                if let error = error {
+                                    print("Error downloading image from storage: ", error.localizedDescription)
+                                } else {
+                                    // Data for "images/island.jpg" is returned
+                                    let image = UIImage(data: data!)
+                                    self.retrievedImages[dream.id!] = image
                                 }
                             }
                         }
                     }
                 }
                 
+                DispatchQueue.main.async {
+                    self.isLoadingMoreDreams = false
+                }
             }
+        }
+    }
+    
+    func loadMoreDreams() {
+        if let user = Auth.auth().currentUser {
+            self.retrieveDreams(userId: user.uid, loadMore: true)
+        }
+    }
+    
+    func toggleSortOrder(isNewest: Bool) {
+        sortByDateDescending = isNewest
+        if let user = Auth.auth().currentUser {
+            self.retrieveDreams(userId: user.uid)
+        }
     }
     
     // Called after a dream is created in CreateDreamManager, processes the AI aspects of the dream
@@ -143,7 +189,14 @@ class HomeManager : ObservableObject {
     func processTextAnalysis(dream: Dream, isImageGenerationNeeded: Bool) async {
         let dreamPrompt = "Analyze the following dream: " + dream.plainText!
         
-        let query = ChatQuery(model: .gpt3_5Turbo, messages: [.init(role: .user, content: dreamPrompt)])
+        // Create a non-optional Chat message
+        
+        guard let message = ChatQuery.ChatCompletionMessageParam(role: .user, content: dreamPrompt) else {
+            print( "Failed to create Chat message")
+            return
+        }
+        
+        let query = ChatQuery(messages: [message], model: .gpt4_o_mini)
         openAI.chats(query: query) { result in
             // Handle OpenAI response
             switch result {
@@ -151,15 +204,7 @@ class HomeManager : ObservableObject {
                 if let response = result.choices[0].message.content {
                     // Save the AI dream analysis onto the dream object in firestore
                     do {
-                        // Get dream collection
-                        let timestamp = dream.rawTimestamp!
-                        let date = timestamp.dateValue()
-                        let dateFormatter = DateFormatter()
-                        dateFormatter.dateFormat = "MMMMYYYY"  // Set the desired format
-                        let formattedString = dateFormatter.string(from: date)
-                        let dreamCollection = "dreams" + formattedString
-
-                        try self.db.collection(dreamCollection).document(dream.id!).updateData([
+                        self.db.collection("dreams").document(dream.id!).updateData([
                             "AITextAnalysis": response
                         ])
                         
@@ -172,7 +217,9 @@ class HomeManager : ObservableObject {
                             }
                         } else {
                             self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
-                            self.isViewNewlyCreatedDreamPopupShowing = false
+                            DispatchQueue.main.async {
+                                self.isViewNewlyCreatedDreamPopupShowing = false
+                            }
                         }
                         
                     } catch {
@@ -183,7 +230,7 @@ class HomeManager : ObservableObject {
                 }
             case .failure(let error):
                 print("Failure generating AI Dream Analysis: ", error.localizedDescription)
-                
+                print(result)
             }
         }
     }
@@ -213,13 +260,7 @@ class HomeManager : ObservableObject {
                     
                     // Save the compressed jpeg to firestore under the dreamId
                     
-                    // Get dream collection
-                    let timestamp = dream.rawTimestamp!
-                    let date = timestamp.dateValue()
-                    let dateFormatter = DateFormatter()
-                    dateFormatter.dateFormat = "MMMMYYYY"  // Set the desired format
-                    let formattedString = dateFormatter.string(from: date)
-                    let dreamCollection = "dreams" + formattedString
+                    let dreamCollection = "dreams"
                     
                     // Create a storage reference
                     let storageRef = storage.reference().child(dreamCollection + "/" + dream.id! + ".jpg")
@@ -231,7 +272,7 @@ class HomeManager : ObservableObject {
                                 self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
                                 self.isViewNewlyCreatedDreamPopupShowing = false
                             } else {
-                                if let metadata = metadata {
+                                if let _ = metadata {
 //                                    print("Metadata: ", metadata)
                                 }
                                 self.setHasImageBitOnDream(dreamId: dream.id!, dreamCollection: dreamCollection)
@@ -259,110 +300,6 @@ class HomeManager : ObservableObject {
         }
     }
     
-    // This old method uses OpenAI's DALLE. The new method above uses stability.ai's stable diffusion. It's cheaper and higher quality.
-//    func processImageGeneration(dream: Dream) {
-//        // TODO: Determine if we want to pass in the entire dream plainText (this could be very long)
-//        //       OR simply generate a summary of the dream with OpenAI chat query and pass that.
-//        let imagePrompt = dream.plainText!
-//        
-//        let query = ImagesQuery(prompt: imagePrompt, n: 1, size: "1024x1024")
-//        openAI.images(query: query) { result in
-//            switch result {
-//            case .success(let result):
-//
-//                print("trying to grab the url: ", result.data[0].url ?? "no url")
-//                // Download the image from the url
-//                self.downloadImageFromURL(result.data[0].url ?? "no url") { image, urlString in
-//                    if let imageObject = image {
-//                        // We now have access to the imageObject, we can store it how we like in firebase storage
-//                        self.uploadImgToStorage(image: imageObject, dreamId: dream.id!, rawTimestamp: dream.rawTimestamp!)
-//                    } else {
-//                        print("return false from completion on downloadImage URL")
-//                        self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
-//                        self.isViewNewlyCreatedDreamPopupShowing = false
-//                    }
-//                }
-//                
-////                self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
-////                self.isViewNewlyCreatedDreamPopupShowing = false
-//            case .failure(let error):
-//                print("Error generating image with DALLE: ", error.localizedDescription)
-//                
-//                self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
-//                self.isViewNewlyCreatedDreamPopupShowing = false
-//            }
-//        }
-//        
-////        self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
-////        self.isViewNewlyCreatedDreamPopupShowing = false
-//        return
-//    }
-    
-//    func downloadImageFromURL(_ urlString: String, completion: ((_ uiImage: UIImage?, _ urlString: String?) -> ())?) {
-//        guard let url = URL(string: urlString) else {
-//            completion?(nil, urlString)
-//            return
-//        }
-//        URLSession.shared.dataTask(with: url) { (data, response, error) in
-//            if let error = error {
-//                print("error in downloading image from url: \(error)")
-//                completion?(nil, urlString)
-//                return
-//            }
-//            
-//            guard let httpResponse = response as? HTTPURLResponse,(200...299).contains(httpResponse.statusCode) else {
-//                completion?(nil, urlString)
-//                return
-//            }
-//            
-//            if let data = data, let image = UIImage(data: data) {
-//                completion?(image, urlString)
-//                return
-//            }
-//            completion?(nil, urlString)
-//        }.resume()
-//    }
-    
-//    func uploadImgToStorage(image: UIImage, dreamId: String, rawTimestamp: Timestamp) {
-//        
-//        // Get dream collection
-//        let timestamp = rawTimestamp
-//        let date = timestamp.dateValue()
-//        let dateFormatter = DateFormatter()
-//        dateFormatter.dateFormat = "MMMMYYYY"  // Set the desired format
-//        let formattedString = dateFormatter.string(from: date)
-//        let dreamCollection = "dreams" + formattedString
-//        
-//        // Create a storage reference
-//        let storageRef = storage.reference().child(dreamCollection + "/" + dreamId + ".jpg")
-//
-//        // Convert the image into JPEG and compress the quality to reduce its size
-//        let data = image.jpegData(compressionQuality: 0.5)
-//        
-//        let metadata = StorageMetadata()
-//        metadata.contentType = "image/jpg"
-//        
-//        if let data = data {
-//            storageRef.putData(data, metadata: metadata) { (metadata, error) in
-//                if let error = error {
-//                    print("Error while uploading file to storage: ", error)
-//                    self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
-//                    self.isViewNewlyCreatedDreamPopupShowing = false
-//                } else {
-//                    if let metadata = metadata {
-//                        print("Metadata: ", metadata)
-//                    }
-//                    self.setHasImageBitOnDream(dreamId: dreamId, dreamCollection: dreamCollection)
-//                }
-//                
-//            }
-//        } else {
-//            print("failure compressing image")
-//            self.retrieveDreams(userId: Auth.auth().currentUser!.uid)
-//            self.isViewNewlyCreatedDreamPopupShowing = false
-//        }
-//    }
-    
     func setHasImageBitOnDream(dreamId: String, dreamCollection: String) {
         self.db.collection(dreamCollection).document(dreamId).updateData([
             "hasImage": true
@@ -387,12 +324,7 @@ class HomeManager : ObservableObject {
     
     func deleteDream() {
         if let dream = self.focusedDream {
-            // Format the dream collection based on date and year
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "MMMMYYYY"
-            let formattedDate = dateFormatter.string(from: dream.rawTimestamp!.dateValue())
-            let collectionString = "dreams"+formattedDate
-            
+            let collectionString = "dreams"
             
             self.db.collection(collectionString).document(dream.id!).delete() { err in
                 if let err = err {
@@ -417,6 +349,20 @@ class HomeManager : ObservableObject {
                     }
                 }
             }
+            
+            // delete the image from storage
+            if let hasImage = dream.hasImage, hasImage {
+                let imageRef = self.storage.reference().child("dreams" + "/" + dream.id! + ".jpg")
+                
+                imageRef.delete { error in
+                    if let error = error {
+                        print("Error deleting image from storage: ", error.localizedDescription)
+                    } else {
+                        print("Image successfully deleted from storage")
+                    }
+                }
+            }
+            
         }
     }
     
