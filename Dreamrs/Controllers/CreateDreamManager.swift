@@ -139,7 +139,7 @@ class CreateDreamManager : ObservableObject {
             print("Dream stored with new doc reference: ", newDreamRef.documentID)
             
             // update the local dream id
-//            dream.id = newDreamRef.documentID
+            dream.id = newDreamRef.documentID
             
             // Add 1 to users num dreams
             // TODO add error handling
@@ -147,6 +147,8 @@ class CreateDreamManager : ObservableObject {
             userRef.updateData([
                 "numDreams": FieldValue.increment(Int64(1))
             ])
+            
+            
             
             return dream
         } catch {

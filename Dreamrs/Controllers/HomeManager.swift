@@ -106,6 +106,7 @@ class HomeManager : ObservableObject {
                 self.lastDocumentSnapshot = querySnapshot!.documents.last
                 
                 for document in querySnapshot!.documents {
+                    
                     let id = document.documentID
                     let title = document.data()["title"] as? String
                     let plainText = document.data()["plainText"] as? String
@@ -180,8 +181,15 @@ class HomeManager : ObservableObject {
         } else if shouldAnalyzeDream {
             await processTextAnalysis(dream: dream, isImageGenerationNeeded: false)
         } else if shouldVisualizeDream {
-//            processImageGeneration(dream: dream)
+            //            processImageGeneration(dream: dream)
             await processImageGeneration(dream: dream)
+        } else {
+            DispatchQueue.main.async {
+                if let user = Auth.auth().currentUser {
+                    self.retrieveDreams(userId: user.uid)
+                    self.isViewNewlyCreatedDreamPopupShowing = false
+                }
+            }
         }
         
     }
